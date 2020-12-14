@@ -21,15 +21,11 @@ int main()
 			return (-1);
 		while (true)
 		{
-			char buff[32];
+			char buff[4096];
 			//Приняли
-			int len = net.recv(accept, buff, 32);
+			int len = net.recv(accept, buff, 4096);
 			if (len <= 0)
 				break ;
-			// подняли в верхний регистр, отправили клиенту обратно
-			for (int i = 0; i < len; i++)
-				buff[i] -= 32;
-			buff[31] = '\0';
 			//Отправили клиенту обратно
 			std::cout << "Send message: " << buff <<  " to client..." << std::endl;
 			net.send(accept, buff, 32);
