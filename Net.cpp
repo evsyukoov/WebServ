@@ -81,4 +81,10 @@ int Net::connect() {
 	return (sock_fd);
 }
 
+Net::Net() {}
+
+Net::~Net() {
+
+}
+
 

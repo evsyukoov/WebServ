@@ -17,6 +17,10 @@ class Net {
 	char 	*net_addr;
 
 public:
+	Net();
+
+	virtual ~Net();
+
 	Net(char *address);
 
 	int 	listen();

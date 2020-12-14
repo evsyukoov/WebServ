@@ -1,12 +1,18 @@
 //
 // Created by Денис on 13/12/2020.
 //
+#define RED "\033[1;31m"
+#define GREEN "\033[1;32m"
+#define BLUE "\033[1;34m"
+#define RESET "\033[0m"
 #include <zconf.h>
 #include "Net.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 int main()
 {
-	char buff[13] = "0.0.0.0:8000";
+	char buff[16] = "127.0.0.1:8000";
 	Net net(buff);
 	int listen = net.listen();
 	if (listen < 0)
@@ -21,14 +27,20 @@ int main()
 			return (-1);
 		while (true)
 		{
-			char buff[4096];
+			char recieve[4096];
 			//Приняли
-			int len = net.recv(accept, buff, 4096);
+			int len = net.recv(accept, recieve, 4096);
 			if (len <= 0)
 				break ;
-			//Отправили клиенту обратно
-			std::cout << "Send message: " << buff <<  " to client..." << std::endl;
-			net.send(accept, buff, 32);
+			std::cout << RED << "PARSE MAP: " << RESET << std::endl;
+			HttpRequest httpRequest(recieve, len);
+			httpRequest.printMap();
+			std::cout << GREEN << "HEADER FROM BROWSER: " << RESET << std::endl;
+			write(1, recieve, len);
+			HttpResponse httpResponse(net, httpRequest.getRequestMap(), accept, "index.html",
+					".");
+			httpResponse.get();
+			std::cout << BLUE << "Server response html to client" << RESET << std::endl;
 		}
 		net.close(accept);
 	}
