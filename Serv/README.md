@@ -1,5 +1,5 @@
 # WebServ
---make server
+--make server(или CMake)
 
 --./server
 
