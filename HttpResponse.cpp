@@ -40,5 +40,5 @@ void HttpResponse::get() {
 }
 
 HttpResponse::~HttpResponse() {
-
+	close(connection);
 }

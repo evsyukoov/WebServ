@@ -25,24 +25,19 @@ int main()
 		int accept = net.accept(listen);
 		if (accept < 0)
 			return (-1);
-		while (true)
-		{
-			char recieve[4096];
-			//Приняли
-			int len = net.recv(accept, recieve, 4096);
-			if (len <= 0)
-				break ;
-			std::cout << RED << "PARSE MAP: " << RESET << std::endl;
-			HttpRequest httpRequest(recieve, len);
-			httpRequest.printMap();
-			std::cout << GREEN << "HEADER FROM BROWSER: " << RESET << std::endl;
-			write(1, recieve, len);
-			HttpResponse httpResponse(net, httpRequest.getRequestMap(), accept, "index.html",
-					".");
-			httpResponse.get();
-			std::cout << BLUE << "Server response html to client" << RESET << std::endl;
-		}
-		net.close(accept);
+
+		char recieve[4096];
+		//Приняли
+		int len = net.recv(accept, recieve, 4096);
+		std::cout << RED << "PARSE MAP: " << RESET << std::endl;
+		HttpRequest httpRequest(recieve, len);
+		httpRequest.printMap();
+		std::cout << GREEN << "HEADER FROM BROWSER: " << RESET << std::endl;
+		write(1, recieve, len);
+		HttpResponse httpResponse(net, httpRequest.getRequestMap(),
+				accept, "index.html",".");
+		httpResponse.get();
+		std::cout << BLUE << "Server response html to client" << RESET << std::endl;
 	}
 	net.close(listen);
 	return (1);
