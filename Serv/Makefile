@@ -2,7 +2,9 @@ NAME1=server
 NAME2=client
 
 SRC = Net.cpp \
-	  lib.cpp
+	  lib.cpp \
+	  HttpRequest.cpp \
+	  HttpResponse.cpp 
 
 FLAGS = -Wall -Wextra -Werror
 
