@@ -4,7 +4,8 @@ NAME2=client
 SRC = Net.cpp \
 	  lib.cpp \
 	  HttpRequest.cpp \
-	  HttpResponse.cpp 
+	  HttpResponse.cpp \
+	  CGI.cpp
 
 FLAGS = -Wall -Wextra -Werror
 

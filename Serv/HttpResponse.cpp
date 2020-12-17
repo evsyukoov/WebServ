@@ -25,7 +25,12 @@ void HttpResponse::manager() {
 void HttpResponse::get() {
 	//находим файл в указанном локейшне
 	std::string path = root + reqMap["location"] + fileName;
-	int fd = open(path.c_str(), 'r');
+	int fd;
+	if ((fd = open(path.c_str(), 'r')) < 0)
+	{
+		std::cout << "Error opening file" << std::endl;
+		return ;
+	}
 	//получаем размер файла
 	struct stat statbuf;
 	if (fstat(fd, &statbuf) != 0) {
@@ -47,11 +52,13 @@ void HttpResponse::post() {
 int HttpResponse::sendHTML(int fd, char *header, int file_size)
 {
 	char send_buff[file_size];
+	std::cout << "file_size: " << file_size << std::endl;
 	int nread;
 	if ((nread = read(fd, send_buff, file_size)) < 0) {
 		std::cout << "Error reading"  << std::endl;
 		return (-1);
 	}
+	std::cout << "Send" << std::endl;
 	net.send(connection, header, ft_strlen(header));
 	net.send(connection, send_buff, nread);
 	close(fd);
