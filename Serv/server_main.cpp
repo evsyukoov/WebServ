@@ -17,9 +17,12 @@ int     handle_connection(int client_sock, Net net)
     char recieve[4096];
 
     std::cout << "Wait for reading request from client" << std::endl;
+    usleep(1000);
     int len = net.recv(client_sock, recieve, 4096);
-    if (len <= 0)
-        return (1);
+    if (len == -1) {
+        std::cout << "Not ready for reading" << std::endl;
+        return (-1);
+    }
     std::cout << RED << "PARSE MAP: " << RESET << std::endl;
     HttpRequest httpRequest(recieve, len);
     httpRequest.printMap();
@@ -70,9 +73,12 @@ int main(int argc, char **argv)
                 if (i == listen)
                 {
                     int client_sock = net.accept(listen);
+//                    const int flags = fcntl(client_sock, F_GETFL, 0);
+//                    fcntl(client_sock, F_SETFL, flags | O_NONBLOCK);
                     FD_SET(client_sock, &current_set);
                     if (client_sock > max)
                         max = client_sock;
+                    std::cout << "client sock connected: " << client_sock << std::endl;
                 }
                 //иначе обрабатываем соединение(оно уже есть)
                 else
