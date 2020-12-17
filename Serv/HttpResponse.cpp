@@ -37,12 +37,12 @@ void HttpResponse::get() {
 		net.send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ft_strlen("HTTP/1.1 404 Not Found\n\n404 not found"));
 	}
 	else
-		if ((sendHTML(fd, "HTTP/1.1 200 OK\nContent-type: text/html\n\n", statbuf.st_size) < 0))
+		if ((sendHTML(fd, "HTTP/1.1 200 OK\nContent-type: text/html\n\n\0", statbuf.st_size + 1) < 0))
 			return ;
 }
 
 HttpResponse::~HttpResponse() {
-	close(connection);
+
 }
 
 void HttpResponse::post() {
@@ -58,6 +58,7 @@ int HttpResponse::sendHTML(int fd, char *header, int file_size)
 		std::cout << "Error reading"  << std::endl;
 		return (-1);
 	}
+	send_buff[nread] = '\0';
 	std::cout << "Send" << std::endl;
 	net.send(connection, header, ft_strlen(header));
 	net.send(connection, send_buff, nread);
