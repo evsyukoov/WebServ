@@ -12,12 +12,17 @@
 #include "CGI.hpp"
 
 
+int     set_nonblock(int fd)
+{
+    int flags = fcntl(fd, F_GETFL);
+    return (fcntl(fd, F_SETFL, flags | O_NONBLOCK));
+}
+
 int     handle_connection(int client_sock, Net net)
 {
     char recieve[4096];
 
     std::cout << "Wait for reading request from client" << std::endl;
-    usleep(1000);
     int len = net.recv(client_sock, recieve, 4096);
     if (len == -1) {
         std::cout << "Not ready for reading" << std::endl;
@@ -41,20 +46,21 @@ int main(int argc, char **argv)
 	char buff[16] = "127.0.0.1:8000";
 	Net net(buff);
 	int listen = net.listen();
+	set_nonblock(listen);
 	if (listen < 0)
 		return (-1);
 	std::cout << "Server is listening..." << std::endl;
-    //установим сет дескрипторов current будет отправляться в listen и
-    //поскольку listen его модифицирует будем на каждом витке цикла сохранять set до модификации в master_set
     fd_set  current_set;
     fd_set  master_set;
-    //максимальное количество сокетов в сетеж
+    FD_ZERO(&current_set);
+    //максимальное количество сокетов в сети
     int max = listen;
     // добавим наше соединение в сет открытых дескрипторов(оно пока одно, сервера)
-    FD_SET(listen, &current_set);
+    FD_SET(listen, &master_set);
     while (true)
 	{
-        master_set = current_set;
+        //current модифицируется после возврата из  select, поэтому храним все в master
+        current_set = master_set;
         //select блокирует и ждет пока хотя бы один дескриптор в наборе изменит свое состояние
         std::cout << "Select block..." << std::endl;
         if (select(max + 1, &current_set, NULL, NULL, NULL) == -1)
@@ -73,9 +79,8 @@ int main(int argc, char **argv)
                 if (i == listen)
                 {
                     int client_sock = net.accept(listen);
-//                    const int flags = fcntl(client_sock, F_GETFL, 0);
-//                    fcntl(client_sock, F_SETFL, flags | O_NONBLOCK);
-                    FD_SET(client_sock, &current_set);
+                    set_nonblock(client_sock);
+                    FD_SET(client_sock, &master_set);
                     if (client_sock > max)
                         max = client_sock;
                     std::cout << "client sock connected: " << client_sock << std::endl;
@@ -85,8 +90,7 @@ int main(int argc, char **argv)
                 {
                     handle_connection(i, net);
                     //обработали и удалили из сета
-                    FD_CLR(i, &current_set);
-
+                    FD_CLR(i, &master_set);
                 }
             }
         }

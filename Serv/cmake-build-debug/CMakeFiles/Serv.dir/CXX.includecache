@@ -6,12 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/ccarl/Desktop/WebServer/Serv/CGI.hpp
-zconf.h
--
-lib.hpp
-/Users/ccarl/Desktop/WebServer/Serv/lib.hpp
-
 /Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
 map
 -
@@ -19,6 +13,10 @@ string
 -
 lib.hpp
 /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
+
+/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.cpp
+HttpResponse.hpp
+/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
 
 /Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
 HttpRequest.hpp
@@ -53,16 +51,4 @@ unistd.h
 /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
 cstdlib
 -
-
-/Users/ccarl/Desktop/WebServer/Serv/server_main.cpp
-zconf.h
--
-Net.hpp
-/Users/ccarl/Desktop/WebServer/Serv/Net.hpp
-HttpRequest.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
-HttpResponse.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
-CGI.hpp
-/Users/ccarl/Desktop/WebServer/Serv/CGI.hpp
 
