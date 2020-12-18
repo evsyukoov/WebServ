@@ -104,6 +104,12 @@
 		<Unit filename="/Users/ccarl/Desktop/WebServer/Serv/Net.hpp">
 			<Option target="Serv"/>
 		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer/Serv/Server.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer/Serv/Server.hpp">
+			<Option target="Serv"/>
+		</Unit>
 		<Unit filename="/Users/ccarl/Desktop/WebServer/Serv/lib.cpp">
 			<Option target="Serv"/>
 		</Unit>

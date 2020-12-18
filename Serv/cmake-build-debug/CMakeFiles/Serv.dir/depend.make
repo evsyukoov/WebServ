@@ -19,6 +19,13 @@ CMakeFiles/Serv.dir/Net.cpp.o: ../Net.cpp
 CMakeFiles/Serv.dir/Net.cpp.o: ../Net.hpp
 CMakeFiles/Serv.dir/Net.cpp.o: ../lib.hpp
 
+CMakeFiles/Serv.dir/Server.cpp.o: ../HttpRequest.hpp
+CMakeFiles/Serv.dir/Server.cpp.o: ../HttpResponse.hpp
+CMakeFiles/Serv.dir/Server.cpp.o: ../Net.hpp
+CMakeFiles/Serv.dir/Server.cpp.o: ../Server.cpp
+CMakeFiles/Serv.dir/Server.cpp.o: ../Server.hpp
+CMakeFiles/Serv.dir/Server.cpp.o: ../lib.hpp
+
 CMakeFiles/Serv.dir/lib.cpp.o: ../lib.cpp
 CMakeFiles/Serv.dir/lib.cpp.o: ../lib.hpp
 
@@ -26,6 +33,7 @@ CMakeFiles/Serv.dir/server_main.cpp.o: ../CGI.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../HttpRequest.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../HttpResponse.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../Net.hpp
+CMakeFiles/Serv.dir/server_main.cpp.o: ../Server.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../lib.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../server_main.cpp
 

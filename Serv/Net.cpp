@@ -2,6 +2,7 @@
 // Created by Денис on 13/12/2020.
 //
 
+#include <fcntl.h>
 #include "Net.hpp"
 
 //address = 172.0.0.1:8000
@@ -19,13 +20,13 @@ void Net::parseAddr() {
 
 //для сервера функция которая слушает все входящие соединения на заданном IP и порту
 int Net::listen() {
-	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock_fd < 0)
+	listener = socket(AF_INET, SOCK_STREAM, 0);
+	if (listener < 0)
 		return (error("sock error"));
 	int optval = 1;
 	//если сокет уже был открыт нужен setsockopt(), работает и без него
 	//!непонятно
-	if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
 		return error("setsockopt error");
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
@@ -34,11 +35,11 @@ int Net::listen() {
 
 //	std::cout << net_addr << std::endl;
 //	std::cout << port << std::endl;
-	if (::bind(sock_fd, ((struct sockaddr*)&addr), sizeof(addr)) != 0)
+	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0)
 		return (error("bind failed"));
-	if (::listen(sock_fd, SOMAXCONN) != 0)
+	if (::listen(listener, SOMAXCONN) != 0)
 		return (error("listen error"));
-	return (sock_fd);
+	return (1);
 
 }
 
@@ -85,6 +86,24 @@ Net::Net() {}
 
 Net::~Net() {
 
+}
+
+int Net::getListener() const {
+    return listener;
+}
+
+int     Net::set_nonblock(int fd)
+{
+    int flags = fcntl(fd, F_GETFL);
+    return (fcntl(fd, F_SETFL, flags | O_NONBLOCK));
+}
+
+bool operator < (const Net &n1, const Net &n2) {
+    return n1.listener < n2.listener;
+}
+
+bool operator > (const Net &n1, const Net &n2) {
+    return n1.listener > n2.listener;
 }
 
 

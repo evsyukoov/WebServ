@@ -14,10 +14,6 @@ string
 lib.hpp
 /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
 
-/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.cpp
-HttpResponse.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
-
 /Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
 HttpRequest.hpp
 /Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
@@ -47,6 +43,28 @@ lib.hpp
 /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
 unistd.h
 -
+algorithm
+-
+
+/Users/ccarl/Desktop/WebServer/Serv/Server.cpp
+Server.hpp
+/Users/ccarl/Desktop/WebServer/Serv/Server.hpp
+
+/Users/ccarl/Desktop/WebServer/Serv/Server.hpp
+map
+-
+list
+-
+fcntl.h
+-
+Net.hpp
+/Users/ccarl/Desktop/WebServer/Serv/Net.hpp
+HttpRequest.hpp
+/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+HttpRequest.hpp
+/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+HttpResponse.hpp
+/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
 
 /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
 cstdlib

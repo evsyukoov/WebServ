@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.cpp" "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HttpRequest.cpp.o"
   "/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.cpp" "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HttpResponse.cpp.o"
   "/Users/ccarl/Desktop/WebServer/Serv/Net.cpp" "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Net.cpp.o"
+  "/Users/ccarl/Desktop/WebServer/Serv/Server.cpp" "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Server.cpp.o"
   "/Users/ccarl/Desktop/WebServer/Serv/lib.cpp" "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir/lib.cpp.o"
   "/Users/ccarl/Desktop/WebServer/Serv/server_main.cpp" "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir/server_main.cpp.o"
   )

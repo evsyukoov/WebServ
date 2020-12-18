@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Serv.dir/HttpRequest.cpp.o"
   "CMakeFiles/Serv.dir/HttpResponse.cpp.o"
   "CMakeFiles/Serv.dir/Net.cpp.o"
+  "CMakeFiles/Serv.dir/Server.cpp.o"
   "CMakeFiles/Serv.dir/lib.cpp.o"
   "CMakeFiles/Serv.dir/server_main.cpp.o"
   "Serv"

@@ -19,6 +19,13 @@ CMakeFiles/Serv.dir/Net.cpp.o
  /Users/ccarl/Desktop/WebServer/Serv/Net.cpp
  /Users/ccarl/Desktop/WebServer/Serv/Net.hpp
  /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
+CMakeFiles/Serv.dir/Server.cpp.o
+ /Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+ /Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
+ /Users/ccarl/Desktop/WebServer/Serv/Net.hpp
+ /Users/ccarl/Desktop/WebServer/Serv/Server.cpp
+ /Users/ccarl/Desktop/WebServer/Serv/Server.hpp
+ /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
 CMakeFiles/Serv.dir/lib.cpp.o
  /Users/ccarl/Desktop/WebServer/Serv/lib.cpp
  /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
@@ -27,5 +34,6 @@ CMakeFiles/Serv.dir/server_main.cpp.o
  /Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
  /Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
  /Users/ccarl/Desktop/WebServer/Serv/Net.hpp
+ /Users/ccarl/Desktop/WebServer/Serv/Server.hpp
  /Users/ccarl/Desktop/WebServer/Serv/lib.hpp
  /Users/ccarl/Desktop/WebServer/Serv/server_main.cpp

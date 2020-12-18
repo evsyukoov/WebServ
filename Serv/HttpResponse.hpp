@@ -21,16 +21,17 @@ class HttpResponse {
 	int				connection;
 	std::string		fileName; //index.html
 	std::string 	root; //root-откуда начинать искать
-	Net				net;
 
 	void 	get();
 
 	void 	post();
 
+    void 	head();
+
 	int 	sendHTML(int fd, char *header, int file_size);
 
 public:
-	HttpResponse(const Net &net, const std::map<std::string, std::string> &reqMap, int connection, const std::string &fileName, const std::string &root);
+	HttpResponse( const std::map<std::string, std::string> &reqMap, int connection, const std::string &fileName, const std::string &root);
 
 	virtual ~HttpResponse();
 
