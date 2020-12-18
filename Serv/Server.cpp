@@ -87,14 +87,11 @@ int Server::servLoop() {
             FD_SET(*it, &read_set);
             FD_SET(*it, &write_set);
         }
-        int max_listen = std::max_element(servers.begin(), servers.end())->getListener();
         //ждем коннекта или готовности к чтению
-        int max_client = *std::max_element(clients.begin(), clients.end());
-        int max = max_client;
-        if (max_listen > max)
-            max = max_listen;
+        int max= std::max(std::max_element(servers.begin(), servers.end())->getListener(),*std::max_element(clients.begin(), clients.end()));
 
-        select(max + 1, &read_set, &write_set, NULL, NULL);
+        std::cout << "select block" << std::endl;
+        select(max + 1, &read_set, NULL, NULL, NULL);
         std::cout << "select unblock, max: " << max << std::endl;
         //бежим по всем серверам, смотрим на каком событие
         for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++)
@@ -125,18 +122,19 @@ int Server::servLoop() {
                     if (FD_ISSET(*it, &write_set))
                         sendData(*it, req);
                 }
+                delete req;
             }
         }
     }
 }
 
 Server::~Server() {
-//    for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++)
-//    {
-//        close(it->getListener());
-//        servers.erase(it);
-//    }
-//    servers.clear();
+    for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++)
+    {
+        close(it->getListener());
+        servers.erase(it);
+    }
+    servers.clear();
 }
 
 
