@@ -104,6 +104,24 @@
 		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Net.hpp">
 			<Option target="Serv"/>
 		</Unit>
+		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Parser/Config.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Parser/Config.hpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Parser/Location.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Parser/ServConf.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Parser/ServConf.hpp">
+			<Option target="Serv"/>
+		</Unit>
 		<Unit filename="/Users/denis/Desktop/WebServer/Serv/Server.cpp">
 			<Option target="Serv"/>
 		</Unit>

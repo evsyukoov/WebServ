@@ -19,6 +19,18 @@ CMakeFiles/Serv.dir/Net.cpp.o
  /Users/denis/Desktop/WebServer/Serv/Net.cpp
  /Users/denis/Desktop/WebServer/Serv/Net.hpp
  /Users/denis/Desktop/WebServer/Serv/lib.hpp
+CMakeFiles/Serv.dir/Parser/Config.cpp.o
+ /Users/denis/Desktop/WebServer/Serv/Parser/Config.cpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/Config.hpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/ServConf.hpp
+CMakeFiles/Serv.dir/Parser/Location.cpp.o
+ /Users/denis/Desktop/WebServer/Serv/Parser/Location.cpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp
+CMakeFiles/Serv.dir/Parser/ServConf.cpp.o
+ /Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/ServConf.cpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/ServConf.hpp
 CMakeFiles/Serv.dir/Server.cpp.o
  /Users/denis/Desktop/WebServer/Serv/HttpRequest.hpp
  /Users/denis/Desktop/WebServer/Serv/HttpResponse.hpp
@@ -34,6 +46,9 @@ CMakeFiles/Serv.dir/server_main.cpp.o
  /Users/denis/Desktop/WebServer/Serv/HttpRequest.hpp
  /Users/denis/Desktop/WebServer/Serv/HttpResponse.hpp
  /Users/denis/Desktop/WebServer/Serv/Net.hpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/Config.hpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp
+ /Users/denis/Desktop/WebServer/Serv/Parser/ServConf.hpp
  /Users/denis/Desktop/WebServer/Serv/Server.hpp
  /Users/denis/Desktop/WebServer/Serv/lib.hpp
  /Users/denis/Desktop/WebServer/Serv/server_main.cpp

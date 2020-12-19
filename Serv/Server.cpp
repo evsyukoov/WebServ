@@ -8,8 +8,8 @@
 
 int     set_nonblock(int fd)
 {
-    int flags = fcntl(fd, F_GETFL);
-    return (fcntl(fd, F_SETFL, flags | O_NONBLOCK));
+    //int flags = fcntl(fd, F_GETFL);
+    return (fcntl(fd, F_SETFL | O_NONBLOCK));
 }
 
 
@@ -40,7 +40,7 @@ int     Server::sendData(int client_sock, HttpRequest *httpRequest)
     httpResponse.manager();
     std::cout << BLUE << "Server response html to client: " << client_sock << RESET << std::endl;
     shutdown(client_sock, SHUT_RDWR);
-   // close(client_sock);
+    //close(client_sock);
     return (1);
 }
 
@@ -92,7 +92,7 @@ int Server::servLoop() {
 						   *std::max_element(clients.begin(), clients.end()));
 
 		std::cout << "select block" << std::endl;
-		select(max + 1, &read_set, &write_set, NULL, NULL);
+		select(max + 1, &read_set, NULL, NULL, NULL);
 		std::cout << "select unblock, max: " << max << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++) {

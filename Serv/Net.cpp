@@ -91,8 +91,8 @@ int Net::getListener() const {
 
 int     Net::set_nonblock(int fd)
 {
-    int flags = fcntl(fd, F_GETFL);
-    return (fcntl(fd, F_SETFL, flags | O_NONBLOCK));
+    //int flags = fcntl(fd, F_GETFL);
+    return (fcntl(fd, F_SETFL | O_NONBLOCK));
 }
 
 bool operator < (const Net &n1, const Net &n2) {

@@ -231,6 +231,87 @@ Net.cpp.s:
 	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Net.cpp.s
 .PHONY : Net.cpp.s
 
+Parser/Config.o: Parser/Config.cpp.o
+
+.PHONY : Parser/Config.o
+
+# target to build an object file
+Parser/Config.cpp.o:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/Config.cpp.o
+.PHONY : Parser/Config.cpp.o
+
+Parser/Config.i: Parser/Config.cpp.i
+
+.PHONY : Parser/Config.i
+
+# target to preprocess a source file
+Parser/Config.cpp.i:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/Config.cpp.i
+.PHONY : Parser/Config.cpp.i
+
+Parser/Config.s: Parser/Config.cpp.s
+
+.PHONY : Parser/Config.s
+
+# target to generate assembly for a file
+Parser/Config.cpp.s:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/Config.cpp.s
+.PHONY : Parser/Config.cpp.s
+
+Parser/Location.o: Parser/Location.cpp.o
+
+.PHONY : Parser/Location.o
+
+# target to build an object file
+Parser/Location.cpp.o:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/Location.cpp.o
+.PHONY : Parser/Location.cpp.o
+
+Parser/Location.i: Parser/Location.cpp.i
+
+.PHONY : Parser/Location.i
+
+# target to preprocess a source file
+Parser/Location.cpp.i:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/Location.cpp.i
+.PHONY : Parser/Location.cpp.i
+
+Parser/Location.s: Parser/Location.cpp.s
+
+.PHONY : Parser/Location.s
+
+# target to generate assembly for a file
+Parser/Location.cpp.s:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/Location.cpp.s
+.PHONY : Parser/Location.cpp.s
+
+Parser/ServConf.o: Parser/ServConf.cpp.o
+
+.PHONY : Parser/ServConf.o
+
+# target to build an object file
+Parser/ServConf.cpp.o:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/ServConf.cpp.o
+.PHONY : Parser/ServConf.cpp.o
+
+Parser/ServConf.i: Parser/ServConf.cpp.i
+
+.PHONY : Parser/ServConf.i
+
+# target to preprocess a source file
+Parser/ServConf.cpp.i:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/ServConf.cpp.i
+.PHONY : Parser/ServConf.cpp.i
+
+Parser/ServConf.s: Parser/ServConf.cpp.s
+
+.PHONY : Parser/ServConf.s
+
+# target to generate assembly for a file
+Parser/ServConf.cpp.s:
+	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Parser/ServConf.cpp.s
+.PHONY : Parser/ServConf.cpp.s
+
 Server.o: Server.cpp.o
 
 .PHONY : Server.o
@@ -333,6 +414,15 @@ help:
 	@echo "... Net.o"
 	@echo "... Net.i"
 	@echo "... Net.s"
+	@echo "... Parser/Config.o"
+	@echo "... Parser/Config.i"
+	@echo "... Parser/Config.s"
+	@echo "... Parser/Location.o"
+	@echo "... Parser/Location.i"
+	@echo "... Parser/Location.s"
+	@echo "... Parser/ServConf.o"
+	@echo "... Parser/ServConf.i"
+	@echo "... Parser/ServConf.s"
 	@echo "... Server.o"
 	@echo "... Server.i"
 	@echo "... Server.s"

@@ -5,7 +5,8 @@ SRC = Net.cpp \
 	  lib.cpp \
 	  HttpRequest.cpp \
 	  HttpResponse.cpp \
-	  CGI.cpp
+	  CGI.cpp   \
+	  Parser/Config.cpp
 
 FLAGS = -Wall -Wextra -Werror
 
