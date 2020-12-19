@@ -6,17 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+/Users/denis/Desktop/WebServer/Serv/HttpRequest.hpp
 map
 -
 string
 -
 lib.hpp
-/Users/ccarl/Desktop/WebServer/Serv/lib.hpp
+/Users/denis/Desktop/WebServer/Serv/lib.hpp
 
-/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
+/Users/denis/Desktop/WebServer/Serv/HttpResponse.hpp
 HttpRequest.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+/Users/denis/Desktop/WebServer/Serv/HttpRequest.hpp
 fcntl.h
 -
 sys/stat.h
@@ -26,31 +26,33 @@ iostream
 zconf.h
 -
 Net.hpp
-/Users/ccarl/Desktop/WebServer/Serv/Net.hpp
+/Users/denis/Desktop/WebServer/Serv/Net.hpp
 lib.hpp
-/Users/ccarl/Desktop/WebServer/Serv/lib.hpp
+/Users/denis/Desktop/WebServer/Serv/lib.hpp
 
-/Users/ccarl/Desktop/WebServer/Serv/Net.hpp
+/Users/denis/Desktop/WebServer/Serv/Net.hpp
 string
 -
 sys/types.h
-/Users/ccarl/Desktop/WebServer/Serv/sys/types.h
+/Users/denis/Desktop/WebServer/Serv/sys/types.h
 arpa/inet.h
 -
 iostream
 -
 lib.hpp
-/Users/ccarl/Desktop/WebServer/Serv/lib.hpp
+/Users/denis/Desktop/WebServer/Serv/lib.hpp
 unistd.h
 -
 algorithm
 -
 
-/Users/ccarl/Desktop/WebServer/Serv/Server.cpp
+/Users/denis/Desktop/WebServer/Serv/Server.cpp
+vector
+-
 Server.hpp
-/Users/ccarl/Desktop/WebServer/Serv/Server.hpp
+/Users/denis/Desktop/WebServer/Serv/Server.hpp
 
-/Users/ccarl/Desktop/WebServer/Serv/Server.hpp
+/Users/denis/Desktop/WebServer/Serv/Server.hpp
 map
 -
 list
@@ -58,15 +60,15 @@ list
 fcntl.h
 -
 Net.hpp
-/Users/ccarl/Desktop/WebServer/Serv/Net.hpp
+/Users/denis/Desktop/WebServer/Serv/Net.hpp
 HttpRequest.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+/Users/denis/Desktop/WebServer/Serv/HttpRequest.hpp
 HttpRequest.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpRequest.hpp
+/Users/denis/Desktop/WebServer/Serv/HttpRequest.hpp
 HttpResponse.hpp
-/Users/ccarl/Desktop/WebServer/Serv/HttpResponse.hpp
+/Users/denis/Desktop/WebServer/Serv/HttpResponse.hpp
 
-/Users/ccarl/Desktop/WebServer/Serv/lib.hpp
+/Users/denis/Desktop/WebServer/Serv/lib.hpp
 cstdlib
 -
 

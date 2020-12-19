@@ -1,4 +1,4 @@
-# Install script for directory: /Users/ccarl/Desktop/WebServer/Serv
+# Install script for directory: /Users/denis/Desktop/WebServer/Serv
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/denis/Desktop/WebServer/Serv/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,3 +1,3 @@
-/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/ccarl/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir
+/Users/denis/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/denis/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/denis/Desktop/WebServer/Serv/cmake-build-debug/CMakeFiles/Serv.dir

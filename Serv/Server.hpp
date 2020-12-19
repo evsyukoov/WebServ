@@ -42,7 +42,11 @@ public:
 
     int     run();
 
-    void    initSets();
+    void    initReadSet();
+
+	std::vector<HttpRequest*>	readRequests(std::list<int> &clients);
+
+	void 			sendToAllClients(std::vector<HttpRequest*> requests, std::list<int> clients);
 
 };
 

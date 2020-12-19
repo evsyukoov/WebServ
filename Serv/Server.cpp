@@ -2,6 +2,7 @@
 // Created by Casie Carl on 12/18/20.
 //
 
+#include <vector>
 #include "Server.hpp"
 
 
@@ -37,8 +38,9 @@ int     Server::sendData(int client_sock, HttpRequest *httpRequest)
                               client_sock, "index.html",".");
 
     httpResponse.manager();
-    std::cout << BLUE << "Server response html to client" << RESET << std::endl;
+    std::cout << BLUE << "Server response html to client: " << client_sock << RESET << std::endl;
     shutdown(client_sock, SHUT_RDWR);
+   // close(client_sock);
     return (1);
 }
 
@@ -61,7 +63,7 @@ int Server::openServers()
     return (1);
 }
 
-void     Server::initSets()
+void     Server::initReadSet()
 {
     for(std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++) {
         FD_SET(it->getListener(), &read_set);
@@ -77,55 +79,76 @@ int     Server::run()
 
 int Server::servLoop() {
     //список всех подключенных клиентов
-    std::list<int> clients;
-    while (true)
-    {
-        FD_ZERO(&read_set);
-        FD_ZERO(&write_set);
-        initSets();
-        for(std::list<int>::iterator it = clients.begin(); it != clients.end(); it++) {
-            FD_SET(*it, &read_set);
-            FD_SET(*it, &write_set);
-        }
-        //ждем коннекта или готовности к чтению
-        int max= std::max(std::max_element(servers.begin(), servers.end())->getListener(),*std::max_element(clients.begin(), clients.end()));
+	std::list<int> clients;
+	while (true) {
+		FD_ZERO(&read_set);
+		FD_ZERO(&write_set);
+		initReadSet();
+		for (std::list<int>::iterator it = clients.begin(); it != clients.end(); it++) {
+			FD_SET(*it, &read_set);
+		}
+		//ждем коннекта или готовности к чтению
+		int max = std::max(std::max_element(servers.begin(), servers.end())->getListener(),
+						   *std::max_element(clients.begin(), clients.end()));
 
-        std::cout << "select block" << std::endl;
-        select(max + 1, &read_set, NULL, NULL, NULL);
-        std::cout << "select unblock, max: " << max << std::endl;
-        //бежим по всем серверам, смотрим на каком событие
-        for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++)
-        {
-            // произошел коннект на n-ом сервере
-            if (FD_ISSET(it->getListener(), &read_set))
-            {
+		std::cout << "select block" << std::endl;
+		select(max + 1, &read_set, &write_set, NULL, NULL);
+		std::cout << "select unblock, max: " << max << std::endl;
+		//бежим по всем серверам, смотрим на каком событие
+		for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++) {
+			// произошел коннект на n-ом сервере
+			if (FD_ISSET(it->getListener(), &read_set)) {
 
-                int client_sock = it->accept(it->getListener());
-                set_nonblock(client_sock);
-                clients.push_back(client_sock);
-                std::cout << "listener =  " << it->getListener() <<  " client_sock = "  << client_sock << std::endl;
-            }
-        }
-        //смотрим что кто то из клиентов что-то отправил(сервер готов читать)
-        for (std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
-        {
-            if (FD_ISSET(*it, &read_set))
-            {
-                HttpRequest *req;
-                if (!(req = receiveData(*it)))
-                {
-                    close(*it);
-                    clients.erase(it);
-                }
-                else
-                {
-                    if (FD_ISSET(*it, &write_set))
-                        sendData(*it, req);
-                }
-                delete req;
-            }
-        }
-    }
+				int client_sock = it->accept(it->getListener());
+				set_nonblock(client_sock);
+				clients.push_back(client_sock);
+				std::cout << "listener =  " << it->getListener() << " client_sock = " << client_sock << std::endl;
+			}
+		}
+		std::vector<HttpRequest*> requests = readRequests(clients);
+		sendToAllClients(requests, clients);
+	}
+	return (1);
+}
+
+std::vector<HttpRequest*>	Server::readRequests(std::list<int> &clients)
+{
+	std::vector<HttpRequest*> requests;
+	//смотрим что кто то из клиентов что-то отправил(сервер готов читать)
+	for (std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (FD_ISSET(*it, &read_set))
+		{
+			HttpRequest *req;
+
+			//кто-то отключился
+			if (!(req = receiveData(*it)))
+			{
+				close(*it);
+				clients.erase(it);
+			}
+			//если не отключился значит готов принять ответ
+			else
+			{
+				FD_SET(*it, &write_set);
+				requests.push_back(req);
+			}
+		}
+	}
+	return (requests);
+}
+
+void	Server::sendToAllClients(std::vector<HttpRequest*> requests, std::list<int> clients)
+{
+	int i = 0;
+	for(std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (FD_ISSET(*it, &write_set))
+			sendData(*it, requests[i]);
+		i++;
+	}
+	for(int i = 0; i < requests.size(); i++)
+		delete requests[i];
 }
 
 Server::~Server() {
