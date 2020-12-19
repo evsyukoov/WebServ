@@ -106,7 +106,16 @@ int Server::servLoop() {
 			}
 		}
 		std::vector<HttpRequest*> requests = readRequests(clients);
+		for(int i = 0; i < requests.size(); i++)
+		{
+			std::cout << GREEN;
+			requests[i]->printMap();
+			std::cout << RESET;
+		}
 		sendToAllClients(requests, clients);
+		for(int i = 0; i < requests.size(); i++)
+			delete requests[i];
+		requests.clear();
 	}
 	return (1);
 }
@@ -119,7 +128,7 @@ std::vector<HttpRequest*>	Server::readRequests(std::list<int> &clients)
 	{
 		if (FD_ISSET(*it, &read_set))
 		{
-			HttpRequest *req;
+			HttpRequest *req = NULL;
 
 			//кто-то отключился
 			if (!(req = receiveData(*it)))
@@ -143,12 +152,12 @@ void	Server::sendToAllClients(std::vector<HttpRequest*> requests, std::list<int>
 	int i = 0;
 	for(std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
 	{
-		if (FD_ISSET(*it, &write_set))
+		if (FD_ISSET(*it, &write_set)) {
 			sendData(*it, requests[i]);
-		i++;
+			i++;
+		}
 	}
-	for(int i = 0; i < requests.size(); i++)
-		delete requests[i];
+
 }
 
 Server::~Server() {
