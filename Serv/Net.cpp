@@ -24,8 +24,7 @@ int Net::listen() {
 	if (listener < 0)
 		return (error("sock error"));
 	int optval = 1;
-	//если сокет уже был открыт нужен setsockopt(), работает и без него
-	//!непонятно
+	//если сокет уже был открыт
 	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
 		return error("setsockopt error");
 	struct sockaddr_in addr;
@@ -33,8 +32,6 @@ int Net::listen() {
 	addr.sin_port = port;
 	addr.sin_addr.s_addr = inet_addr(net_addr);
 
-//	std::cout << net_addr << std::endl;
-//	std::cout << port << std::endl;
 	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0)
 		return (error("bind failed"));
 	if (::listen(listener, SOMAXCONN) != 0)

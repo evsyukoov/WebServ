@@ -106,12 +106,6 @@ int Server::servLoop() {
 			}
 		}
 		std::vector<HttpRequest*> requests = readRequests(clients);
-		for(int i = 0; i < requests.size(); i++)
-		{
-			std::cout << GREEN;
-			requests[i]->printMap();
-			std::cout << RESET;
-		}
 		sendToAllClients(requests, clients);
 		for(int i = 0; i < requests.size(); i++)
 			delete requests[i];
