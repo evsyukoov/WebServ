@@ -13,6 +13,7 @@
 
 int main(int argc, char **argv)
 {
+    //для запуска закоментить конфиг
 	Config conf("Config.txt");
 	std::list<std::string> lst;
 	conf.readConf();
@@ -23,7 +24,7 @@ int main(int argc, char **argv)
 	}
     // это все из конфига будет браться, надо отдельный класс ServConf
 //    char buff1[16] = "127.0.0.1:8000";
-//   char buff2[16] = "127.0.0.1:1234";
+//    char buff2[16] = "127.0.0.1:1234";
 //    char buff3[16] = "127.0.0.1:3456";
 //    Net net1(buff1);
 //    Net net2(buff2);

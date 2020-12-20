@@ -11,11 +11,19 @@ Location::Location(const std::string &rawLocation) {
 
 int Location::parseRaw()
 {
-    size_t pos_bracket;
-    pos_bracket = raw_location.find('{');
-    std::string rawLoc = raw_location.substr(0, pos_bracket);
+    size_t pos;
+    pos = raw_location.find('{');
+    std::string rawLoc = raw_location.substr(0, pos);
+    std::string innerLocation = raw_location.substr(pos + 1);
     if (parseLocation(rawLoc) == -1)
         return (0);
+
+    std::list<std::string>  raw_directives;
+
+    while ((pos = innerLocation.find(';')) != std::string::npos)
+    {
+
+    }
     return (1);
 }
 
