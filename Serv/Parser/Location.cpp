@@ -3,3 +3,10 @@
 //
 
 #include "Location.hpp"
+
+
+Location::Location(const std::string &rawLocation) {
+    this->raw_location = rawLocation;
+}
+
+

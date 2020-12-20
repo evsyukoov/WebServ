@@ -17,21 +17,49 @@ int Config::readConf()
 {
 	std::ifstream in(path_to_conf);
 	std::string line;
+	std::string server;
+	int i = 0;
+
 	if (in.is_open())
 	{
-		while (std::getline(in, line)) {
-			//убираем пустые строчки, пробелы в начале и конце, коменты
+		while (std::getline(in, line))
+		{
 			if (!line.empty()) {
-				trim(line);
-				if (line[0] != '#')
-					raw_conf.push_back(line);
-			}
+                trim(line);
+                //каждая директива сервер в отдельной строчке
+                if (line[0] != '#') {
+                    if (startWith(line, "server"))
+                        i++;
+                    if (i == 2) {
+                        raw_conf.push_back(server);
+                        server = "";
+                        i = 1;
+                    }
+                    server += line;
+                }
+            }
 		}
+		raw_conf.push_back(server);
 	}
 	else
 		return (error("Error opening file!\n"));
+
 	in.close();
+	checkBracketsDirectives();
 	return (1);
+}
+
+int     Config::startWith(const std::string &str, const std::string &in)
+{
+    int i = 0;
+    if (in == str)
+        return (1);
+    while (str[i] == in[i])
+        i++;
+    if (!in[i] && (str[i] == ' ' || str[i] == '{')){
+        return (1);
+    }
+    return (0);
 }
 
 int Config::error(std::string msg) {
@@ -42,6 +70,7 @@ int Config::error(std::string msg) {
 const std::list<std::string> &Config::getRawConf() const {
 	return raw_conf;
 }
+
 
 void Config::trim(std::string &s) {
 	std::string::iterator it = s.begin();
@@ -59,9 +88,8 @@ void Config::trim(std::string &s) {
 	{
 		if (std::isspace(*ite1))
 		{
-			std::string::iterator tmp = ite1--;
-			s.erase(++ite1);
-			it = tmp;
+			ite1 = s.erase(ite1);
+			ite1--;
 		}
 		else
 			break ;
@@ -76,8 +104,46 @@ int Config::check_errors()
 int Config::checkBracketsDirectives() {
 	for(std::list<std::string>::iterator it = raw_conf.begin(); it != raw_conf.end(); it++)
 	{
+	    int bracketsBalance = 0;
+	    size_t posOpenBracket = (*it).find('{');
+	    if (posOpenBracket == std::string::npos)
+            return (error("Brackets error"));
+	    bracketsBalance++;
+	    std::string serv_directive = (*it).substr(0, posOpenBracket);
+	    trim(serv_directive);
+	    if (serv_directive != "server"){
+            return error("Unknown server directive");
+        }
+	    //проверим баланс открывающих и закрывающих скобок
+	    else
+        {
+            for (int i = posOpenBracket + 1; i < (*it). size(); i++)
+            {
+                if ((*it)[i] == '{')
+                    bracketsBalance++;
+                if ((*it)[i] == '}')
+                    bracketsBalance--;
+                if (bracketsBalance < 0)
+                    return (error("Brackets error"));
+            }
+            if (bracketsBalance != 0)
+                return error("Brackets error");
+
+        }
+	    //все хорошо - дальнейшая обработка в классе ServConf
+	    ServConf servConf((*it), posOpenBracket);
+	    servConf.parseRaw();
+	    std::cout << "server name " << servConf.getServerName() << std::endl;
+	    std::cout << "port " << servConf.getPort() << std::endl;
+        std::map<int, std::string> errors = servConf.getErrorPages();
+        std::cout << "Error pages: " << std::endl;
+	    for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
+        {
+	        std::cout << i->first << ": " << i->second << std::endl;
+        }
 
 	}
+    return (1);
 }
 
 //int Config::checkBracketsOpen() {

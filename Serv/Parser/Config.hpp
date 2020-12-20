@@ -25,6 +25,10 @@ class Config {
 
 	int 	checkBracketsOpen();
 
+    void    modifyConfig();
+
+    int     startWith(const std::string &str, const std::string &in);
+
 
 
 public:

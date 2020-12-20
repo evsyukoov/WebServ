@@ -6,29 +6,35 @@
 
 #IncludeRegexTransform: 
 
-/Users/denis/Desktop/WebServer/Serv/Parser/Config.cpp
-Config.hpp
-/Users/denis/Desktop/WebServer/Serv/Parser/Config.hpp
-
-/Users/denis/Desktop/WebServer/Serv/Parser/Config.hpp
-ServConf.hpp
-/Users/denis/Desktop/WebServer/Serv/Parser/ServConf.hpp
-iostream
--
-fstream
--
-
-/Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/Location.hpp
 string
 -
 list
 -
 
-/Users/denis/Desktop/WebServer/Serv/Parser/ServConf.hpp
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.cpp
+sstream
+-
+ServConf.hpp
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.hpp
+
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.hpp
 string
 -
 map
 -
 Location.hpp
-/Users/denis/Desktop/WebServer/Serv/Parser/Location.hpp
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/Location.hpp
+iostream
+-
+parser_utils.hpp
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/parser_utils.hpp
+
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/parser_utils.hpp
+iostream
+-
+list
+-
+sstream
+-
 

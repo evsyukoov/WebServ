@@ -1,7 +1,6 @@
-server      swr    {
-    server_name localhost;
+server        {
     listen                      80;
-    default_error_page 404  path/404.html;
+server_name localhost;
     default_error_page 405  path/405.html;
 
     #блок локейшн
@@ -10,33 +9,16 @@ server      swr    {
         limit_except POST;
         max_body                    200;
         root    /Denis/ccarl/www/;
-        index   index.html; }
+        index   index.html;}
 
-    location /hz{
-        limit_except GET;
-        root    /path;}
-}
+    root = abc;
+    dddd = 1;
 
-server{
-    server_name localhost;
-    listen      8000;
 
-    location /
-    {
-        limit_except    GET;
-        root /path;
-        index index.html;
-    }
-}
 
-server
-{
-   // если server_name не указан то берем указанный в первом блоке server( из сабжа)
-    listen 1234;
-    location /path/to_path
-    {
-        root                    /path/example;
-        cgi_extension             php;
-        cgi_scrypt      /path/cgi_scrypt;
-    }
+    #location /hz{
+     #   limit_except GET;
+    #    root    /path;}
+
+        art = 2;
 }

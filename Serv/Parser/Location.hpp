@@ -20,6 +20,10 @@ class Location {
 	int 				   enable_upload;
 	std::string			   upload_path;
 
+	std::string            raw_location;
+public:
+    Location(const std::string &rawLocation);
+
 };
 
 
