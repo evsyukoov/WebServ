@@ -27,6 +27,7 @@ CMakeFiles/Serv.dir/Parser/Config.cpp.o: ../Parser/parser_utils.hpp
 
 CMakeFiles/Serv.dir/Parser/Location.cpp.o: ../Parser/Location.cpp
 CMakeFiles/Serv.dir/Parser/Location.cpp.o: ../Parser/Location.hpp
+CMakeFiles/Serv.dir/Parser/Location.cpp.o: ../Parser/parser_utils.hpp
 
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.o: ../Parser/Location.hpp
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.o: ../Parser/ServConf.cpp

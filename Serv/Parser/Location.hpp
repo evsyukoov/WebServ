@@ -6,7 +6,7 @@
 #define SERV_LOCATION_HPP
 #include <string>
 #include <list>
-
+#include "parser_utils.hpp"
 //конфиг одного локейшна
 
 class Location {
@@ -23,6 +23,14 @@ class Location {
 	std::string            raw_location;
 public:
     Location(const std::string &rawLocation);
+
+    int     parseRaw();
+
+    //int     parseLocation();
+
+    int parseLocation(const std::string &loc);
+
+    const std::string &getLocation() const;
 
 };
 

@@ -1,12 +1,10 @@
 server        {
     listen                      80;
-server_name localhost;
+                server_name localhost;
     default_error_page 405  path/405.html;
 
     #блок локейшн
-    location /
-    {
-        limit_except POST;
+    location  /{   limit_except POST;
         max_body                    200;
         root    /Denis/ccarl/www/;
         index   index.html;}
@@ -15,10 +13,19 @@ server_name localhost;
     dddd = 1;
 
 
-
-    #location /hz{
-     #   limit_except GET;
-    #    root    /path;}
+default_error_page 405  path/405.html;
+default_error_page 407  path/405.html;
+default_error_page 4010  path/405.html;
+    location /hz{
+        limit_except GET;
+        root    /path;}
 
         art = 2;
+       default_error_page 40000  path/405.html;
+}
+
+server
+{
+..
+..
 }

@@ -5,11 +5,6 @@
 #include <sstream>
 #include "ServConf.hpp"
 
-int ServConf::error(std::string msg) {
-    std::cout << "Config error: " << msg << std::endl;
-    return (-1);
-}
-
 ServConf::ServConf(const std::string &rawServconf, int pos) : raw_servconf(rawServconf), pos(pos) {
     port = -1;
 }
@@ -56,7 +51,10 @@ int    ServConf::parseRaw()
             int close_bracket_index = servconf.find('}');
             std::string location_block = servconf.substr(0, close_bracket_index);
             servconf = servconf.substr(close_bracket_index + 1);
+            std::cout << "location block: " << location_block << std::endl;
             Location location(location_block);
+            location.parseRaw();
+            locations.push_back(location);
         }
         else
         {
@@ -133,5 +131,9 @@ int ServConf::getPort() const {
 
 const std::map<int, std::string> &ServConf::getErrorPages() const {
     return error_pages;
+}
+
+const std::vector<Location> &ServConf::getLocations() const {
+    return locations;
 }
 

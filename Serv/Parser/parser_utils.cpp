@@ -23,3 +23,18 @@ int                     isDigit(const std::string &value)
     }
     return (1);
 }
+
+int error(std::string msg) {
+    std::cout << "Config error: " << msg << std::endl;
+    return (-1);
+}
+
+int                 isUnexpectedSymbol(const std::string &value, char sym)
+{
+    for(int i = 0; i < value.size(); i++)
+    {
+        if (value[i] == sym)
+            return (1);
+    }
+    return (0);
+}

@@ -11,13 +11,14 @@
 #include "Location.hpp"
 #include <iostream>
 #include "parser_utils.hpp"
+#include <vector>
 //конфиг одного сервера
 
 class  ServConf {
 	std::string					server_name;
 	int 						port;
 	std::map<int, std::string>	error_pages;
-	std::list<Location>			locations;
+	std::vector<Location>			locations;
 
 	std::string                 raw_servconf;
 
@@ -25,13 +26,12 @@ class  ServConf {
 
 	int                         pos;
 
-    int error(std::string msg);
 
     int     isErrorDelimetr(const std::string &directive);
 
     int     isLocationBlock(const std::string &directive);
 
-
+    int   analizeDirective(std::list<std::string> line);
 
 
 public:
@@ -41,11 +41,11 @@ public:
 
     int    parse();
 
-    int   analizeDirective(std::list<std::string> line);
-
     const std::string &getServerName() const;
 
     int getPort() const;
+
+    const std::vector<Location> &getLocations() const;
 
     const std::map<int, std::string> &getErrorPages() const;
 

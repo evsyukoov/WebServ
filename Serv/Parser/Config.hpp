@@ -23,9 +23,6 @@ class Config {
 
 	int 	checkBracketsDirectives();
 
-	int 	checkBracketsOpen();
-
-    void    modifyConfig();
 
     int     startWith(const std::string &str, const std::string &in);
 
@@ -40,7 +37,8 @@ public:
 
 	int		 readConf();
 
-	int 	 check_errors();
+
+
 
 
 };

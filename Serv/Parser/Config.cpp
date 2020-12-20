@@ -96,10 +96,7 @@ void Config::trim(std::string &s) {
 	}
 }
 
-int Config::check_errors()
-{
 
-}
 
 int Config::checkBracketsDirectives() {
 	for(std::list<std::string>::iterator it = raw_conf.begin(); it != raw_conf.end(); it++)
@@ -141,25 +138,13 @@ int Config::checkBracketsDirectives() {
         {
 	        std::cout << i->first << ": " << i->second << std::endl;
         }
+        std::cout << "Locations: " << std::endl;
+	    std::vector<Location> locations = servConf.getLocations();
+	    for (int i = 0;i < locations.size(); i++)
+        {
+	        std::cout << "loc  " << i << " " << locations[i].getLocation() << std::endl;
+        }
 
 	}
     return (1);
 }
-
-//int Config::checkBracketsOpen() {
-//	int balance = 0;
-//	for(std::list<std::string>::iterator it = raw_conf.begin(); it != raw_conf.end(); it++)
-//	{
-//		std::string curr = (*it);
-//		if (curr.find('{'))
-//		{
-//			if (curr.size() == 1)
-//				balance++;
-//		}
-//		else if (curr.find('}'))
-//		{
-//			if (curr.size() == 1)
-//				balance--;
-//		}
-//	}
-//}

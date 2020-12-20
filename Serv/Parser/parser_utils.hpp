@@ -10,5 +10,7 @@
 
 int                     isDigit(const std::string &value);
 std::list<std::string>      split(const std::string &directive);
+int error(std::string msg);
+int                 isUnexpectedSymbol(const std::string &value, char sym);
 
 #endif //SERV_PARSER_UTILS_HPP
