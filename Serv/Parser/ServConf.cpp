@@ -35,7 +35,8 @@ int    ServConf::parseRaw()
             std::string location_block = servconf.substr(0, close_bracket_index);
             servconf = servconf.substr(close_bracket_index + 1);
             Location location(location_block);
-            location.parseRaw();
+            if (!location.parseRaw())
+                return (0);
             locations.push_back(location);
         }
         else if (isLocationBlock(directive) == -1)
@@ -46,7 +47,7 @@ int    ServConf::parseRaw()
             servconf = servconf.substr(pos_delim + 1);
         }
     }
-    if (parse() == 1)
+    if (parse())
         return (1);
     return (0);
 }

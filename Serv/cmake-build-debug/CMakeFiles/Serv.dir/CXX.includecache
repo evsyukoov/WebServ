@@ -6,18 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/ccarl/Desktop/WebServConf/Serv/Parser/Config.cpp
-Config.hpp
-/Users/ccarl/Desktop/WebServConf/Serv/Parser/Config.hpp
-
-/Users/ccarl/Desktop/WebServConf/Serv/Parser/Config.hpp
-ServConf.hpp
-/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.hpp
-iostream
--
-fstream
--
-
 /Users/ccarl/Desktop/WebServConf/Serv/Parser/Location.hpp
 string
 -
@@ -27,6 +15,12 @@ vector
 -
 parser_utils.hpp
 /Users/ccarl/Desktop/WebServConf/Serv/Parser/parser_utils.hpp
+
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.cpp
+sstream
+-
+ServConf.hpp
+/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.hpp
 
 /Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.hpp
 string
