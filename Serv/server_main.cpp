@@ -56,7 +56,8 @@ int main(int argc, char **argv)
 {
     //для запуска закоментить конфиг
 	Config conf("Config.txt");
-	conf.readConf();
+	if (conf.readConf() == -1)
+	    return (0);
     printCongig(conf);
     // это все из конфига будет браться, надо отдельный класс ServConf
 //    char buff1[16] = "127.0.0.1:8000";
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
 //    listeners.push_back(net3);
 //    Server server(listeners);
 //    server.run();
+    return (1);
 }
 
 

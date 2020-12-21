@@ -47,7 +47,7 @@ int    ServConf::parseRaw()
             servconf = servconf.substr(pos_delim + 1);
         }
     }
-    if (parse())
+    if (parse() != -1)
         return (1);
     return (0);
 }
@@ -92,6 +92,8 @@ int    ServConf::analizeDirective(std::list<std::string> line)
                 return (error("Bad number of error page"));
         }
     }
+    else
+        return (error("Unknown directive in Server Block!"));
     return (1);
 }
 
