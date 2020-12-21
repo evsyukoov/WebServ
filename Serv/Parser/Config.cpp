@@ -45,7 +45,8 @@ int Config::readConf()
 		return (error("Error opening file!\n"));
 
 	in.close();
-	checkBracketsDirectives();
+	if (checkBracketsDirectives() == -1)
+	    return (0);
 	return (1);
 }
 
@@ -129,22 +130,9 @@ int Config::checkBracketsDirectives() {
         }
 	    //все хорошо - дальнейшая обработка в классе ServConf
 	    ServConf servConf((*it), posOpenBracket);
-	    servConf.parseRaw();
-	    std::cout << "server name " << servConf.getServerName() << std::endl;
-	    std::cout << "port " << servConf.getPort() << std::endl;
-        std::map<int, std::string> errors = servConf.getErrorPages();
-        std::cout << "Error pages: " << std::endl;
-	    for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
-        {
-	        std::cout << i->first << ": " << i->second << std::endl;
-        }
-        std::cout << "Locations: " << std::endl;
-	    std::vector<Location> locations = servConf.getLocations();
-	    for (int i = 0;i < locations.size(); i++)
-        {
-	        std::cout << "loc  " << i << " " << locations[i].getLocation() << std::endl;
-        }
-
+	    if (!servConf.parseRaw())
+	        return (-1);
+	    config.push_back(servConf);
 	}
     return (1);
 }

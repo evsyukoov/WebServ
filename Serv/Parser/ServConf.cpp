@@ -9,22 +9,6 @@ ServConf::ServConf(const std::string &rawServconf, int pos) : raw_servconf(rawSe
     port = -1;
 }
 
-int     ServConf::isErrorDelimetr(const std::string &directive)
-{
-    if (directive.empty())
-        return (error("Error while parsing"));
-    else
-    {
-        int i = 0;
-        while (std::isspace(directive[i]))
-            i++;
-        if (directive[i] == ';' || !directive[i])
-            return (error("Bad position of ';' "));
-    }
-    return (1);
-}
-
-
 int     ServConf::isLocationBlock(const std::string &directive)
 {
     size_t index = directive.find(' ');
@@ -43,19 +27,19 @@ int    ServConf::parseRaw()
     while ((pos_delim = servconf.find(';')) != std::string::npos)
     {
         std::string directive = servconf.substr(0, pos_delim);
-        //std::cout << "servConf " << servconf << " size: " << servconf.size() << std::endl;
         if (isErrorDelimetr(directive) == -1)
-            return (-1);
+            return (0);
         else if (isLocationBlock(directive))
         {
             int close_bracket_index = servconf.find('}');
             std::string location_block = servconf.substr(0, close_bracket_index);
             servconf = servconf.substr(close_bracket_index + 1);
-            std::cout << "location block: " << location_block << std::endl;
             Location location(location_block);
             location.parseRaw();
             locations.push_back(location);
         }
+        else if (isLocationBlock(directive) == -1)
+            return (0);
         else
         {
             raw_directives.push_back(directive);

@@ -1,6 +1,7 @@
 //
 // Created by Casie Carl on 12/20/20.
 //
+#include <vector>
 #include "parser_utils.hpp"
 
 std::list<std::string>      split(const std::string &directive)
@@ -11,7 +12,14 @@ std::list<std::string>      split(const std::string &directive)
     while (iss >> word)
         dir.push_back(word);
     return (dir);
+}
 
+int     skipSpaces(const std::string &str)
+{
+    int i = 0;
+    while (std::isspace(str[i]))
+        i++;
+    return (i);
 }
 
 int                     isDigit(const std::string &value)
@@ -37,4 +45,19 @@ int                 isUnexpectedSymbol(const std::string &value, char sym)
             return (1);
     }
     return (0);
+}
+
+int     isErrorDelimetr(const std::string &directive)
+{
+    if (directive.empty())
+        return (error("Error while parsing"));
+    else
+    {
+        int i = 0;
+        while (std::isspace(directive[i]))
+            i++;
+        if (directive[i] == ';' || !directive[i])
+            return (error("Bad position of ';' "));
+    }
+    return (1);
 }

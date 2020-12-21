@@ -15,19 +15,21 @@
 //конфиг одного сервера
 
 class  ServConf {
+    //output data
 	std::string					server_name;
+
 	int 						port;
+
 	std::map<int, std::string>	error_pages;
+
 	std::vector<Location>			locations;
 
+	//input and helper data
 	std::string                 raw_servconf;
 
 	std::list<std::string>      raw_directives;
 
 	int                         pos;
-
-
-    int     isErrorDelimetr(const std::string &directive);
 
     int     isLocationBlock(const std::string &directive);
 
