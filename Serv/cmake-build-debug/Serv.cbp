@@ -98,12 +98,6 @@
 		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/HttpResponse.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/Net.cpp">
-			<Option target="Serv"/>
-		</Unit>
-		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/Net.hpp">
-			<Option target="Serv"/>
-		</Unit>
 		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/Parser/Config.cpp">
 			<Option target="Serv"/>
 		</Unit>
@@ -132,12 +126,6 @@
 			<Option target="Serv"/>
 		</Unit>
 		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/Server.hpp">
-			<Option target="Serv"/>
-		</Unit>
-		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/lib.cpp">
-			<Option target="Serv"/>
-		</Unit>
-		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/lib.hpp">
 			<Option target="Serv"/>
 		</Unit>
 		<Unit filename="/Users/denis/Desktop/WebServerConf/Serv/server_main.cpp">

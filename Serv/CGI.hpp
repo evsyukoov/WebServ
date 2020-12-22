@@ -5,7 +5,6 @@
 #ifndef SERV_CGI_HPP
 #define SERV_CGI_HPP
 #include <zconf.h>
-#include "lib.hpp"
 
 // 	CGI_scrypt(дочерний процесс)	----->	Server --- > Client(Browser)
 								//	<-----		 //<----

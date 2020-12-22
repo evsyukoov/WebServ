@@ -204,33 +204,6 @@ HttpResponse.cpp.s:
 	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/HttpResponse.cpp.s
 .PHONY : HttpResponse.cpp.s
 
-Net.o: Net.cpp.o
-
-.PHONY : Net.o
-
-# target to build an object file
-Net.cpp.o:
-	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Net.cpp.o
-.PHONY : Net.cpp.o
-
-Net.i: Net.cpp.i
-
-.PHONY : Net.i
-
-# target to preprocess a source file
-Net.cpp.i:
-	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Net.cpp.i
-.PHONY : Net.cpp.i
-
-Net.s: Net.cpp.s
-
-.PHONY : Net.s
-
-# target to generate assembly for a file
-Net.cpp.s:
-	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Net.cpp.s
-.PHONY : Net.cpp.s
-
 Parser/Config.o: Parser/Config.cpp.o
 
 .PHONY : Parser/Config.o
@@ -366,33 +339,6 @@ Server.cpp.s:
 	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Server.cpp.s
 .PHONY : Server.cpp.s
 
-lib.o: lib.cpp.o
-
-.PHONY : lib.o
-
-# target to build an object file
-lib.cpp.o:
-	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/lib.cpp.o
-.PHONY : lib.cpp.o
-
-lib.i: lib.cpp.i
-
-.PHONY : lib.i
-
-# target to preprocess a source file
-lib.cpp.i:
-	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/lib.cpp.i
-.PHONY : lib.cpp.i
-
-lib.s: lib.cpp.s
-
-.PHONY : lib.s
-
-# target to generate assembly for a file
-lib.cpp.s:
-	$(MAKE) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/lib.cpp.s
-.PHONY : lib.cpp.s
-
 server_main.o: server_main.cpp.o
 
 .PHONY : server_main.o
@@ -438,9 +384,6 @@ help:
 	@echo "... HttpResponse.o"
 	@echo "... HttpResponse.i"
 	@echo "... HttpResponse.s"
-	@echo "... Net.o"
-	@echo "... Net.i"
-	@echo "... Net.s"
 	@echo "... Parser/Config.o"
 	@echo "... Parser/Config.i"
 	@echo "... Parser/Config.s"
@@ -456,9 +399,6 @@ help:
 	@echo "... Server.o"
 	@echo "... Server.i"
 	@echo "... Server.s"
-	@echo "... lib.o"
-	@echo "... lib.i"
-	@echo "... lib.s"
 	@echo "... server_main.o"
 	@echo "... server_main.i"
 	@echo "... server_main.s"

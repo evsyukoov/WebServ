@@ -3,7 +3,30 @@
 //
 
 #include <vector>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "Server.hpp"
+
+int Server::listen(const ServConf &servConf) {
+	int listener = socket(AF_INET, SOCK_STREAM, 0);
+	if (listener < 0)
+		return (error("sock error"));
+	int optval = 1;
+	//если сокет уже был открыт
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
+		return error("setsockopt error");
+	struct sockaddr_in addr;
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(servConf.getPort());
+	addr.sin_addr.s_addr = inet_addr(servConf.getServerName().c_str());
+
+	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0)
+		return (error("bind failed"));
+	if (::listen(listener, SOMAXCONN) != 0)
+		return (error("listen error"));
+	return (listener);
+}
 
 
 int     set_nonblock(int fd)
@@ -20,7 +43,6 @@ HttpRequest     *Server::receiveData(int client_sock)
     std::cout << "Wait for reading request from client" << std::endl;
     int len = read(client_sock, recieve, 4096);
     if (len == 0) {
-        //std::cout << "Not ready for reading" << std::endl;
         return (NULL);
     }
     std::cout << "recieved len: " << len << std::endl;
@@ -45,28 +67,29 @@ int     Server::sendData(int client_sock, HttpRequest *httpRequest)
 }
 
 
-Server::Server(const std::list<Net> &servers)
+Server::Server(const Config &config)
 {
-    this->servers = servers;
+    this->config = config;
     FD_ZERO(&read_set);
 }
 
 int Server::openServers()
 {
-    for(std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++)
+    for(std::list<ServConf>::const_iterator it = config.getConfig().begin(); it != config.getConfig().end(); it++)
     {
-        if (it->listen() == -1)
-            return (-1);
-        it->set_nonblock(it->getListener());
-
+    	int listener;
+        if ((listener = listen(*it)) < 0)
+            return (0);
+        set_nonblock(listener);
+        servers.push_back(listener);
     }
     return (1);
 }
 
 void     Server::initReadSet()
 {
-    for(std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++) {
-        FD_SET(it->getListener(), &read_set);
+    for(std::list<int>::iterator it = servers.begin(); it != servers.end(); it++) {
+        FD_SET(*it, &read_set);
     }
 }
 
@@ -88,21 +111,21 @@ int Server::servLoop() {
 			FD_SET(*it, &read_set);
 		}
 		//ждем коннекта или готовности к чтению
-		int max = std::max(std::max_element(servers.begin(), servers.end())->getListener(),
+		int max = std::max(*std::max_element(servers.begin(), servers.end()),
 						   *std::max_element(clients.begin(), clients.end()));
 
 		std::cout << "select block" << std::endl;
 		select(max + 1, &read_set, NULL, NULL, NULL);
 		std::cout << "select unblock, max: " << max << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
-		for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++) {
+		for (std::list<int>::iterator it = servers.begin(); it != servers.end(); it++) {
 			// произошел коннект на n-ом сервере
-			if (FD_ISSET(it->getListener(), &read_set)) {
+			if (FD_ISSET(*it, &read_set)) {
 
-				int client_sock = it->accept(it->getListener());
+				int client_sock = accept(*it, NULL, NULL);
 				set_nonblock(client_sock);
 				clients.push_back(client_sock);
-				std::cout << "listener =  " << it->getListener() << " client_sock = " << client_sock << std::endl;
+				std::cout << "listener =  " << *it << " client_sock = " << client_sock << std::endl;
 			}
 		}
 		std::vector<HttpRequest*> requests = readRequests(clients);
@@ -155,11 +178,8 @@ void	Server::sendToAllClients(std::vector<HttpRequest*> requests, std::list<int>
 }
 
 Server::~Server() {
-    for (std::list<Net>::iterator it = servers.begin(); it != servers.end(); it++)
-    {
-        close(it->getListener());
-        servers.erase(it);
-    }
+    for (std::list<int>::iterator it = servers.begin(); it != servers.end(); it++)
+        close(*it);
     servers.clear();
 }
 

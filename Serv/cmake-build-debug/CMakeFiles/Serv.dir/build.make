@@ -57,22 +57,9 @@ include CMakeFiles/Serv.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Serv.dir/flags.make
 
-CMakeFiles/Serv.dir/Net.cpp.o: CMakeFiles/Serv.dir/flags.make
-CMakeFiles/Serv.dir/Net.cpp.o: ../Net.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Serv.dir/Net.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Net.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/Net.cpp
-
-CMakeFiles/Serv.dir/Net.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/Net.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/denis/Desktop/WebServerConf/Serv/Net.cpp > CMakeFiles/Serv.dir/Net.cpp.i
-
-CMakeFiles/Serv.dir/Net.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/Net.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/denis/Desktop/WebServerConf/Serv/Net.cpp -o CMakeFiles/Serv.dir/Net.cpp.s
-
 CMakeFiles/Serv.dir/server_main.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/server_main.cpp.o: ../server_main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Serv.dir/server_main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Serv.dir/server_main.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/server_main.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/server_main.cpp
 
 CMakeFiles/Serv.dir/server_main.cpp.i: cmake_force
@@ -83,22 +70,9 @@ CMakeFiles/Serv.dir/server_main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/server_main.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/denis/Desktop/WebServerConf/Serv/server_main.cpp -o CMakeFiles/Serv.dir/server_main.cpp.s
 
-CMakeFiles/Serv.dir/lib.cpp.o: CMakeFiles/Serv.dir/flags.make
-CMakeFiles/Serv.dir/lib.cpp.o: ../lib.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Serv.dir/lib.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/lib.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/lib.cpp
-
-CMakeFiles/Serv.dir/lib.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/lib.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/denis/Desktop/WebServerConf/Serv/lib.cpp > CMakeFiles/Serv.dir/lib.cpp.i
-
-CMakeFiles/Serv.dir/lib.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/lib.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/denis/Desktop/WebServerConf/Serv/lib.cpp -o CMakeFiles/Serv.dir/lib.cpp.s
-
 CMakeFiles/Serv.dir/HttpRequest.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/HttpRequest.cpp.o: ../HttpRequest.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Serv.dir/HttpRequest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Serv.dir/HttpRequest.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/HttpRequest.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/HttpRequest.cpp
 
 CMakeFiles/Serv.dir/HttpRequest.cpp.i: cmake_force
@@ -111,7 +85,7 @@ CMakeFiles/Serv.dir/HttpRequest.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/HttpResponse.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/HttpResponse.cpp.o: ../HttpResponse.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Serv.dir/HttpResponse.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Serv.dir/HttpResponse.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/HttpResponse.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/HttpResponse.cpp
 
 CMakeFiles/Serv.dir/HttpResponse.cpp.i: cmake_force
@@ -124,7 +98,7 @@ CMakeFiles/Serv.dir/HttpResponse.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/CGI.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/CGI.cpp.o: ../CGI.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Serv.dir/CGI.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Serv.dir/CGI.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/CGI.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/CGI.cpp
 
 CMakeFiles/Serv.dir/CGI.cpp.i: cmake_force
@@ -137,7 +111,7 @@ CMakeFiles/Serv.dir/CGI.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/Server.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Server.cpp.o: ../Server.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Serv.dir/Server.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Serv.dir/Server.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Server.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/Server.cpp
 
 CMakeFiles/Serv.dir/Server.cpp.i: cmake_force
@@ -150,7 +124,7 @@ CMakeFiles/Serv.dir/Server.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.o: ../Parser/ServConf.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Serv.dir/Parser/ServConf.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Serv.dir/Parser/ServConf.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Parser/ServConf.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/Parser/ServConf.cpp
 
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.i: cmake_force
@@ -163,7 +137,7 @@ CMakeFiles/Serv.dir/Parser/ServConf.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/Parser/Location.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Parser/Location.cpp.o: ../Parser/Location.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Serv.dir/Parser/Location.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Serv.dir/Parser/Location.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Parser/Location.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/Parser/Location.cpp
 
 CMakeFiles/Serv.dir/Parser/Location.cpp.i: cmake_force
@@ -176,7 +150,7 @@ CMakeFiles/Serv.dir/Parser/Location.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/Parser/Config.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Parser/Config.cpp.o: ../Parser/Config.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Serv.dir/Parser/Config.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Serv.dir/Parser/Config.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Parser/Config.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/Parser/Config.cpp
 
 CMakeFiles/Serv.dir/Parser/Config.cpp.i: cmake_force
@@ -189,7 +163,7 @@ CMakeFiles/Serv.dir/Parser/Config.cpp.s: cmake_force
 
 CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o: ../Parser/parser_utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o -c /Users/denis/Desktop/WebServerConf/Serv/Parser/parser_utils.cpp
 
 CMakeFiles/Serv.dir/Parser/parser_utils.cpp.i: cmake_force
@@ -202,9 +176,7 @@ CMakeFiles/Serv.dir/Parser/parser_utils.cpp.s: cmake_force
 
 # Object files for target Serv
 Serv_OBJECTS = \
-"CMakeFiles/Serv.dir/Net.cpp.o" \
 "CMakeFiles/Serv.dir/server_main.cpp.o" \
-"CMakeFiles/Serv.dir/lib.cpp.o" \
 "CMakeFiles/Serv.dir/HttpRequest.cpp.o" \
 "CMakeFiles/Serv.dir/HttpResponse.cpp.o" \
 "CMakeFiles/Serv.dir/CGI.cpp.o" \
@@ -217,9 +189,7 @@ Serv_OBJECTS = \
 # External object files for target Serv
 Serv_EXTERNAL_OBJECTS =
 
-Serv: CMakeFiles/Serv.dir/Net.cpp.o
 Serv: CMakeFiles/Serv.dir/server_main.cpp.o
-Serv: CMakeFiles/Serv.dir/lib.cpp.o
 Serv: CMakeFiles/Serv.dir/HttpRequest.cpp.o
 Serv: CMakeFiles/Serv.dir/HttpResponse.cpp.o
 Serv: CMakeFiles/Serv.dir/CGI.cpp.o
@@ -230,7 +200,7 @@ Serv: CMakeFiles/Serv.dir/Parser/Config.cpp.o
 Serv: CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o
 Serv: CMakeFiles/Serv.dir/build.make
 Serv: CMakeFiles/Serv.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable Serv"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable Serv"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Serv.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

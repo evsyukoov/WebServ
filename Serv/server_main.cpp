@@ -62,8 +62,9 @@ int main(int argc, char **argv)
 	Config conf("Config.txt");
 	if (conf.readConf() == -1)
 	    return (0);
-    Config conf2(conf);
-    printCongig(conf);
+    //printCongig(conf);
+    Server server = Server(conf);
+    server.run();
     // это все из конфига будет браться, надо отдельный класс ServConf
 //    char buff1[16] = "127.0.0.1:8000";
 //    char buff2[16] = "127.0.0.1:1234";

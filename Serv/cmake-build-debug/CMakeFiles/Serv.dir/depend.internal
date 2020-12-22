@@ -4,21 +4,13 @@
 CMakeFiles/Serv.dir/CGI.cpp.o
  /Users/denis/Desktop/WebServerConf/Serv/CGI.cpp
  /Users/denis/Desktop/WebServerConf/Serv/CGI.hpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
 CMakeFiles/Serv.dir/HttpRequest.cpp.o
  /Users/denis/Desktop/WebServerConf/Serv/HttpRequest.cpp
  /Users/denis/Desktop/WebServerConf/Serv/HttpRequest.hpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
 CMakeFiles/Serv.dir/HttpResponse.cpp.o
  /Users/denis/Desktop/WebServerConf/Serv/HttpRequest.hpp
  /Users/denis/Desktop/WebServerConf/Serv/HttpResponse.cpp
  /Users/denis/Desktop/WebServerConf/Serv/HttpResponse.hpp
- /Users/denis/Desktop/WebServerConf/Serv/Net.hpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
-CMakeFiles/Serv.dir/Net.cpp.o
- /Users/denis/Desktop/WebServerConf/Serv/Net.cpp
- /Users/denis/Desktop/WebServerConf/Serv/Net.hpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
 CMakeFiles/Serv.dir/Parser/Config.cpp.o
  /Users/denis/Desktop/WebServerConf/Serv/Parser/Config.cpp
  /Users/denis/Desktop/WebServerConf/Serv/Parser/Config.hpp
@@ -40,22 +32,19 @@ CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o
 CMakeFiles/Serv.dir/Server.cpp.o
  /Users/denis/Desktop/WebServerConf/Serv/HttpRequest.hpp
  /Users/denis/Desktop/WebServerConf/Serv/HttpResponse.hpp
- /Users/denis/Desktop/WebServerConf/Serv/Net.hpp
+ /Users/denis/Desktop/WebServerConf/Serv/Parser/Config.hpp
+ /Users/denis/Desktop/WebServerConf/Serv/Parser/Location.hpp
+ /Users/denis/Desktop/WebServerConf/Serv/Parser/ServConf.hpp
+ /Users/denis/Desktop/WebServerConf/Serv/Parser/parser_utils.hpp
  /Users/denis/Desktop/WebServerConf/Serv/Server.cpp
  /Users/denis/Desktop/WebServerConf/Serv/Server.hpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
-CMakeFiles/Serv.dir/lib.cpp.o
- /Users/denis/Desktop/WebServerConf/Serv/lib.cpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o
  /Users/denis/Desktop/WebServerConf/Serv/CGI.hpp
  /Users/denis/Desktop/WebServerConf/Serv/HttpRequest.hpp
  /Users/denis/Desktop/WebServerConf/Serv/HttpResponse.hpp
- /Users/denis/Desktop/WebServerConf/Serv/Net.hpp
  /Users/denis/Desktop/WebServerConf/Serv/Parser/Config.hpp
  /Users/denis/Desktop/WebServerConf/Serv/Parser/Location.hpp
  /Users/denis/Desktop/WebServerConf/Serv/Parser/ServConf.hpp
  /Users/denis/Desktop/WebServerConf/Serv/Parser/parser_utils.hpp
  /Users/denis/Desktop/WebServerConf/Serv/Server.hpp
- /Users/denis/Desktop/WebServerConf/Serv/lib.hpp
  /Users/denis/Desktop/WebServerConf/Serv/server_main.cpp

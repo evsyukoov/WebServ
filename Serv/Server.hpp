@@ -7,10 +7,10 @@
 #include <map>
 #include <list>
 #include <fcntl.h>
-#include "Net.hpp"
 #include "HttpRequest.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+#include "Parser/Config.hpp"
 
 //debug
 #define RED "\033[1;31m"
@@ -20,7 +20,8 @@
 
 class Server {
     //количество серверов( localhost::80, localhost::443 и.т.д
-    std::list<Net>              servers;
+    std::list<int>              servers;
+    Config 						config;
     //сет всех дескрипторов для select
     fd_set                      read_set;
     fd_set                      write_set;
@@ -29,8 +30,10 @@ class Server {
 
     int    sendData(int client_sock, HttpRequest *httpRequest);
 
+	int listen(const ServConf &servConf);
+
 public:
-    Server(const std::list<Net> &servers);
+    Server(const Config &config);
 
     virtual ~Server();
 

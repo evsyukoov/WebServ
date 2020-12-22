@@ -2,6 +2,7 @@
 // Created by Денис on 14/12/2020.
 //
 
+#include <sys/socket.h>
 #include "HttpResponse.hpp"
 
 HttpResponse::HttpResponse(const std::map<std::string, std::string> &reqMap,
@@ -34,7 +35,7 @@ void HttpResponse::head() {
     //получаем размер файла
     struct stat statbuf;
     if (fstat(fd, &statbuf) != 0) {
-        ::send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ft_strlen("HTTP/1.1 404 Not Found\n\n404 not found"), 0);
+        ::send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ::strlen("HTTP/1.1 404 Not Found\n\n404 not found"), 0);
     }
     else
     if ((sendHTML(fd, "HTTP/1.1 405 OK\nContent-type: text/html\n\n\0", statbuf.st_size + 1) < 0))
@@ -55,7 +56,7 @@ void HttpResponse::post() {
     //получаем размер файла
     struct stat statbuf;
     if (fstat(fd, &statbuf) != 0) {
-        ::send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ft_strlen("HTTP/1.1 404 Not Found\n\n404 not found"), 0);
+        ::send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ::strlen("HTTP/1.1 404 Not Found\n\n404 not found"), 0);
     }
     else
         if ((sendHTML(fd, "HTTP/1.1 405 OK\nContent-type: text/html\n\n\0", statbuf.st_size + 1) < 0))
@@ -75,7 +76,7 @@ void HttpResponse::get() {
 	//получаем размер файла
 	struct stat statbuf;
 	if (fstat(fd, &statbuf) != 0) {
-		::send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ft_strlen("HTTP/1.1 404 Not Found\n\n404 not found"), 0);
+		::send(connection, "HTTP/1.1 404 Not Found\n\n404 not found", ::strlen("HTTP/1.1 404 Not Found\n\n404 not found"), 0);
 	}
 	else
 		if ((sendHTML(fd, "HTTP/1.1 200 OK\nContent-type: text/html\n\n\0", statbuf.st_size + 1) < 0))
@@ -101,7 +102,7 @@ int HttpResponse::sendHTML(int fd, char *header, int file_size)
 	}
 	send_buff[nread] = '\0';
 	std::cout << "Send" << std::endl;
-	::send(connection, header, ft_strlen(header), 0);
+	::send(connection, header, ::strlen(header), 0);
 	::send(connection, send_buff, nread, 0);
 	close(fd);
 	return (1);

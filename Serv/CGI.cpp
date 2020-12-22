@@ -54,7 +54,7 @@ void 	CGI::run_parent()
 	close(fdOldOut);
 
 	//пишем в трубу(на stdin дочернего процесса)
-	write(fdStdIn[1], request, ft_strlen(request));
+	write(fdStdIn[1], request, ::strlen(request));
 	int nread;
 	char buff[100] = "";
 	int status;

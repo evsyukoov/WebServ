@@ -9,8 +9,6 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <zconf.h>
-#include "Net.hpp"
-#include "lib.hpp"
 #define OK "HTTP/1.1 200 OK\nContent-type: text/html\n\n"
 
 //тут будет ответ от сервера клиенту в соответствии с запросом (запрос в reqMap)

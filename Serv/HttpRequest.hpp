@@ -7,7 +7,6 @@
 #define MAX_LEN = 4096
 #include <map>
 #include <string>
-#include "lib.hpp"
 
 //то что пришло от пользователя серверу
 
