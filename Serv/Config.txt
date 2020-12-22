@@ -3,6 +3,7 @@ server{  server_name localhost;
     default_error_page 404         path/404.html;
     default_error_page      405    path/405.html;
 
+    root    /Denis/ccarl/www/;
 
     location /
     {

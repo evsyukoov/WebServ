@@ -5,6 +5,11 @@
 #include <sstream>
 #include "ServConf.hpp"
 
+int 	Comparator(const Location &l1, const Location &l2)
+{
+	return l1.getLocation().size() > l2.getLocation().size();
+}
+
 ServConf::ServConf(const std::string &rawServconf, int pos) : raw_servconf(rawServconf), pos(pos) {
     port = -1;
 }
@@ -47,6 +52,7 @@ int    ServConf::parseRaw()
             servconf = servconf.substr(pos_delim + 1);
         }
     }
+	locations.sort(Comparator);
     if (parse() != -1)
         return (1);
     return (0);
@@ -55,7 +61,7 @@ int    ServConf::parseRaw()
 int    ServConf::analizeDirective(std::list<std::string> line)
 {
     std::list<std::string>::iterator str = line.begin();
-    if (*str == "server_name" || *str == "listen")
+    if (*str == "server_name" || *str == "listen" || *str == "root" || *str == "index")
     {
         if (line.size() != 2)
             return (error("Bad directive in Server Block"));
@@ -65,17 +71,28 @@ int    ServConf::analizeDirective(std::list<std::string> line)
                 std::cout << *str << std::endl;
                 return (error("Dublicate directive in Server Block"));
             }
-            if (*str == "server_name" && server_name.empty())
+            else if (*str == "server_name" && server_name.empty())
             {
                 if (*(++str) == "localhost")
                     server_name = "127.0.0.1";
                 else
                     server_name = *str;
             }
+
             if (*str == "listen" && port != -1)
                 return (error("Dublicate directive in Server Block"));
-            if (*str == "listen" && isDigit(*(++str)) && port == -1)
+            else if (*str == "listen" && isDigit(*(++str)) && port == -1)
                 port = std::atoi((*(str)).c_str());
+
+            if (*str == "root" && !root.empty())
+            	return (error("Dublicate directive in Server Block"));
+            else if (*str == "root" && root.empty())
+            	root = *(++str);
+
+            if (*str == "index" && !root.empty())
+            	return (error("Dublicate directive in Server Block"));
+            else if (*str == "index" && index.empty())
+            	index = *(++str);
         }
     }
     else if (*str == "default_error_page")
@@ -120,7 +137,35 @@ const std::map<int, std::string> &ServConf::getErrorPages() const {
     return error_pages;
 }
 
-const std::vector<Location> &ServConf::getLocations() const {
+const std::list<Location> &ServConf::getLocations() const {
     return locations;
+}
+
+const std::string &ServConf::getRoot() const {
+	return root;
+}
+
+const std::string &ServConf::getIndex() const {
+	return index;
+}
+
+ServConf &ServConf::operator=(const ServConf &other) {
+	server_name = other.server_name;
+	port = other.port;
+	root = other.root;
+	index = other.index;
+	error_pages = other.error_pages;
+	locations = other.locations;
+	return (*this);
+}
+
+ServConf::ServConf() {}
+
+ServConf::~ServConf() {
+
+}
+
+ServConf::ServConf(const ServConf &other) {
+	this->operator=(other);
 }
 

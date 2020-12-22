@@ -20,9 +20,13 @@ class  ServConf {
 
 	int 						port;
 
+	std::string 				root;
+
+	std::string 				index;
+
 	std::map<int, std::string>	error_pages;
 
-	std::vector<Location>			locations;
+	std::list<Location>			locations;
 
 	//input and helper data
 	std::string                 raw_servconf;
@@ -47,9 +51,21 @@ public:
 
     int getPort() const;
 
-    const std::vector<Location> &getLocations() const;
+    const std::list<Location> &getLocations() const;
 
     const std::map<int, std::string> &getErrorPages() const;
+
+	const std::string &getRoot() const;
+
+	const std::string &getIndex() const;
+
+	ServConf	&operator=(const ServConf &other);
+
+	ServConf(const ServConf &other);
+
+	ServConf();
+
+	virtual ~ServConf();
 
 };
 

@@ -23,30 +23,34 @@ void    printCongig(const Config &config)
         std::cout << GREEN << "Server number "  << i << RESET << std::endl;
         std::cout << "   Server name: " << it->getServerName() << std::endl;
         std::cout << "   Port: " << it->getPort() << std::endl;
+		std::cout << "   Root: " << it->getRoot() << std::endl;
+		std::cout << "   Index: " << it->getIndex() << std::endl;
         std::map<int, std::string> error_pages = it->getErrorPages();
         for(std::map<int, std::string>::iterator it = error_pages.begin(); it != error_pages.end(); it++)
             std::cout << RED << "   error page N " << it->first << " path " << it->second << std::endl;
         std::cout << RESET;
-        std::vector<Location> locations = it->getLocations();
-        for (int i = 0; i < locations.size(); i++)
+        std::list<Location> locations = it->getLocations();
+        int i = 0;
+        for (std::list<Location>::iterator it = locations.begin(); it != locations.end(); it++)
         {
-            std::cout << BLUE << "   Location N" << i + 1 << " path: " << locations[i].getLocation() << RESET << std::endl;
-            std::cout << "      index: " << locations[i].getIndex() << std::endl;
-            std::cout << "      root: " << locations[i].getRoot() << std::endl;
-            std::cout << "      cgi extension: " << locations[i].getCgiExtension() << std::endl;
-            std::cout << "      cgi scrypt: " << locations[i].getCgiScrypt() << std::endl;
-            std::cout << "      max body: " << locations[i].getMaxBody() << std::endl;
-            std::cout << "      autoindex: " << locations[i].isAutoindex() << std::endl;
-            std::cout << "      upload: " << locations[i].isEnableUpload() << std::endl;
-            if (!locations[i].getUploadPath().empty())
-                std::cout << "      upload path: " << locations[i].isEnableUpload() << std::endl;
+            std::cout << BLUE << "   Location N" << i + 1 << " path: " << (*it).getLocation() << RESET << std::endl;
+            std::cout << "      index: " << (*it).getIndex() << std::endl;
+            std::cout << "      root: " << (*it).getRoot() << std::endl;
+            std::cout << "      cgi extension: " << (*it).getCgiExtension() << std::endl;
+            std::cout << "      cgi scrypt: " << (*it).getCgiScrypt() << std::endl;
+            std::cout << "      max body: " << (*it).getMaxBody() << std::endl;
+            std::cout << "      autoindex: " << (*it).isAutoindex() << std::endl;
+            std::cout << "      upload: " << (*it).isEnableUpload() << std::endl;
+            if (!(*it).getUploadPath().empty())
+                std::cout << "      upload path: " << (*it).isEnableUpload() << std::endl;
             std::cout << "      Allowed methods: ";
-            std::vector<std::string> methods = locations[i].getMethods();
+            std::vector<std::string> methods = (*it).getMethods();
             for (int i = 0; i < methods.size(); i++)
             {
                 std::cout << methods[i] << " ";
             }
             std::cout << std::endl;
+            i++;
         }
         it++;
     }
@@ -58,6 +62,7 @@ int main(int argc, char **argv)
 	Config conf("Config.txt");
 	if (conf.readConf() == -1)
 	    return (0);
+    Config conf2(conf);
     printCongig(conf);
     // это все из конфига будет браться, надо отдельный класс ServConf
 //    char buff1[16] = "127.0.0.1:8000";

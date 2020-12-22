@@ -23,22 +23,26 @@ class Config {
 
 	int 	checkBracketsDirectives();
 
-
-    int     startWith(const std::string &str, const std::string &in);
+	int     startWith(const std::string &str, const std::string &in);
 
 
 
 public:
 	const std::list<ServConf> &getConfig() const;
 
-	const std::list<std::string> &getRawConf() const;
-
 	Config(const std::string &pathToConf);
 
 	int		 readConf();
 
+	//Coplien's
 
+	Config();
 
+	Config(const Config &config);
+
+	Config		&operator=(const Config &config);
+
+	virtual ~Config();
 
 
 };

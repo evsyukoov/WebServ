@@ -11,6 +11,7 @@
 //конфиг одного локейшна
 
 class Location {
+	//after parse
 	std::string 		   location;
 	std::vector<std::string> methods;
 	int                     max_body;
@@ -22,6 +23,7 @@ class Location {
 	bool 				   enable_upload;
 	std::string			   upload_path;
 
+	//input
 	std::string            raw_location;
 
 	std::list<std::string>  raw_directives;
@@ -68,6 +70,15 @@ public:
     bool isEnableUpload() const;
 
     const std::string &getUploadPath() const;
+
+    Location	&operator=(const Location &other);
+
+    Location(const Location &other);
+
+	Location();
+
+	virtual ~Location();
+
 
 };
 

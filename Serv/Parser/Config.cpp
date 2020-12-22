@@ -68,11 +68,6 @@ int Config::error(std::string msg) {
 	return (-1);
 }
 
-const std::list<std::string> &Config::getRawConf() const {
-	return raw_conf;
-}
-
-
 void Config::trim(std::string &s) {
 	std::string::iterator it = s.begin();
 	std::string::iterator ite = s.end();
@@ -135,4 +130,22 @@ int Config::checkBracketsDirectives() {
 	    config.push_back(servConf);
 	}
     return (1);
+}
+
+Config::Config() {}
+
+Config::~Config() {
+
+}
+
+Config::Config(const Config &other)
+{
+	this->operator=(other);
+}
+
+Config &Config::operator=(const Config &other){
+	this->path_to_conf = other.path_to_conf;
+	this->config = other.config;
+	return (*this);
+
 }

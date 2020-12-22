@@ -223,3 +223,27 @@ bool Location::isEnableUpload() const {
 const std::string &Location::getUploadPath() const {
     return upload_path;
 }
+
+Location::Location() {}
+
+Location::~Location() {
+
+}
+
+Location &Location::operator=(const Location &other) {
+	location = other.location;
+	methods = other.methods;
+	max_body = other.max_body;
+	root = other.root;
+	index = other.index;
+	cgi_extension = other.cgi_extension;
+	cgi_scrypt = other.cgi_scrypt;
+	autoindex = other.autoindex;
+	enable_upload = other.enable_upload;
+	upload_path = other.upload_path;
+	return (*this);
+}
+
+Location::Location(const Location &other) {
+	this->operator=(other);
+}

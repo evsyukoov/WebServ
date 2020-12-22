@@ -4,17 +4,17 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/ccarl/Desktop/WebServConf/Serv/CGI.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/CGI.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/HttpRequest.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HttpRequest.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/HttpResponse.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HttpResponse.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/Net.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Net.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/Parser/Config.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/Config.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/Parser/Location.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/Location.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/Parser/ServConf.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/ServConf.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/Parser/parser_utils.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/Server.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Server.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/lib.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/lib.cpp.o"
-  "/Users/ccarl/Desktop/WebServConf/Serv/server_main.cpp" "/Users/ccarl/Desktop/WebServConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/server_main.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/CGI.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/CGI.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/HttpRequest.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HttpRequest.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/HttpResponse.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HttpResponse.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/Net.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Net.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/Parser/Config.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/Config.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/Parser/Location.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/Location.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/Parser/ServConf.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/ServConf.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/Parser/parser_utils.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/Server.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Server.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/lib.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/lib.cpp.o"
+  "/Users/denis/Desktop/WebServerConf/Serv/server_main.cpp" "/Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug/CMakeFiles/Serv.dir/server_main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
