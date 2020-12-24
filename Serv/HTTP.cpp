@@ -22,7 +22,7 @@ bool HTTP::validateMethod()
 {
 	std::string methods[] = { "GET", "PUT", "POST", "DELETE",
 						   "HEAD", "CONNECT", "OPTIONS", "TRACE"};
-	for (int  i = 0;  i < 8; ++ i)
+	for (int  i = 0;  i < 8; ++i)
 	{
 		if (reqMap["method"] == methods[i])
 			return (true);
@@ -95,7 +95,7 @@ void HTTP::manager() {
 	it = getMatchingLocation();
 
 	if (!validateMethod() || !validateProtocol())
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\nConnection: Closed\r\n\r\n", "");
 	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")
@@ -224,13 +224,13 @@ void HTTP::get()
 //	std::vector<std::string>::const_iterator vector_iter = std::find(it->getMethods().begin(), it->getMethods().end(), "GET");
 
 	if (!checkForAllowedMethod())
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
 	else if (path == "")
-		sendReq("HTTP/1.1 404 Not Found\r\n", "");
+		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
-			sendReq("HTTP/1.1 404 Not Found\r\n", "");
+			sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
 		else
 		{
 			fstat(fd, &structstat);
@@ -248,7 +248,7 @@ void HTTP::readFile(int file_size, int fd)
 	{
 		if (it->getMaxBody() != -1 && it->getMaxBody() < file_size)
 		{
-			sendReq("HTTP/1.1 413 Payload Too Large\r\n", "");
+			sendReq("HTTP/1.1 413 Payload Too Large\r\n\r\n", "");
 			return;
 		}
 	}
@@ -299,12 +299,12 @@ void HTTP::post()
 
 	if (!checkForAllowedMethod())
 	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
 		return;
 	}
 	if (content_length == -1)
 	{
-		sendReq("HTTP/1.1 411 Length Required\r\n", "");
+		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
 		return;
 	}
 	if (!(it->getRoot().empty()))
@@ -319,7 +319,7 @@ void HTTP::post()
 	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
 			(write(fd, reqMap["body"].c_str(), content_length)) < 0)
 	{
-		sendReq("HTTP/1.1 403 Forbidden\r\n", "");
+		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 		return;
 	}
 	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", "");

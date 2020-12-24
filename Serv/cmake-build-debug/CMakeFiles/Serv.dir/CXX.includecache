@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.cpp
+HTTP.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
+
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
 sys/stat.h
 -
 fcntl.h
@@ -14,7 +18,7 @@ fcntl.h
 algorithm
 -
 Parser/Config.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Config.hpp
 unistd.h
 -
 limits
@@ -22,15 +26,15 @@ limits
 sys/socket.h
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Config.hpp
 ServConf.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/ServConf.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/ServConf.hpp
 iostream
 -
 fstream
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Location.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Location.hpp
 string
 -
 list
@@ -38,51 +42,27 @@ list
 vector
 -
 parser_utils.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/parser_utils.hpp
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/ServConf.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/ServConf.hpp
 string
 -
 map
 -
 Location.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Location.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Location.hpp
 iostream
 -
 parser_utils.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/parser_utils.hpp
 vector
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/parser_utils.hpp
 iostream
 -
 list
 -
 sstream
 -
-
-/Users/ccarl/Desktop/WebServ/Serv/Server.cpp
-vector
--
-sys/socket.h
--
-netinet/in.h
--
-arpa/inet.h
--
-Server.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Server.hpp
-
-/Users/ccarl/Desktop/WebServ/Serv/Server.hpp
-map
--
-list
--
-fcntl.h
--
-Parser/Config.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
-HTTP.hpp
-/Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
 
