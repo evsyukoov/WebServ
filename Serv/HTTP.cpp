@@ -2,7 +2,7 @@
 
 #include "HTTP.hpp"
 
-HTTP::HTTP(char *buf, const ServConf &servConf):buff_req(buf), servConf(servConf) {}
+HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {}
 
 HTTP::HTTP() {}
 
@@ -10,9 +10,10 @@ const std::map<std::string, std::string> &HTTP::getRequestMap() const {
 	return (reqMap);
 }
 
-void HTTP::setFields(char *buf, const ServConf &serv) {
+void HTTP::setFields(int client, char *buf, const ServConf &serv) {
 	buff_req = buf;
 	servConf = serv;
+	client_fd = client;
 	initMap();
 }
 
@@ -32,7 +33,7 @@ void HTTP::initMap() {
 	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
 
 	second_pos = rev_pos + 2;
-	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r")
+	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size())
 	{
 	    //std::cout << "Loop" << std::endl;
 		blanc_pos = str.find(" ");
@@ -230,7 +231,7 @@ int HTTP::sendReq(std::string header, std::string request)
 	result = header + request;
 	std::cout << "Result responce: " << result << std::endl;
 
-	//send(client_fd, (char *)result.c_str(), result.size(), 0);
+	send(client_fd, (char *)result.c_str(), result.size(), 0);
 //	net.send(client_fd, (char *)result.c_str(), result.size());
 	return (0);
 }
@@ -279,6 +280,7 @@ void HTTP::post()
 		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 		return;
 	}
+	sendReq("HTTP/1.1 200 OK\r\n", "");
 }
 
 std::string &HTTP::getResponce()

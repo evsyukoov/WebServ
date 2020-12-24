@@ -13,6 +13,7 @@
 #include "Parser/Config.hpp"
 #include <unistd.h>
 #include <limits>
+#include <sys/socket.h>
 
 class HTTP
 {
@@ -23,6 +24,7 @@ private:
 	std::map<std::string, std::string>	reqMap;  //map запроса включает в себя все заголовки
 	std::list<Location>::const_iterator it;
 	std::string 	result;
+	int				client_fd;
 
 	void 	get();
 
@@ -52,11 +54,11 @@ private:
 
 public:
 
-	HTTP(char *buf, const ServConf&);
+	HTTP(int client, char *buf, const ServConf&);
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(char *buf, const ServConf &serv); // функция инициализации полей для дальнейшей обработки
+	void setFields(int client, char *buf, const ServConf &serv); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 

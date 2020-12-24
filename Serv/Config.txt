@@ -8,7 +8,7 @@ server{  server_name localhost;
     location /
     {
         limit_except POST,          GET, PUT,          DELETE;
-        root    /Users/ccarl/Desktop/WebServLast/Serv;
+        root    ./;
         index   index.html;
     }
 }

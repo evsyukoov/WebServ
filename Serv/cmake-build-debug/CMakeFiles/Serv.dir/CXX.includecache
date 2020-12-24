@@ -6,11 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/ccarl/Desktop/WebServLast/Serv/HTTP.cpp
-HTTP.hpp
-/Users/ccarl/Desktop/WebServLast/Serv/HTTP.hpp
-
-/Users/ccarl/Desktop/WebServLast/Serv/HTTP.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
 sys/stat.h
 -
 fcntl.h
@@ -18,21 +14,23 @@ fcntl.h
 algorithm
 -
 Parser/Config.hpp
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/Config.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Config.hpp
 unistd.h
 -
 limits
 -
+sys/socket.h
+-
 
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/Config.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Config.hpp
 ServConf.hpp
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/ServConf.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/ServConf.hpp
 iostream
 -
 fstream
 -
 
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/Location.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Location.hpp
 string
 -
 list
@@ -40,27 +38,51 @@ list
 vector
 -
 parser_utils.hpp
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/parser_utils.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/parser_utils.hpp
 
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/ServConf.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/ServConf.hpp
 string
 -
 map
 -
 Location.hpp
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/Location.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Location.hpp
 iostream
 -
 parser_utils.hpp
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/parser_utils.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/parser_utils.hpp
 vector
 -
 
-/Users/ccarl/Desktop/WebServLast/Serv/Parser/parser_utils.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/parser_utils.hpp
 iostream
 -
 list
 -
 sstream
 -
+
+/Users/zcolleen/Desktop/Denis_git/Serv/Server.cpp
+vector
+-
+sys/socket.h
+-
+netinet/in.h
+-
+arpa/inet.h
+-
+Server.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Server.hpp
+
+/Users/zcolleen/Desktop/Denis_git/Serv/Server.hpp
+map
+-
+list
+-
+fcntl.h
+-
+Parser/Config.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Config.hpp
+HTTP.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
 
