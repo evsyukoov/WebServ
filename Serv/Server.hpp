@@ -7,10 +7,8 @@
 #include <map>
 #include <list>
 #include <fcntl.h>
-#include "HttpRequest.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 #include "Parser/Config.hpp"
+#include "HTTP.hpp"
 
 //debug
 #define RED "\033[1;31m"
@@ -19,16 +17,16 @@
 #define RESET "\033[0m"
 
 class Server {
-    //количество серверов( localhost::80, localhost::443 и.т.д
-    std::list<int>              servers;
+    //сервера ключ-listener, значение -  ServConf
+    std::map<int, ServConf>              servers;
+
+
     Config 						config;
     //сет всех дескрипторов для select
     fd_set                      read_set;
     fd_set                      write_set;
 
-    HttpRequest     *receiveData(int client_sock);
-
-    int    sendData(int client_sock, HttpRequest *httpRequest);
+    char     *receiveData(int client_sock);
 
 	int listen(const ServConf &servConf);
 
@@ -41,15 +39,14 @@ public:
 
     int     servLoop();
 
-    int     handle_connection(int client_sock);
 
     int     run();
 
     void    initReadSet();
 
-	std::vector<HttpRequest*>	readRequests(std::list<int> &clients);
+    std::vector<char*>      readRequests(std::map<int, ServConf> &clients);
 
-	void 			sendToAllClients(std::vector<HttpRequest*> requests, std::list<int> clients);
+	void 			sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> clients);
 
 };
 

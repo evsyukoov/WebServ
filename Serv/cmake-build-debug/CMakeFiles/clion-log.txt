@@ -1,4 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/denis/Desktop/WebServerConf/Serv
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/ccarl/Desktop/WebServLast/Serv
 -- Configuring done
 -- Generating done
--- Build files have been written to: /Users/denis/Desktop/WebServerConf/Serv/cmake-build-debug
+-- Build files have been written to: /Users/ccarl/Desktop/WebServLast/Serv/cmake-build-debug

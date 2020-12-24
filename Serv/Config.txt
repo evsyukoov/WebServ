@@ -3,30 +3,24 @@ server{  server_name localhost;
     default_error_page 404         path/404.html;
     default_error_page      405    path/405.html;
 
-    root    /Denis/ccarl/www/;
+    root    /Users/ccarl/Desktop/WebServLast/Serv;
 
     location /
     {
-        limit_except POST,          GET,PUT,          DELETE     ;
-        max_body                    200;
-        root    /Denis/ccarl/www/;
+        limit_except POST,          GET, PUT,          DELETE;
+        root    /Users/ccarl/Desktop/WebServLast/Serv;
         index   index.html;
-    }
-
-    location /hz
-    {
-        limit_except GET;
-        root    /path;
     }
 }
 
+
 server{
     server_name localhost;
-    listen      8000;
+    listen      3456;
 
     location /
     { limit_except    GET PUT       POST;
-        root /path;
+        root /Users/ccarl/Desktop/WebServLast/Serv;
         index index.html;
         autoindex on;
     }
@@ -34,7 +28,7 @@ server{
 location /toto
     {
         upload on;
-	    upload_dir 	/path;
+	    upload_dir 	/Users/ccarl/Desktop/WebServLast/Serv;
     }
 }
 

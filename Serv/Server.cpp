@@ -36,35 +36,18 @@ int     set_nonblock(int fd)
 }
 
 
-HttpRequest     *Server::receiveData(int client_sock)
+char*   Server::receiveData(int client_sock)
 {
     char recieve[4096];
 
     std::cout << "Wait for reading request from client" << std::endl;
     int len = read(client_sock, recieve, 4096);
-    if (len == 0) {
-        return (NULL);
-    }
-    std::cout << "recieved len: " << len << std::endl;
-    std::cout << RED << "PARSE MAP: " << RESET << std::endl;
-    HttpRequest *httpRequest = new HttpRequest(recieve, len);
-    httpRequest->printMap();
-    std::cout << GREEN << "HEADER FROM BROWSER: " << RESET << std::endl;
-    write(1, recieve, len);
-    return (httpRequest);
+    if (len == 0)
+        return (nullptr);
+    recieve[len] = '\0';
+    return (recieve);
 }
 
-int     Server::sendData(int client_sock, HttpRequest *httpRequest)
-{
-    HttpResponse httpResponse(httpRequest->getRequestMap(),
-                              client_sock, "index.html",".");
-
-    httpResponse.manager();
-    std::cout << BLUE << "Server response html to client: " << client_sock << RESET << std::endl;
-    shutdown(client_sock, SHUT_RDWR);
-    //close(client_sock);
-    return (1);
-}
 
 
 Server::Server(const Config &config)
@@ -81,15 +64,16 @@ int Server::openServers()
         if ((listener = listen(*it)) < 0)
             return (0);
         set_nonblock(listener);
-        servers.push_back(listener);
+        std::pair<int , ServConf> pair = std::make_pair(listener, *it);
+        servers.insert(pair);
     }
     return (1);
 }
 
 void     Server::initReadSet()
 {
-    for(std::list<int>::iterator it = servers.begin(); it != servers.end(); it++) {
-        FD_SET(*it, &read_set);
+    for(std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
+        FD_SET((*it).first, &read_set);
     }
 }
 
@@ -98,79 +82,99 @@ int     Server::run()
     if (openServers() == -1)
         return (-1);
     servLoop();
+    return (1);
 }
 
 int Server::servLoop() {
-    //список всех подключенных клиентов
-	std::list<int> clients;
+    //ключ-сокет клиента  - value - конфиг сервера на котором коннект
+	std::map<int, ServConf> clients;
 	while (true) {
 		FD_ZERO(&read_set);
 		FD_ZERO(&write_set);
 		initReadSet();
-		for (std::list<int>::iterator it = clients.begin(); it != clients.end(); it++) {
-			FD_SET(*it, &read_set);
+		for (std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++) {
+			FD_SET((*it).first, &read_set);
 		}
-		//ждем коннекта или готовности к чтению
-		int max = std::max(*std::max_element(servers.begin(), servers.end()),
-						   *std::max_element(clients.begin(), clients.end()));
 
+		int max;
+		if (!clients.empty())
+		    max = std::max((--servers.end())->first, (--clients.end())->first);
+		else
+		    max = (--servers.end())->first;
+
+        //ждем коннекта или готовности к чтению
 		std::cout << "select block" << std::endl;
 		select(max + 1, &read_set, NULL, NULL, NULL);
 		std::cout << "select unblock, max: " << max << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
-		for (std::list<int>::iterator it = servers.begin(); it != servers.end(); it++) {
+		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
 			// произошел коннект на n-ом сервере
-			if (FD_ISSET(*it, &read_set)) {
+			if (FD_ISSET((*it).first, &read_set)) {
 
-				int client_sock = accept(*it, NULL, NULL);
+				int client_sock = accept((*it).first, NULL, NULL);
 				set_nonblock(client_sock);
-				clients.push_back(client_sock);
-				std::cout << "listener =  " << *it << " client_sock = " << client_sock << std::endl;
+				std::pair<int, ServConf> pair = std::make_pair(client_sock, (*it).second);
+				clients.insert(pair);
+				std::cout << "listener =  " << (*it).first << " client_sock = " << client_sock << std::endl;
 			}
 		}
-		std::vector<HttpRequest*> requests = readRequests(clients);
+		std::vector<char*> requests = readRequests(clients);
 		sendToAllClients(requests, clients);
-		for(int i = 0; i < requests.size(); i++)
-			delete requests[i];
 		requests.clear();
 	}
 	return (1);
 }
 
-std::vector<HttpRequest*>	Server::readRequests(std::list<int> &clients)
+std::vector<char*>      Server::readRequests(std::map<int, ServConf> &clients)
 {
-	std::vector<HttpRequest*> requests;
+	std::vector<char*> requests;
+	HTTP http;
 	//смотрим что кто то из клиентов что-то отправил(сервер готов читать)
-	for (std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
+    std::map<int, ServConf>::iterator it = clients.begin();
+    std::map<int, ServConf>::iterator ite = clients.end();
+    int i = 0;
+	while (it != ite)
 	{
-		if (FD_ISSET(*it, &read_set))
+        std::cout << "i1: " << i << std::endl;
+		if (FD_ISSET(it->first, &read_set))
 		{
-			HttpRequest *req = NULL;
-
+            char *req;
 			//кто-то отключился
-			if (!(req = receiveData(*it)))
+			if (!(req = receiveData(it->first)))
 			{
-				close(*it);
-				clients.erase(it);
+				close(it->first);
+				it = clients.erase(it);
 			}
 			//если не отключился значит готов принять ответ
 			else
 			{
-				FD_SET(*it, &write_set);
+			    std::cout << "REquest prinyat!" << std::endl;
+			    //std::cout << "Write set on" << std::endl;
+				FD_SET(it->first, &write_set);
 				requests.push_back(req);
+				it++;
 			}
 		}
+		else
+		    it++;
+		i++;
 	}
 	return (requests);
 }
 
-void	Server::sendToAllClients(std::vector<HttpRequest*> requests, std::list<int> clients)
+void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> clients)
 {
 	int i = 0;
-	for(std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
+	HTTP http;
+	for(std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++)
 	{
-		if (FD_ISSET(*it, &write_set)) {
-			sendData(*it, requests[i]);
+		if (FD_ISSET(it->first, &write_set))
+		{
+		    http.setFields(requests[i], it->second);
+			http.manager();
+			std::string response = http.getResponce();
+			send(it->first, response.c_str(), response.size(), 0);
+			shutdown(it->first, SHUT_RDWR);
 			i++;
 		}
 	}
@@ -178,8 +182,8 @@ void	Server::sendToAllClients(std::vector<HttpRequest*> requests, std::list<int>
 }
 
 Server::~Server() {
-    for (std::list<int>::iterator it = servers.begin(); it != servers.end(); it++)
-        close(*it);
+    for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++)
+        close(it->first);
     servers.clear();
 }
 

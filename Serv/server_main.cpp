@@ -62,22 +62,8 @@ int main(int argc, char **argv)
 	Config conf("Config.txt");
 	if (conf.readConf() == -1)
 	    return (0);
-    //printCongig(conf);
     Server server = Server(conf);
     server.run();
-    // это все из конфига будет браться, надо отдельный класс ServConf
-//    char buff1[16] = "127.0.0.1:8000";
-//    char buff2[16] = "127.0.0.1:1234";
-//    char buff3[16] = "127.0.0.1:3456";
-//    Net net1(buff1);
-//    Net net2(buff2);
-//    Net net3(buff3);
-//    std::list<Net> listeners;
-//    listeners.push_back(net1);
-//    listeners.push_back(net2);
-//    listeners.push_back(net3);
-//    Server server(listeners);
-//    server.run();
     return (1);
 }
 
