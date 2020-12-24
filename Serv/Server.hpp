@@ -46,7 +46,7 @@ public:
 
     std::vector<char*>      readRequests(std::map<int, ServConf> &clients);
 
-	void 			sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> clients);
+	void 			sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients);
 
 };
 

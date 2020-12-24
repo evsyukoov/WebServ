@@ -115,12 +115,17 @@ int Server::servLoop() {
 				set_nonblock(client_sock);
 				std::pair<int, ServConf> pair = std::make_pair(client_sock, (*it).second);
 				clients.insert(pair);
-				std::cout << "listener =  " << (*it).first << " client_sock = " << client_sock << std::endl;
+				//std::cout << "listener =  " << (*it).first << " client_sock = " << client_sock << std::endl;
 			}
 		}
 		std::vector<char*> requests = readRequests(clients);
 		sendToAllClients(requests, clients);
 		requests.clear();
+		std::cout << "Clients: " << std::endl;
+		for(std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++)
+        {
+		    std::cout << RED << "CLIENTS: " << it->first << RESET << std::endl;
+        }
 	}
 	return (1);
 }
@@ -135,10 +140,10 @@ std::vector<char*>      Server::readRequests(std::map<int, ServConf> &clients)
     int i = 0;
 	while (it != ite)
 	{
-        std::cout << "i1: " << i << std::endl;
+        //std::cout << "i1: " << i << std::endl;
 		if (FD_ISSET(it->first, &read_set))
 		{
-            char *req;
+            char *req = NULL;
 			//кто-то отключился
 			if (!(req = receiveData(it->first)))
 			{
@@ -148,8 +153,6 @@ std::vector<char*>      Server::readRequests(std::map<int, ServConf> &clients)
 			//если не отключился значит готов принять ответ
 			else
 			{
-			    std::cout << "REquest prinyat!" << std::endl;
-			    //std::cout << "Write set on" << std::endl;
 				FD_SET(it->first, &write_set);
 				requests.push_back(req);
 				it++;
@@ -162,22 +165,25 @@ std::vector<char*>      Server::readRequests(std::map<int, ServConf> &clients)
 	return (requests);
 }
 
-void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> clients)
+void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients)
 {
 	int i = 0;
 	HTTP http;
-	for(std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++)
-	{
+    std::map<int, ServConf>::iterator it = clients.begin();
+    std::map<int, ServConf>::iterator ite = clients.end();
+	while (it != ite)
+    {
 		if (FD_ISSET(it->first, &write_set))
 		{
 		    http.setFields(it->first, requests[i], it->second);
 			http.manager();
-		//	std::cout << "out" << std::endl;
-		//	std::string response = http.getResponce();
-		//	send(it->first, response.c_str(), response.size(), 0);
 			shutdown(it->first, SHUT_RDWR);
-			i++;
+            //close(it->first);
+			it = clients.erase(it);
 		}
+		else {
+            it++;
+        }
 	}
 
 }
