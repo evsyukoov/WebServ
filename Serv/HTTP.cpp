@@ -17,6 +17,26 @@ void HTTP::setFields(int client, char *buf, const ServConf &serv) {
 	initMap();
 }
 
+
+bool HTTP::validateMethod()
+{
+	std::string methods[] = { "GET", "PUT", "POST", "DELETE",
+						   "HEAD", "CONNECT", "OPTIONS", "TRACE"};
+	for (int  i = 0;  i < 8; ++ i)
+	{
+		if (reqMap["method"] == methods[i])
+			return (true);
+	}
+	return (false);
+}
+
+bool HTTP::validateProtocol()
+{
+	if (reqMap["protocol"] == "HTTP/1.1")
+		return (true);
+	return (false);
+}
+
 void HTTP::initMap() {
 
 	size_t second_pos;
@@ -41,9 +61,15 @@ void HTTP::initMap() {
 		rev_pos = str.find("\r", blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos - 1)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
 		second_pos = buff_req.find("\n", second_pos) + 1;
-		std::cout << buff_req.find("\n", second_pos) << std::endl;
+		//std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
-	second_pos += 2;
+	if (second_pos == 0 || second_pos >= buff_req.size())
+		return;
+	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
+	{
+		//std::cout <<
+		second_pos++;
+	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
 	printMap();
@@ -68,7 +94,9 @@ void HTTP::manager() {
 //	ServConf servConf = getServerNum(server_num);
 	it = getMatchingLocation();
 
-	if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
+	if (!validateMethod() || !validateProtocol())
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n", "");
+	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")
 		post();
@@ -87,7 +115,7 @@ int HTTP::checkDirectory(const std::string& root)
 
 	if (!stat((root + reqMap["location"]).c_str(), &structstat))
 	{
-		if (S_ISREG(structstat.st_mode) || S_ISLNK(structstat.st_mode))
+		if (S_ISREG(structstat.st_mode))
 			return (0);
 		else
 			return (1);
@@ -111,10 +139,10 @@ std::string HTTP::rootSwitcher(const std::string& root, const std::string& serv_
 		else if (!serv_index.empty())
 			return (rootWithSlash + serv_index);
 		else
-			return ("not found");
+			return ("");
 	}
 	else
-		return ("not found");
+		return ("");
 }
 
 std::list<Location>::const_iterator HTTP::getMatchingLocation()
@@ -196,16 +224,13 @@ void HTTP::get()
 //	std::vector<std::string>::const_iterator vector_iter = std::find(it->getMethods().begin(), it->getMethods().end(), "GET");
 
 	if (!checkForAllowedMethod())
-	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
-		return;
-	}
-	else if (path == "not found")
-		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n", "");
+	else if (path == "")
+		sendReq("HTTP/1.1 404 Not Found\r\n", "");
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
-			sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+			sendReq("HTTP/1.1 404 Not Found\r\n", "");
 		else
 		{
 			fstat(fd, &structstat);
@@ -223,14 +248,14 @@ void HTTP::readFile(int file_size, int fd)
 	{
 		if (it->getMaxBody() != -1 && it->getMaxBody() < file_size)
 		{
-			sendReq("HTTP/1.1 413 Payload Too Large\r\n\r\n", "");
+			sendReq("HTTP/1.1 413 Payload Too Large\r\n", "");
 			return;
 		}
 	}
 	buf[file_size] = '\0';
 	if (read(fd, buf, file_size) < 0)
 		return;
-	sendReq("HTTP/1.1 200 OK\r\nContent-type: text/html\r\nConnection: Closed\r\n\r\n", buf);
+	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", buf);
 }
 
 int HTTP::sendReq(std::string header, std::string request)
@@ -242,8 +267,8 @@ int HTTP::sendReq(std::string header, std::string request)
 	result = header + request;
 	std::cout << "Result responce: " << result << std::endl;
 
-	write(client_fd, (char *)result.c_str(), result.size());
-	//send(client_fd, (char *)result.c_str(), result.size(), 0);
+	//write(client_fd, (char *)result.c_str(), result.size());
+	send(client_fd, (char *)result.c_str(), result.size(), 0);
 //	net.send(client_fd, (char *)result.c_str(), result.size());
 	return (0);
 }
@@ -274,7 +299,7 @@ void HTTP::post()
 
 	if (!checkForAllowedMethod())
 	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n", "");
 		return;
 	}
 	if (content_length == -1)
@@ -294,10 +319,10 @@ void HTTP::post()
 	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
 			(write(fd, reqMap["body"].c_str(), content_length)) < 0)
 	{
-		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
+		sendReq("HTTP/1.1 403 Forbidden\r\n", "");
 		return;
 	}
-	sendReq("HTTP/1.1 200 OK\r\n", "");
+	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", "");
 }
 
 std::string &HTTP::getResponce()

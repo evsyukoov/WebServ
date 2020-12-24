@@ -52,6 +52,10 @@ private:
 
 	void 	initMap();
 
+	bool validateMethod();
+
+	bool validateProtocol();
+
 public:
 
 	HTTP(int client, char *buf, const ServConf&);
