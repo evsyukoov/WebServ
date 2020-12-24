@@ -33,13 +33,15 @@ void HTTP::initMap() {
 	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
 
 	second_pos = rev_pos + 2;
-	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size())
+	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
+	&& second_pos != 0)
 	{
 	    //std::cout << "Loop" << std::endl;
 		blanc_pos = str.find(" ");
 		rev_pos = str.find("\r", blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos - 1)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
 		second_pos = buff_req.find("\n", second_pos) + 1;
+		std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
 	second_pos += 2;
 	if (buff_req.size() > second_pos)
@@ -172,8 +174,14 @@ bool HTTP::checkForAllowedMethod()
 				return (false);
 			else
 				return (true);
-		} else
-			return (true);
+		}
+		else if (reqMap["method"] == "POST")
+		{
+			if (std::find(it->getMethods().begin(), it->getMethods().end(), "POST") == it->getMethods().end())
+				return (false);
+			else
+				return (true);
+		}
 	}
 	return (true);
 }
@@ -188,7 +196,10 @@ void HTTP::get()
 //	std::vector<std::string>::const_iterator vector_iter = std::find(it->getMethods().begin(), it->getMethods().end(), "GET");
 
 	if (!checkForAllowedMethod())
+	{
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		return;
+	}
 	else if (path == "not found")
 		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
 	else
@@ -231,7 +242,8 @@ int HTTP::sendReq(std::string header, std::string request)
 	result = header + request;
 	std::cout << "Result responce: " << result << std::endl;
 
-	send(client_fd, (char *)result.c_str(), result.size(), 0);
+	write(client_fd, (char *)result.c_str(), result.size());
+	//send(client_fd, (char *)result.c_str(), result.size(), 0);
 //	net.send(client_fd, (char *)result.c_str(), result.size());
 	return (0);
 }
@@ -260,9 +272,14 @@ void HTTP::post()
 	std::string post_root;
 	char buf[PATH_MAX];
 
+	if (!checkForAllowedMethod())
+	{
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		return;
+	}
 	if (content_length == -1)
 	{
-		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
+		sendReq("HTTP/1.1 411 Length Required\r\n", "");
 		return;
 	}
 	if (!(it->getRoot().empty()))

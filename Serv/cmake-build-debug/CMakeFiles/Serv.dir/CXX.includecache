@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.cpp
+HTTP.hpp
+/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
+
 /Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
 sys/stat.h
 -
@@ -61,28 +65,4 @@ list
 -
 sstream
 -
-
-/Users/zcolleen/Desktop/Denis_git/Serv/Server.cpp
-vector
--
-sys/socket.h
--
-netinet/in.h
--
-arpa/inet.h
--
-Server.hpp
-/Users/zcolleen/Desktop/Denis_git/Serv/Server.hpp
-
-/Users/zcolleen/Desktop/Denis_git/Serv/Server.hpp
-map
--
-list
--
-fcntl.h
--
-Parser/Config.hpp
-/Users/zcolleen/Desktop/Denis_git/Serv/Parser/Config.hpp
-HTTP.hpp
-/Users/zcolleen/Desktop/Denis_git/Serv/HTTP.hpp
 

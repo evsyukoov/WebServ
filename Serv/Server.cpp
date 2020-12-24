@@ -172,7 +172,8 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServCon
 		{
 		    http.setFields(it->first, requests[i], it->second);
 			http.manager();
-			std::string response = http.getResponce();
+		//	std::cout << "out" << std::endl;
+		//	std::string response = http.getResponce();
 		//	send(it->first, response.c_str(), response.size(), 0);
 			shutdown(it->first, SHUT_RDWR);
 			i++;

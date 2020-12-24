@@ -7,7 +7,7 @@ server{  server_name localhost;
 
     location /
     {
-        limit_except POST,          GET, PUT,          DELETE;
+        limit_except           GET;
         root    ./;
         index   index.html;
     }
