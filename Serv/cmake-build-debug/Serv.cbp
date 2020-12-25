@@ -125,6 +125,12 @@
 		<Unit filename="/Users/ccarl/Desktop/WebServ/Serv/server_main.cpp">
 			<Option target="Serv"/>
 		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServ/Serv/utils.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServ/Serv/utils.hpp">
+			<Option target="Serv"/>
+		</Unit>
 		<Unit filename="/Users/ccarl/Desktop/WebServ/Serv/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

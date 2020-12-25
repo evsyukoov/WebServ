@@ -6,7 +6,8 @@
 #define BLUE "\033[1;34m"
 #define RESET "\033[0m"
 #include <zconf.h>
-#include <list>
+#include <unistd.h>
+//#include <list>
 #include "CGI.hpp"
 #include "Server.hpp"
 #include "Parser/Config.hpp"
@@ -56,9 +57,13 @@ void    printCongig(const Config &config)
     }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **env)
 {
-    //для запуска закоментить конфиг
+//    char buff[21] = "./CGI_Scrypts/simple";
+//    CGI cgi(buff, NULL, NULL, "azaza eppePeafp");
+//    cgi.run();
+//    std::cout << cgi.getResponse() << std::endl;
+
 	Config conf("Config.txt");
 	if (conf.readConf() == -1)
 	    return (0);

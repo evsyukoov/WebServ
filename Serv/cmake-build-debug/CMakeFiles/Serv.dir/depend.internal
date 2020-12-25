@@ -4,6 +4,7 @@
 CMakeFiles/Serv.dir/CGI.cpp.o
  /Users/ccarl/Desktop/WebServ/Serv/CGI.cpp
  /Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
+ /Users/ccarl/Desktop/WebServ/Serv/utils.hpp
 CMakeFiles/Serv.dir/HTTP.cpp.o
  /Users/ccarl/Desktop/WebServ/Serv/HTTP.cpp
  /Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
@@ -46,3 +47,7 @@ CMakeFiles/Serv.dir/server_main.cpp.o
  /Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
  /Users/ccarl/Desktop/WebServ/Serv/Server.hpp
  /Users/ccarl/Desktop/WebServ/Serv/server_main.cpp
+ /Users/ccarl/Desktop/WebServ/Serv/utils.hpp
+CMakeFiles/Serv.dir/utils.cpp.o
+ /Users/ccarl/Desktop/WebServ/Serv/utils.cpp
+ /Users/ccarl/Desktop/WebServ/Serv/utils.hpp

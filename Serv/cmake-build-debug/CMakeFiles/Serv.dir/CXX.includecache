@@ -6,6 +6,22 @@
 
 #IncludeRegexTransform: 
 
+/Users/ccarl/Desktop/WebServ/Serv/CGI.cpp
+fstream
+-
+CGI.hpp
+/Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
+
+/Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
+zconf.h
+-
+iostream
+-
+fcntl.h
+-
+utils.hpp
+/Users/ccarl/Desktop/WebServ/Serv/utils.hpp
+
 /Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
 sys/stat.h
 -
@@ -62,18 +78,6 @@ list
 sstream
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Server.cpp
-vector
--
-sys/socket.h
--
-netinet/in.h
--
-arpa/inet.h
--
-Server.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Server.hpp
-
 /Users/ccarl/Desktop/WebServ/Serv/Server.hpp
 map
 -
@@ -85,4 +89,22 @@ Parser/Config.hpp
 /Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
 HTTP.hpp
 /Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
+
+/Users/ccarl/Desktop/WebServ/Serv/server_main.cpp
+zconf.h
+-
+unistd.h
+-
+CGI.hpp
+/Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
+Server.hpp
+/Users/ccarl/Desktop/WebServ/Serv/Server.hpp
+Parser/Config.hpp
+/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
+
+/Users/ccarl/Desktop/WebServ/Serv/utils.hpp
+sys/stat.h
+-
+cstdio
+-
 

@@ -7,6 +7,6 @@ set(CMAKE_CXX_STANDARD 98)
 add_executable(Serv server_main.cpp HTTP.cpp CGI.cpp Server.cpp
         Parser/ServConf.cpp
         Parser/Location.cpp
-        Parser/Config.cpp Parser/parser_utils.cpp Parser/parser_utils.hpp)
+        Parser/Config.cpp Parser/parser_utils.cpp Parser/parser_utils.hpp utils.cpp utils.hpp)
 
 #target_link_libraries(Serv ft)
