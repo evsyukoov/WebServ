@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <limits>
 #include <sys/socket.h>
+#include "File.hpp"
 
 class HTTP
 {
@@ -25,6 +26,7 @@ private:
 	std::list<Location>::const_iterator it;
 	std::string 	result;
 	int				client_fd;
+	std::vector<File> files;
 
 	void 	get();
 
@@ -50,11 +52,13 @@ private:
 
 	long contentLength();
 
-	void 	initMap();
+	int 	initMap();
 
 	bool validateMethod();
 
 	bool validateProtocol();
+
+	void 	locationToRootReplcaer(std::string& root_with_slash);
 
 public:
 

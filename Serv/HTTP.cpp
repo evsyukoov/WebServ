@@ -37,7 +37,7 @@ bool HTTP::validateProtocol()
 	return (false);
 }
 
-void HTTP::initMap() {
+int HTTP::initMap() {
 
 	size_t second_pos;
 	size_t blanc_pos;
@@ -64,17 +64,21 @@ void HTTP::initMap() {
 		//std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
 	if (second_pos == 0 || second_pos >= buff_req.size())
-		return;
-	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
-	{
-		//std::cout <<
-		second_pos++;
-	}
+		return (1);
+	if (buff_req[second_pos] != '\r' || (second_pos + 1 < buff_req.size() && buff_req[second_pos + 1] != '\n'))
+		return (1);
+//	size_t len = buff_req.size();
+	second_pos += 2;
+//	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
+//	{
+//		//std::cout <<
+//		second_pos++;
+//	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
 	printMap();
 	std::cout << YELLOW << "Your request is:\n" << buff_req << RESET << std::endl;
-
+	return (0);
 }
 
 void 	HTTP::printMap()
@@ -109,10 +113,22 @@ bool HTTP::locationMatch(const std::string& location)
 	return (false);
 }
 
+void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
+{
+	//reqMap["location"].replace(0, it->getLocation().size(), root_with_slash);
+	reqMap["location"].erase(0, it->getLocation().size());
+//	if (reqMap["location"][0] == '/')
+//		reqMap["location"].erase(0, 1);
+	std::cout << "Your new request is: " << reqMap["location"] << std::endl;
+}
+
 int HTTP::checkDirectory(const std::string& root)
 {
 	struct stat structstat;
 
+	std::cout << root + reqMap["location"] << std::endl;
+//	if (stat("/Users/zcolleen/Desktop/webserv2/Serv/testfiles/test.txt", &structstat))
+//		std::cout << "working" << std::endl;
 	if (!stat((root + reqMap["location"]).c_str(), &structstat))
 	{
 		if (S_ISREG(structstat.st_mode))
@@ -130,6 +146,7 @@ std::string HTTP::rootSwitcher(const std::string& root, const std::string& serv_
 
 	if (rootWithSlash.back() != '/')
 		rootWithSlash.push_back('/');
+	reqMap["location"].erase(0, it->getLocation().size());
 	if ((checkDirectoryRet = checkDirectory(rootWithSlash)) == 0)
 		return (rootWithSlash + reqMap["location"]);
 	else if (checkDirectoryRet == 1)
@@ -171,8 +188,6 @@ std::string HTTP::pathFormerer() {
 			return (rootSwitcher(servConf.getRoot(), servConf.getIndex(), it->getIndex()));
 		else
 			return (rootSwitcher(getcwd(buf, PATH_MAX), servConf.getIndex(), it->getIndex()));
-
-
 	}
 	else
 	{
@@ -242,6 +257,7 @@ void HTTP::get()
 void HTTP::readFile(int file_size, int fd)
 {
 	char buf[file_size + 1];
+//	std::string responce;
 //	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
 
 	if (it != servConf.getLocations().end())
@@ -255,16 +271,18 @@ void HTTP::readFile(int file_size, int fd)
 	buf[file_size] = '\0';
 	if (read(fd, buf, file_size) < 0)
 		return;
+//	responce = buf;
+//	responce += "\r\n\r\n";
 	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", buf);
 }
 
-int HTTP::sendReq(std::string header, std::string request)
+int HTTP::sendReq(std::string header, std::string responce)
 {
 //	std::string result;
 
 	if (reqMap["method"] == "HEAD")
-		request = header;
-	result = header + request;
+		responce = header;
+	result = header + responce;
 	std::cout << "Result responce: " << result << std::endl;
 
 	//write(client_fd, (char *)result.c_str(), result.size());
@@ -315,6 +333,7 @@ void HTTP::post()
 		post_root = getcwd(buf, PATH_MAX);
 	if (post_root.back() != '/')
 		post_root.push_back('/');
+	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
 	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
 			(write(fd, reqMap["body"].c_str(), content_length)) < 0)
@@ -323,7 +342,6 @@ void HTTP::post()
 		return;
 	}
 	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", "");
-	//wridksjhfgihbdk;lf
 }
 
 std::string &HTTP::getResponce()

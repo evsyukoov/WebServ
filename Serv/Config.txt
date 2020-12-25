@@ -3,14 +3,25 @@ server{  server_name localhost;
     default_error_page 404         path/404.html;
     default_error_page      405    path/405.html;
 
-    root    /Users/ccarl/Desktop/WebServLast/Serv;
-
     location /
     {
         limit_except           GET;
-        root    ./;
         index   index.html;
     }
+
+#    location /testfiles
+#    {
+#        index test.txt;
+#        limit_except     GET;
+#    }
+    location /directory
+    {
+           limit_except GET, POST;
+           root /Users/zcolleen/Desktop/webserv2/Serv/YoupiBanane;
+           index youpi.bad_extension;
+    }
+
+
 }
 
 
