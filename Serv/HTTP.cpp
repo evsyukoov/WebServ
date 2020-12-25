@@ -323,6 +323,7 @@ void HTTP::post()
 		return;
 	}
 	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", "");
+	//wridksjhfgihbdk;lf
 }
 
 std::string &HTTP::getResponce()
