@@ -68,10 +68,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/zcolleen/Desktop/Denis_git/Serv
+CMAKE_SOURCE_DIR = /Users/ccarl/Desktop/WebServ/Serv
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/zcolleen/Desktop/Denis_git/Serv/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/ccarl/Desktop/WebServ/Serv/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -100,9 +100,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zcolleen/Desktop/Denis_git/Serv/cmake-build-debug/CMakeFiles /Users/zcolleen/Desktop/Denis_git/Serv/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ccarl/Desktop/WebServ/Serv/cmake-build-debug/CMakeFiles /Users/ccarl/Desktop/WebServ/Serv/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zcolleen/Desktop/Denis_git/Serv/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ccarl/Desktop/WebServ/Serv/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -359,6 +359,33 @@ server_main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.s
 .PHONY : server_main.cpp.s
 
+utils.o: utils.cpp.o
+
+.PHONY : utils.o
+
+# target to build an object file
+utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils.cpp.o
+.PHONY : utils.cpp.o
+
+utils.i: utils.cpp.i
+
+.PHONY : utils.i
+
+# target to preprocess a source file
+utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils.cpp.i
+.PHONY : utils.cpp.i
+
+utils.s: utils.cpp.s
+
+.PHONY : utils.s
+
+# target to generate assembly for a file
+utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils.cpp.s
+.PHONY : utils.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -392,6 +419,9 @@ help:
 	@echo "... server_main.o"
 	@echo "... server_main.i"
 	@echo "... server_main.s"
+	@echo "... utils.o"
+	@echo "... utils.i"
+	@echo "... utils.s"
 .PHONY : help
 
 

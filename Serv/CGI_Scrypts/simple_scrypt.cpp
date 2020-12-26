@@ -7,19 +7,12 @@
 
 int 	main(int argc, char **argv, char **env)
 {
-//	int i = 0;
-//	while (i < argc)
-//	{
-//		std::cout << argv[i] << std::endl;
-//		i++;
-//	}
-	std::cout << "Child process started" << std::endl;
-	char buff[10];
-	int nread = read(0, buff, 10);
-	std::cout << "Read in child from parent" << std::endl;
-	for (int i = 0; i < nread; i++)
-	{
-		std::cout << buff[i] << std::endl;
-	}
+    int i = 1;
+    char buff[100];
+    int n = read(0, buff, 100);
+    buff[n] = '\0';
+    std::cout << buff << " modified by child " << std::endl;
+//	while(argv && argv[i])
+//	    std::cout << argv[i++] << std::endl;
 }
 

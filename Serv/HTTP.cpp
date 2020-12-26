@@ -230,7 +230,7 @@ void HTTP::readFile(int file_size, int fd)
 	buf[file_size] = '\0';
 	if (read(fd, buf, file_size) < 0)
 		return;
-	sendReq("HTTP/1.1 200 OK\r\nContent-type: text/html;\r\n\r\n", buf);
+	sendReq("HTTP/1.1 200 OK\r\nContent-type: text/html\r\nConnection: Closed\r\n\r\n", buf);
 }
 
 int HTTP::sendReq(std::string header, std::string request)

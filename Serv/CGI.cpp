@@ -3,19 +3,51 @@
 //
 
 
-#include <iostream>
+
+#include <fstream>
 #include "CGI.hpp"
 
-CGI::CGI(char *childProgram, char **env, char **args, char *request) : child_program(childProgram), env(env), args(args), request(request)
+CGI::CGI(char *childProgram, char **env, char **args, const std::string &request, ) : child_program(childProgram), env(env), args(args), request(request)
 {}
 
-int	CGI::run_child()
+
+void        CGI::initEnvironments()
 {
+    environments["AUTH_TYPE"] = "Basic";
+    //environments["CONTENT_LENGTH"] = ;
+   // environments["CONTENT_TYPE"] = ;
+   environments["GATEWAY_INTERFACE"] = "CGI/1.1";
+}
+
+int	CGI::run()
+{
+    int fd[2];
+    int status;
+    if (pipe(fd) < 0)
+    {
+        std::cerr << "Pipe error" << std::endl;
+        return (0);
+    }
 	int child = fork();
-	if (child < 0)
-		std::cerr << "Problems with fork" << std::endl;
+	int tmp_fd = open("./tmp", O_RDWR | O_CREAT, S_IRWXU);
+	if (tmp_fd < 0)
+    {
+	    std::cerr << "Error with tmp file on CGI" << std::endl;
+	    return (0);
+    }
+	if (child < 0) {
+        std::cerr << "Problems with fork" << std::endl;
+        return (0);
+    }
 	else if (child == 0)
 	{
+        close(fd[1]); //ничего не пишем
+        //заменяем stdout дочернего процесса на дескриптор временного файла
+        dup2(tmp_fd, 1);
+        close(tmp_fd);
+        //читать запрос будем от родителя
+        dup2(fd[0], 0);
+        close(fd[0]);
 		if (!(execve(child_program, args, env)))
 		{
 			std::cerr << "Problems with execve" << std::endl;
@@ -23,48 +55,42 @@ int	CGI::run_child()
 		}
 		exit (EXIT_SUCCESS);
 	}
-	return (child);
+	//родитель
+	else
+    {
+	    close(fd[0]);
+	    write(fd[1], request.c_str(), request.size());
+	    close(fd[1]);
+	    wait(&status);
+	    readFromCGI();
+    }
+	return (1);
 }
 
-void 	CGI::run_parent()
+int     CGI::readFromCGI()
 {
-	int fdStdIn[2];
-	int fdStdOut[2];
-	std::cout << "Begin reading" << std::endl;
-	if (pipe(fdStdIn) != 0 || pipe(fdStdOut) != 0)
-	{
-		std::cerr << "Error pipe!" << std::endl;
-		return ;
-	}
+    int fd = open("./tmp", O_RDONLY);
+    if (fd < 0)
+    {
+        std::cerr << "Error open tmp file from CGI scrypt" << std::endl;
+        return (0);
+    }
+    long size = findFileSize(fd);
+    if (size < 0)
+    {
+        std::cerr << "Error reading from tmp file" << std::endl;
+        return (0);
+    }
 
-	int		fdOldIn = dup(0);
-	int 	fdOldOut = dup(1);
-
-	dup2(fdStdOut[1], 1);
-	dup2(fdStdIn[0], 0);
-//
-	close(fdStdOut[1]);
-	close(fdStdIn[0]);
-
-	int pid = run_child();
-
-	dup2(fdOldIn, 1);
-	dup2(fdOldOut, 0);
-	close(fdOldIn);
-	close(fdOldOut);
-
-	//пишем в трубу(на stdin дочернего процесса)
-	write(fdStdIn[1], request, ::strlen(request));
-	int nread;
-	char buff[100] = "";
-	int status;
-	std::cout << "Begin reading 2" << std::endl;
-	while (1)
-	{
-		read(fdStdOut[0], buff, 100);
-		if (waitpid(pid, &status, WNOHANG) < 0)
-			break ;
-	}
-	std::cout << buff[0] << std::endl;
-	std::cout << buff[1] << std::endl;
+    char buff[size];
+    int n = read(fd, buff, size);
+    buff[n] = '\0';
+    response = buff;
+    unlink("./tmp");
+    return (1);
 }
+
+const std::string &CGI::getResponse() const {
+    return response;
+}
+

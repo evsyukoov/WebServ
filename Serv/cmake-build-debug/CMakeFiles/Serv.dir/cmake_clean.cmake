@@ -7,6 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
   "CMakeFiles/Serv.dir/Server.cpp.o"
   "CMakeFiles/Serv.dir/server_main.cpp.o"
+  "CMakeFiles/Serv.dir/utils.cpp.o"
   "Serv"
   "Serv.pdb"
 )
