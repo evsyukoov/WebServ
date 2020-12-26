@@ -6,17 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/Users/zcolleen/Desktop/webserv2/Serv/CGI.hpp
-zconf.h
--
-
 /Users/zcolleen/Desktop/webserv2/Serv/File.hpp
 HTTP.hpp
 /Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
-
-/Users/zcolleen/Desktop/webserv2/Serv/HTTP.cpp
-HTTP.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
+utils_for_file.hpp
+/Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.hpp
 
 /Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
 sys/stat.h
@@ -76,39 +70,13 @@ list
 sstream
 -
 
-/Users/zcolleen/Desktop/webserv2/Serv/Server.cpp
+/Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp
+File.hpp
+/Users/zcolleen/Desktop/webserv2/Serv/File.hpp
+
+/Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.hpp
+iostream
+-
 vector
 -
-sys/socket.h
--
-netinet/in.h
--
-arpa/inet.h
--
-Server.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/Server.hpp
-
-/Users/zcolleen/Desktop/webserv2/Serv/Server.hpp
-map
--
-list
--
-fcntl.h
--
-Parser/Config.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/Parser/Config.hpp
-HTTP.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
-
-/Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp
-zconf.h
--
-list
--
-CGI.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/CGI.hpp
-Server.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/Server.hpp
-Parser/Config.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/Parser/Config.hpp
 

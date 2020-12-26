@@ -143,32 +143,32 @@ Serv/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/build
 .PHONY : Serv/fast
 
-CGI.o: CGI.cpp.o
+File.o: File.cpp.o
 
-.PHONY : CGI.o
+.PHONY : File.o
 
 # target to build an object file
-CGI.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.o
-.PHONY : CGI.cpp.o
+File.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/File.cpp.o
+.PHONY : File.cpp.o
 
-CGI.i: CGI.cpp.i
+File.i: File.cpp.i
 
-.PHONY : CGI.i
+.PHONY : File.i
 
 # target to preprocess a source file
-CGI.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.i
-.PHONY : CGI.cpp.i
+File.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/File.cpp.i
+.PHONY : File.cpp.i
 
-CGI.s: CGI.cpp.s
+File.s: File.cpp.s
 
-.PHONY : CGI.s
+.PHONY : File.s
 
 # target to generate assembly for a file
-CGI.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.s
-.PHONY : CGI.cpp.s
+File.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/File.cpp.s
+.PHONY : File.cpp.s
 
 HTTP.o: HTTP.cpp.o
 
@@ -332,32 +332,59 @@ Server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Server.cpp.s
 .PHONY : Server.cpp.s
 
-server_main.o: server_main.cpp.o
+test_for_file.o: test_for_file.cpp.o
 
-.PHONY : server_main.o
+.PHONY : test_for_file.o
 
 # target to build an object file
-server_main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.o
-.PHONY : server_main.cpp.o
+test_for_file.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/test_for_file.cpp.o
+.PHONY : test_for_file.cpp.o
 
-server_main.i: server_main.cpp.i
+test_for_file.i: test_for_file.cpp.i
 
-.PHONY : server_main.i
+.PHONY : test_for_file.i
 
 # target to preprocess a source file
-server_main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.i
-.PHONY : server_main.cpp.i
+test_for_file.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/test_for_file.cpp.i
+.PHONY : test_for_file.cpp.i
 
-server_main.s: server_main.cpp.s
+test_for_file.s: test_for_file.cpp.s
 
-.PHONY : server_main.s
+.PHONY : test_for_file.s
 
 # target to generate assembly for a file
-server_main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.s
-.PHONY : server_main.cpp.s
+test_for_file.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/test_for_file.cpp.s
+.PHONY : test_for_file.cpp.s
+
+utils_for_file.o: utils_for_file.cpp.o
+
+.PHONY : utils_for_file.o
+
+# target to build an object file
+utils_for_file.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils_for_file.cpp.o
+.PHONY : utils_for_file.cpp.o
+
+utils_for_file.i: utils_for_file.cpp.i
+
+.PHONY : utils_for_file.i
+
+# target to preprocess a source file
+utils_for_file.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils_for_file.cpp.i
+.PHONY : utils_for_file.cpp.i
+
+utils_for_file.s: utils_for_file.cpp.s
+
+.PHONY : utils_for_file.s
+
+# target to generate assembly for a file
+utils_for_file.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils_for_file.cpp.s
+.PHONY : utils_for_file.cpp.s
 
 # Help Target
 help:
@@ -368,9 +395,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Serv"
-	@echo "... CGI.o"
-	@echo "... CGI.i"
-	@echo "... CGI.s"
+	@echo "... File.o"
+	@echo "... File.i"
+	@echo "... File.s"
 	@echo "... HTTP.o"
 	@echo "... HTTP.i"
 	@echo "... HTTP.s"
@@ -389,9 +416,12 @@ help:
 	@echo "... Server.o"
 	@echo "... Server.i"
 	@echo "... Server.s"
-	@echo "... server_main.o"
-	@echo "... server_main.i"
-	@echo "... server_main.s"
+	@echo "... test_for_file.o"
+	@echo "... test_for_file.i"
+	@echo "... test_for_file.s"
+	@echo "... utils_for_file.o"
+	@echo "... utils_for_file.i"
+	@echo "... utils_for_file.s"
 .PHONY : help
 
 

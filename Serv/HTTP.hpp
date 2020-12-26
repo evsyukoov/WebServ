@@ -26,7 +26,7 @@ private:
 	std::list<Location>::const_iterator it;
 	std::string 	result;
 	int				client_fd;
-	std::vector<File> files;
+//	std::vector<File> files;
 
 	void 	get();
 

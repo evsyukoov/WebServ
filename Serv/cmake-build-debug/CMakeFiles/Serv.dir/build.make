@@ -77,18 +77,18 @@ include CMakeFiles/Serv.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Serv.dir/flags.make
 
-CMakeFiles/Serv.dir/server_main.cpp.o: CMakeFiles/Serv.dir/flags.make
-CMakeFiles/Serv.dir/server_main.cpp.o: ../server_main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Serv.dir/server_main.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/server_main.cpp.o -c /Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp
+CMakeFiles/Serv.dir/test_for_file.cpp.o: CMakeFiles/Serv.dir/flags.make
+CMakeFiles/Serv.dir/test_for_file.cpp.o: ../test_for_file.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Serv.dir/test_for_file.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/test_for_file.cpp.o -c /Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp
 
-CMakeFiles/Serv.dir/server_main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/server_main.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp > CMakeFiles/Serv.dir/server_main.cpp.i
+CMakeFiles/Serv.dir/test_for_file.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/test_for_file.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp > CMakeFiles/Serv.dir/test_for_file.cpp.i
 
-CMakeFiles/Serv.dir/server_main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/server_main.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp -o CMakeFiles/Serv.dir/server_main.cpp.s
+CMakeFiles/Serv.dir/test_for_file.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/test_for_file.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp -o CMakeFiles/Serv.dir/test_for_file.cpp.s
 
 CMakeFiles/Serv.dir/HTTP.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/HTTP.cpp.o: ../HTTP.cpp
@@ -103,22 +103,9 @@ CMakeFiles/Serv.dir/HTTP.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/HTTP.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/HTTP.cpp -o CMakeFiles/Serv.dir/HTTP.cpp.s
 
-CMakeFiles/Serv.dir/CGI.cpp.o: CMakeFiles/Serv.dir/flags.make
-CMakeFiles/Serv.dir/CGI.cpp.o: ../CGI.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Serv.dir/CGI.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/CGI.cpp.o -c /Users/zcolleen/Desktop/webserv2/Serv/CGI.cpp
-
-CMakeFiles/Serv.dir/CGI.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/CGI.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zcolleen/Desktop/webserv2/Serv/CGI.cpp > CMakeFiles/Serv.dir/CGI.cpp.i
-
-CMakeFiles/Serv.dir/CGI.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/CGI.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/CGI.cpp -o CMakeFiles/Serv.dir/CGI.cpp.s
-
 CMakeFiles/Serv.dir/Server.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Server.cpp.o: ../Server.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Serv.dir/Server.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Serv.dir/Server.cpp.o"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/Server.cpp.o -c /Users/zcolleen/Desktop/webserv2/Serv/Server.cpp
 
 CMakeFiles/Serv.dir/Server.cpp.i: cmake_force
@@ -128,6 +115,19 @@ CMakeFiles/Serv.dir/Server.cpp.i: cmake_force
 CMakeFiles/Serv.dir/Server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/Server.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/Server.cpp -o CMakeFiles/Serv.dir/Server.cpp.s
+
+CMakeFiles/Serv.dir/File.cpp.o: CMakeFiles/Serv.dir/flags.make
+CMakeFiles/Serv.dir/File.cpp.o: ../File.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Serv.dir/File.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/File.cpp.o -c /Users/zcolleen/Desktop/webserv2/Serv/File.cpp
+
+CMakeFiles/Serv.dir/File.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/File.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zcolleen/Desktop/webserv2/Serv/File.cpp > CMakeFiles/Serv.dir/File.cpp.i
+
+CMakeFiles/Serv.dir/File.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/File.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/File.cpp -o CMakeFiles/Serv.dir/File.cpp.s
 
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.o: CMakeFiles/Serv.dir/flags.make
 CMakeFiles/Serv.dir/Parser/ServConf.cpp.o: ../Parser/ServConf.cpp
@@ -181,31 +181,46 @@ CMakeFiles/Serv.dir/Parser/parser_utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/Parser/parser_utils.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/Parser/parser_utils.cpp -o CMakeFiles/Serv.dir/Parser/parser_utils.cpp.s
 
+CMakeFiles/Serv.dir/utils_for_file.cpp.o: CMakeFiles/Serv.dir/flags.make
+CMakeFiles/Serv.dir/utils_for_file.cpp.o: ../utils_for_file.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Serv.dir/utils_for_file.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Serv.dir/utils_for_file.cpp.o -c /Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.cpp
+
+CMakeFiles/Serv.dir/utils_for_file.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Serv.dir/utils_for_file.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.cpp > CMakeFiles/Serv.dir/utils_for_file.cpp.i
+
+CMakeFiles/Serv.dir/utils_for_file.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Serv.dir/utils_for_file.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.cpp -o CMakeFiles/Serv.dir/utils_for_file.cpp.s
+
 # Object files for target Serv
 Serv_OBJECTS = \
-"CMakeFiles/Serv.dir/server_main.cpp.o" \
+"CMakeFiles/Serv.dir/test_for_file.cpp.o" \
 "CMakeFiles/Serv.dir/HTTP.cpp.o" \
-"CMakeFiles/Serv.dir/CGI.cpp.o" \
 "CMakeFiles/Serv.dir/Server.cpp.o" \
+"CMakeFiles/Serv.dir/File.cpp.o" \
 "CMakeFiles/Serv.dir/Parser/ServConf.cpp.o" \
 "CMakeFiles/Serv.dir/Parser/Location.cpp.o" \
 "CMakeFiles/Serv.dir/Parser/Config.cpp.o" \
-"CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
+"CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o" \
+"CMakeFiles/Serv.dir/utils_for_file.cpp.o"
 
 # External object files for target Serv
 Serv_EXTERNAL_OBJECTS =
 
-Serv: CMakeFiles/Serv.dir/server_main.cpp.o
+Serv: CMakeFiles/Serv.dir/test_for_file.cpp.o
 Serv: CMakeFiles/Serv.dir/HTTP.cpp.o
-Serv: CMakeFiles/Serv.dir/CGI.cpp.o
 Serv: CMakeFiles/Serv.dir/Server.cpp.o
+Serv: CMakeFiles/Serv.dir/File.cpp.o
 Serv: CMakeFiles/Serv.dir/Parser/ServConf.cpp.o
 Serv: CMakeFiles/Serv.dir/Parser/Location.cpp.o
 Serv: CMakeFiles/Serv.dir/Parser/Config.cpp.o
 Serv: CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o
+Serv: CMakeFiles/Serv.dir/utils_for_file.cpp.o
 Serv: CMakeFiles/Serv.dir/build.make
 Serv: CMakeFiles/Serv.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable Serv"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable Serv"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Serv.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
