@@ -7,6 +7,7 @@
 #define RESET "\033[0m"
 #include <zconf.h>
 #include <unistd.h>
+#include <dirent.h>
 //#include <list>
 #include "CGI.hpp"
 #include "Server.hpp"
@@ -64,6 +65,11 @@ int main(int argc, char **argv, char **env)
 //    cgi.run();
 //    std::cout << cgi.getResponse() << std::endl;
 
+//	DIR *dir = opendir("./");
+//	struct dirent *dir_info;
+//	while ((dir_info = readdir(dir)) != NULL)
+//		std::cout << dir_info->d_name << std::endl;
+//	closedir(dir);
 	Config conf("Config.txt");
 	if (conf.readConf() == -1)
 	    return (0);

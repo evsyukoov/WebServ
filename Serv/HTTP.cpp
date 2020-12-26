@@ -1,5 +1,6 @@
 
 
+#include <dirent.h>
 #include "HTTP.hpp"
 
 HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {}
@@ -8,6 +9,36 @@ HTTP::HTTP() {}
 
 const std::map<std::string, std::string> &HTTP::getRequestMap() const {
 	return (reqMap);
+}
+
+int 		HTTP::initListingHTML(const std::string &path)
+{
+	//сюда запишем ссылки на директории по указанному path чтобы потом отправить клиенту
+	listing = "<!DOCTYPE html>\n"
+							"<html lang=\"en\">\n"
+							"<head>\n"
+							"<meta charset=\"UTF-8\">\n"
+							"<title>Listing</title>\n"
+	   						"<p><strong>Index of " + path + "</strong>\n\n";
+	DIR *dir = opendir(path.c_str());
+	if (!dir)
+	{
+		std::cout << "Error open dir" << std::endl;
+		return (0);
+	}
+	struct dirent *dir_info;
+	std::string ref;
+
+	//<p><a href=dir_name> dir_name </a></p>
+	while ((dir_info = readdir(dir)) != NULL)
+		ref += "<p><a href=" + std::string(dir_info->d_name) + ">" + std::string(dir_info->d_name) + "</a></p>\n";
+	listing += ref;
+	listing += "</head>\n"
+			   "<body>\n"
+			   "</body>\n"
+			   "</html>";
+	closedir(dir);
+	return (1);
 }
 
 void HTTP::setFields(int client, char *buf, const ServConf &serv) {
@@ -67,7 +98,7 @@ void HTTP::manager() {
 
 //	ServConf servConf = getServerNum(server_num);
 	it = getMatchingLocation();
-
+	//initListingHTML("./Test");
 	if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")

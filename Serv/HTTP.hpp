@@ -26,6 +26,9 @@ private:
 	std::string 	result;
 	int				client_fd;
 
+	//сформированная страничка со списком директорий для автоиндекса
+	std::string listing;
+
 	void 	get();
 
 	void 	post();
@@ -51,6 +54,8 @@ private:
 	long contentLength();
 
 	void 	initMap();
+
+	int		initListingHTML(const std::string &path);
 
 public:
 

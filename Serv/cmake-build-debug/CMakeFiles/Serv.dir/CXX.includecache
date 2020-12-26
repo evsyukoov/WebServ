@@ -6,23 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/Users/ccarl/Desktop/WebServ/Serv/CGI.cpp
-fstream
+/Users/denis/Desktop/WebServ/Serv/HTTP.cpp
+dirent.h
 -
-CGI.hpp
-/Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
+HTTP.hpp
+/Users/denis/Desktop/WebServ/Serv/HTTP.hpp
 
-/Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
-zconf.h
--
-iostream
--
-fcntl.h
--
-utils.hpp
-/Users/ccarl/Desktop/WebServ/Serv/utils.hpp
-
-/Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
+/Users/denis/Desktop/WebServ/Serv/HTTP.hpp
 sys/stat.h
 -
 fcntl.h
@@ -30,7 +20,7 @@ fcntl.h
 algorithm
 -
 Parser/Config.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/Config.hpp
 unistd.h
 -
 limits
@@ -38,15 +28,15 @@ limits
 sys/socket.h
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/Config.hpp
 ServConf.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/ServConf.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/ServConf.hpp
 iostream
 -
 fstream
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Location.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/Location.hpp
 string
 -
 list
@@ -54,57 +44,27 @@ list
 vector
 -
 parser_utils.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/parser_utils.hpp
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/ServConf.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/ServConf.hpp
 string
 -
 map
 -
 Location.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Location.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/Location.hpp
 iostream
 -
 parser_utils.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/parser_utils.hpp
 vector
 -
 
-/Users/ccarl/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/denis/Desktop/WebServ/Serv/Parser/parser_utils.hpp
 iostream
 -
 list
 -
 sstream
--
-
-/Users/ccarl/Desktop/WebServ/Serv/Server.hpp
-map
--
-list
--
-fcntl.h
--
-Parser/Config.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
-HTTP.hpp
-/Users/ccarl/Desktop/WebServ/Serv/HTTP.hpp
-
-/Users/ccarl/Desktop/WebServ/Serv/server_main.cpp
-zconf.h
--
-unistd.h
--
-CGI.hpp
-/Users/ccarl/Desktop/WebServ/Serv/CGI.hpp
-Server.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Server.hpp
-Parser/Config.hpp
-/Users/ccarl/Desktop/WebServ/Serv/Parser/Config.hpp
-
-/Users/ccarl/Desktop/WebServ/Serv/utils.hpp
-sys/stat.h
--
-cstdio
 -
 

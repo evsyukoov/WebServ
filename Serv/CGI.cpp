@@ -7,7 +7,8 @@
 #include <fstream>
 #include "CGI.hpp"
 
-CGI::CGI(char *childProgram, char **env, char **args, const std::string &request, ) : child_program(childProgram), env(env), args(args), request(request)
+CGI::CGI(char *childProgram, char **env, char **args, const std::string &request) :
+child_program(childProgram), env(env), args(args), request(request)
 {}
 
 
