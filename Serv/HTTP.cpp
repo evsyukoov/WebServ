@@ -99,7 +99,7 @@ void HTTP::manager() {
 	it = getMatchingLocation();
 
 	if (!validateMethod() || !validateProtocol())
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\nConnection: Closed\r\n\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
 	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")
@@ -254,14 +254,18 @@ void HTTP::get()
 //	std::vector<std::string>::const_iterator vector_iter = std::find(it->getMethods().begin(), it->getMethods().end(), "GET");
 
 	if (!checkForAllowedMethod())
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
-	else if (postGet())
-		post();
-	else if (path.empty())
 	{
-		path = pathFormerer();
-		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		return;
 	}
+	else if (postGet())
+	{
+		post();
+		return;
+	}
+	path = pathFormerer();
+	if (path.empty())
+		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
@@ -293,7 +297,7 @@ void HTTP::readFile(int file_size, int fd)
 		return;
 //	responce = buf;
 //	responce += "\r\n\r\n";
-	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", buf);
+	sendReq("HTTP/1.1 200 OK\r\n\r\n", buf);
 }
 
 int HTTP::sendReq(std::string header, std::string responce)
@@ -391,7 +395,7 @@ void HTTP::post()
 //		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 //		return;
 //	}
-	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", "");
+	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 }
 
 std::string &HTTP::getResponce()

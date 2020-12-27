@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/zcolleen/Desktop/webserv2/Serv/File.cpp
-File.hpp
 /Users/zcolleen/Desktop/webserv2/Serv/File.hpp
-
-/Users/zcolleen/Desktop/webserv2/Serv/File.hpp
-HTTP.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
 utils_for_file.hpp
 /Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.hpp
+map
+-
+
+/Users/zcolleen/Desktop/webserv2/Serv/HTTP.cpp
+HTTP.hpp
+/Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
 
 /Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
 sys/stat.h
