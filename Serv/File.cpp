@@ -93,6 +93,8 @@ void File::contentType(std::map<std::string, std::string> &reqMap)
 				charset = charset_vector[1];
 		}
 	}
+	else
+		content_type = "application/octet-stream";
 }
 
 std::string File::getMime()
@@ -185,10 +187,9 @@ File::File(std::map<std::string, std::string> &reqMap)
 	contentWithComma(reqMap, LANG);
 	contentWithComma(reqMap, ENCODE);
 	contentType(reqMap);
-	std::cout << content_type << std::endl;
 }
 
-const long &File::getContentLength() { return (content_length); }
+long File::getContentLength() { return (content_length); }
 
 const std::vector<std::string> &File::getContentLanguage() { return (content_language); }
 

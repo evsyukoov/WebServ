@@ -60,6 +60,12 @@ private:
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
+	void	fill_cgi(t_cgi *cgi, File &file, std::string &root);
+
+	std::string postRoot();
+
+	bool postGet();
+
 public:
 
 	HTTP(int client, char *buf, const ServConf&);

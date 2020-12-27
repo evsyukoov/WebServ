@@ -229,19 +229,39 @@ bool HTTP::checkForAllowedMethod()
 	return (true);
 }
 
+bool HTTP::postGet()
+{
+	size_t pos = 0;
+
+	if ((pos = reqMap["location"].find('?')) != std::string::npos)
+	{
+		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
+		std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
+		reqMap["location"].erase(pos);
+		std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
+		return (true);
+	}
+	return (false);
+}
+
 // GET запрос
 void HTTP::get()
 {
-	std::string path = pathFormerer();
 //	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
 	int fd;
 	struct stat structstat;
+	std::string path;
 //	std::vector<std::string>::const_iterator vector_iter = std::find(it->getMethods().begin(), it->getMethods().end(), "GET");
 
 	if (!checkForAllowedMethod())
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
-	else if (path == "")
+	else if (postGet())
+		post();
+	else if (path.empty())
+	{
+		path = pathFormerer();
 		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+	}
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
@@ -291,30 +311,57 @@ int HTTP::sendReq(std::string header, std::string responce)
 	return (0);
 }
 
-long HTTP::contentLength()
+void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
 {
-	std::map<std::string, std::string>::iterator iterator;
-
-	if ((iterator = reqMap.find("Content-Length")) != reqMap.end())
-	{
-		for (int i = 0; i < iterator->second.size(); ++i)
-		{
-			//std::cout << iterator->second.size() << std::endl
-			if (!std::isdigit(iterator->second[i]))
-				return (-1);
-		}
-		return (std::strtol(iterator->second.c_str(), NULL, 0));
-	}
-	return (-1);
+	cgi->content_length = file.getContentLength();
+	cgi->content_type = file.getContentType();
+	cgi->reques_method = reqMap["method"];
+	cgi->query_string = reqMap["body"];
+	cgi->script_name = it->getCgiScrypt();
+	cgi->request_uri = "/" + reqMap["location"];
+	cgi->path_translated = root;
+	cgi->path_info = "./" + reqMap["location"];
+	std::cout << "Lentght: " << cgi->content_length << std::endl;
+	std::cout << "Query string: " << cgi->query_string << std::endl;
+	std::cout << "Script name: " << cgi->script_name << std::endl;
+	std::cout << "Request uri: " << cgi->request_uri << std::endl;
+	std::cout << "Path translated: " << cgi->path_translated << std::endl;
+	std::cout << "Content type: " << cgi->content_type << std::endl;
+	std::cout << "Path info: " << cgi->path_info << std::endl;
 }
+
+std::string HTTP::postRoot()
+{
+	std::string post_root;
+	char buf[PATH_MAX];
+
+	if (it != servConf.getLocations().end())
+	{
+		if (!(it->getRoot().empty()))
+			post_root = it->getRoot();
+		else if (!(servConf.getRoot().empty()))
+			post_root = servConf.getRoot();
+		else
+			post_root = getcwd(buf, PATH_MAX);
+	}
+	else
+	{
+		if (!servConf.getRoot().empty())
+			post_root = servConf.getRoot();
+		else
+			post_root = getcwd(buf, PATH_MAX);
+	}
+	return (post_root);
+}
+
 
 void HTTP::post()
 {
 	int fd;
 //	long content_length = contentLength();
 	File file(reqMap);
-	std::string post_root;
-	char buf[PATH_MAX];
+	t_cgi cgi;
+	std::string post_root = postRoot();
 
 	if (!checkForAllowedMethod())
 	{
@@ -326,29 +373,24 @@ void HTTP::post()
 		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
 		return;
 	}
-	if (!(it->getRoot().empty()))
-		post_root = it->getRoot();
-	else if (!(servConf.getRoot().empty()))
-		post_root = servConf.getRoot();
-	else
-		post_root = getcwd(buf, PATH_MAX);
 	if (post_root.back() != '/')
 		post_root.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
+	fill_cgi(&cgi, file, post_root);
 //	if (file.getMime() != "not_found")
-	post_root += file.getMime();
+//	post_root += file.getMime();
 //	else
 //	{
 //		sendReq("", "");
 //	}
-std::cout << post_root << std::endl;
-	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
-			(write(fd, reqMap["body"].c_str(), file.getContentLength())) < 0)
-	{
-		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
-		return;
-	}
+//std::cout << post_root << std::endl;
+//	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
+//			(write(fd, reqMap["body"].c_str(), file.getContentLength())) < 0)
+//	{
+//		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
+//		return;
+//	}
 	sendReq("HTTP/1.1 200 OK\r\nConnection: Closed\r\n\r\n", "");
 }
 

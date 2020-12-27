@@ -3,12 +3,13 @@
 #ifndef SERV_FILE_HPP
 #define SERV_FILE_HPP
 
-#include "HTTP.hpp"
+//#include "HTTP.hpp"
 #include "utils_for_file.hpp"
 #define LANG "Content-Language"
 #define LENGTH "Content-Length"
 #define TYPE "Content-Type"
 #define ENCODE "Content-Encoding"
+#include <map>
 
 class File
 {
@@ -31,7 +32,7 @@ private:
 public:
 	File(std::map<std::string, std::string>&);
 
-	const long &getContentLength();
+	long getContentLength();
 
 	const std::vector<std::string>& getContentLanguage();
 
@@ -45,5 +46,17 @@ public:
 
 };
 
+
+typedef struct		s_cgi
+{
+	size_t 			content_length;
+	std::string 	content_type;
+	std::string 	query_string;
+	std::string 	reques_method;
+	std::string 	request_uri;
+	std::string 	script_name;
+	std::string 	path_info;
+	std::string 	path_translated;
+}					t_cgi;
 
 #endif //SERV_FILE_HPP
