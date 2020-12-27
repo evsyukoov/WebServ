@@ -143,6 +143,33 @@ Serv/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/build
 .PHONY : Serv/fast
 
+CGI.o: CGI.cpp.o
+
+.PHONY : CGI.o
+
+# target to build an object file
+CGI.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.o
+.PHONY : CGI.cpp.o
+
+CGI.i: CGI.cpp.i
+
+.PHONY : CGI.i
+
+# target to preprocess a source file
+CGI.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.i
+.PHONY : CGI.cpp.i
+
+CGI.s: CGI.cpp.s
+
+.PHONY : CGI.s
+
+# target to generate assembly for a file
+CGI.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.s
+.PHONY : CGI.cpp.s
+
 File.o: File.cpp.o
 
 .PHONY : File.o
@@ -332,32 +359,32 @@ Server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Server.cpp.s
 .PHONY : Server.cpp.s
 
-test_for_file.o: test_for_file.cpp.o
+server_main.o: server_main.cpp.o
 
-.PHONY : test_for_file.o
+.PHONY : server_main.o
 
 # target to build an object file
-test_for_file.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/test_for_file.cpp.o
-.PHONY : test_for_file.cpp.o
+server_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.o
+.PHONY : server_main.cpp.o
 
-test_for_file.i: test_for_file.cpp.i
+server_main.i: server_main.cpp.i
 
-.PHONY : test_for_file.i
+.PHONY : server_main.i
 
 # target to preprocess a source file
-test_for_file.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/test_for_file.cpp.i
-.PHONY : test_for_file.cpp.i
+server_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.i
+.PHONY : server_main.cpp.i
 
-test_for_file.s: test_for_file.cpp.s
+server_main.s: server_main.cpp.s
 
-.PHONY : test_for_file.s
+.PHONY : server_main.s
 
 # target to generate assembly for a file
-test_for_file.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/test_for_file.cpp.s
-.PHONY : test_for_file.cpp.s
+server_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/server_main.cpp.s
+.PHONY : server_main.cpp.s
 
 utils_for_file.o: utils_for_file.cpp.o
 
@@ -395,6 +422,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Serv"
+	@echo "... CGI.o"
+	@echo "... CGI.i"
+	@echo "... CGI.s"
 	@echo "... File.o"
 	@echo "... File.i"
 	@echo "... File.s"
@@ -416,9 +446,9 @@ help:
 	@echo "... Server.o"
 	@echo "... Server.i"
 	@echo "... Server.s"
-	@echo "... test_for_file.o"
-	@echo "... test_for_file.i"
-	@echo "... test_for_file.s"
+	@echo "... server_main.o"
+	@echo "... server_main.i"
+	@echo "... server_main.s"
 	@echo "... utils_for_file.o"
 	@echo "... utils_for_file.i"
 	@echo "... utils_for_file.s"

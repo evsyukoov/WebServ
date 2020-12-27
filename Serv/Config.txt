@@ -5,7 +5,7 @@ server{  server_name localhost;
 
     location /
     {
-        limit_except           GET;
+        limit_except           GET, POST;
         index   index.html;
     }
 

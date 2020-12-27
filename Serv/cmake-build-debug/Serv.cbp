@@ -80,6 +80,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/CGI.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/CGI.hpp">
+			<Option target="Serv"/>
+		</Unit>
 		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/File.cpp">
 			<Option target="Serv"/>
 		</Unit>
@@ -122,7 +128,7 @@
 		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Server.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp">
 			<Option target="Serv"/>
 		</Unit>
 		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.cpp">

@@ -311,7 +311,8 @@ long HTTP::contentLength()
 void HTTP::post()
 {
 	int fd;
-	long content_length = contentLength();
+//	long content_length = contentLength();
+	File file(reqMap);
 	std::string post_root;
 	char buf[PATH_MAX];
 
@@ -320,7 +321,7 @@ void HTTP::post()
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
 		return;
 	}
-	if (content_length == -1)
+	if (file.getContentLength() == -1)
 	{
 		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
 		return;
@@ -335,8 +336,15 @@ void HTTP::post()
 		post_root.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
+//	if (file.getMime() != "not_found")
+	post_root += file.getMime();
+//	else
+//	{
+//		sendReq("", "");
+//	}
+std::cout << post_root << std::endl;
 	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
-			(write(fd, reqMap["body"].c_str(), content_length)) < 0)
+			(write(fd, reqMap["body"].c_str(), file.getContentLength())) < 0)
 	{
 		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 		return;

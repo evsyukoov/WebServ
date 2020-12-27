@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/Users/zcolleen/Desktop/webserv2/Serv/CGI.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/CGI.cpp.o"
   "/Users/zcolleen/Desktop/webserv2/Serv/File.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/File.cpp.o"
   "/Users/zcolleen/Desktop/webserv2/Serv/HTTP.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HTTP.cpp.o"
   "/Users/zcolleen/Desktop/webserv2/Serv/Parser/Config.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/Config.cpp.o"
@@ -11,7 +12,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/zcolleen/Desktop/webserv2/Serv/Parser/ServConf.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/ServConf.cpp.o"
   "/Users/zcolleen/Desktop/webserv2/Serv/Parser/parser_utils.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o"
   "/Users/zcolleen/Desktop/webserv2/Serv/Server.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Server.cpp.o"
-  "/Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/test_for_file.cpp.o"
+  "/Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/server_main.cpp.o"
   "/Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.cpp" "/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/utils_for_file.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")

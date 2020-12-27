@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/Users/zcolleen/Desktop/webserv2/Serv/File.cpp
+File.hpp
+/Users/zcolleen/Desktop/webserv2/Serv/File.hpp
+
 /Users/zcolleen/Desktop/webserv2/Serv/File.hpp
 HTTP.hpp
 /Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp
@@ -69,10 +73,6 @@ list
 -
 sstream
 -
-
-/Users/zcolleen/Desktop/webserv2/Serv/test_for_file.cpp
-File.hpp
-/Users/zcolleen/Desktop/webserv2/Serv/File.hpp
 
 /Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.hpp
 iostream

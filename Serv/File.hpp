@@ -40,6 +40,9 @@ public:
 	const std::string &getCharset();
 
 	const std::string &getContentType();
+
+	std::string getMime();
+
 };
 
 
