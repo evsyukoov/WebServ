@@ -12,7 +12,7 @@ int 	main(int argc, char **argv, char **env)
     int n = read(0, buff, 100);
     buff[n] = '\0';
     std::cout << buff << " modified by child " << std::endl;
-//	while(argv && argv[i])
-//	    std::cout << argv[i++] << std::endl;
+//	while(env && env[i])
+//	    std::cout << env[i++] << std::endl;
 }
 
