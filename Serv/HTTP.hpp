@@ -58,6 +58,8 @@ private:
 
 	long contentLength();
 
+	bool validateExtencion(std::string &root);
+
 	int 	initMap();
 
 	bool validateMethod();
@@ -70,6 +72,12 @@ private:
 
 	std::string postRoot();
 
+	bool validateRequestLine();
+
+	bool parceRequestLine(size_t &second_pos, size_t &rev_pos);
+
+	bool validateHeaderMap();
+
 	bool postGet();
 
 	int		initListingHTML(const std::string &path);
@@ -80,7 +88,7 @@ public:
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(int client, char *buf, const ServConf &serv, struct input); // функция инициализации полей для дальнейшей обработки
+	void setFields(int client, char *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 

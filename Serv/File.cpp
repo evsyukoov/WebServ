@@ -58,6 +58,8 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 		!= type_vector[0].end() || std::find_if_not(type_vector[1].begin(), type_vector[1].end(), charsetPredicate)
 		!= type_vector[1].end())
 		return (false);
+	trimmer(type_vector[0]);
+	trimmer(type_vector[1]);
 	return (true);
 
 
@@ -75,12 +77,10 @@ void File::contentType(std::map<std::string, std::string> &reqMap)
 		start_vector = ft_split(reqMap[TYPE], ";");
 		if (start_vector.size() > 0)
 		{
+			trimmer(start_vector[0]);
+			if (start_vector[0].find(' ') != std::string::npos)
+				return;
 			type_vector = ft_split(start_vector[0], "/");
-			if (type_vector.size() == 2)
-			{
-				trimmer(type_vector[0]);
-				trimmer(type_vector[1]);
-			}
 			if (start_vector.size() == 2)
 			{
 				trimmer(start_vector[1]);

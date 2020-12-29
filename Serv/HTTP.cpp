@@ -41,12 +41,11 @@ int 		HTTP::initListingHTML(const std::string &path)
 	return (1);
 }
 
-void HTTP::setFields(int client, char *buf, const ServConf &serv, input in) {
+void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input &income) {
 	buff_req = buf;
 	servConf = serv;
 	client_fd = client;
-    this->in = in;
-	initMap();
+    this->in = income;
 }
 
 
@@ -69,36 +68,71 @@ bool HTTP::validateProtocol()
 	return (false);
 }
 
+bool HTTP::validateRequestLine()
+{
+	if (reqMap["method"].empty() || reqMap["location"].empty() || reqMap["protocol"].empty() ||
+	reqMap["protocol"].find(' ') != std::string::npos)
+		return (false);
+	return (true);
+}
+
+bool HTTP::parceRequestLine(size_t &second_pos, size_t &rev_pos)
+{
+	if ((rev_pos = buff_req.find(' ')) == std::string::npos)
+		return (false);
+	reqMap["method"] = buff_req.substr(0, rev_pos);
+	if ((second_pos = buff_req.find(' ', rev_pos + 1)) == std::string::npos)
+		return (false);
+	reqMap["location"] = buff_req.substr(rev_pos + 1, second_pos - rev_pos - 1);
+	if ((rev_pos = buff_req.find("\r", second_pos + 1)) == std::string::npos)
+		return (false);
+	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
+	return (true);
+}
+
+bool HTTP::validateHeaderMap()
+{
+	std::map<std::string, std::string>::iterator it = reqMap.begin();
+
+	while (it != reqMap.end())
+	{
+		if (it->first.find(' ') != std::string::npos)
+			return (false);
+		trimmer(it->second);
+		it++;
+	}
+	return (true);
+}
+
 int HTTP::initMap() {
 
-	size_t second_pos;
-	size_t blanc_pos;
-	size_t rev_pos;
+	size_t second_pos = 0;
+	size_t blanc_pos = 0;
+	size_t rev_pos = 0;
 	std::string str;
 
 	reqMap.clear();
-	rev_pos = buff_req.find(" ");
-	reqMap["method"] = buff_req.substr(0, rev_pos);
-	second_pos = buff_req.find(" ", rev_pos + 1);
-	reqMap["location"] = buff_req.substr(rev_pos + 1, second_pos - rev_pos - 1);
-	rev_pos = buff_req.find("\r", second_pos + 1);
-	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
-
+	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
+		return (1);
 	second_pos = rev_pos + 2;
 	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
 	&& second_pos != 0)
 	{
 	    //std::cout << "Loop" << std::endl;
-		blanc_pos = str.find(" ");
+		blanc_pos = str.find(":");
 		rev_pos = str.find("\r", blanc_pos + 1);
-		reqMap[str.substr(0, blanc_pos - 1)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
+		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
 		second_pos = buff_req.find("\n", second_pos) + 1;
 		//std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
-	if (second_pos == 0 || second_pos >= buff_req.size())
+	if (!validateHeaderMap())
 		return (1);
+	if (!second_pos)
+		return (1);
+	if (second_pos >= buff_req.size())
+		return (0);
 	if (buff_req[second_pos] != '\r' || (second_pos + 1 < buff_req.size() && buff_req[second_pos + 1] != '\n'))
-		return (1);
+		return (0);
 //	size_t len = buff_req.size();
 	second_pos += 2;
 //	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
@@ -127,11 +161,16 @@ void 	HTTP::printMap()
 
 void HTTP::manager() {
 
-//	ServConf servConf = getServerNum(server_num);
+	if (initMap())
+	{
+		sendReq("HTTP/1.1 400 Bad Request\r\n\r\n", "");
+		return;
+	}
 	it = getMatchingLocation();
-	//initListingHTML("./Parser");
-	if (!validateMethod() || !validateProtocol())
+	if (!validateMethod())
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+	else if (!validateProtocol())
+		sendReq("HTTP/1.1 505 HTTP Version Not Supported\r\n\r\n", "");
 	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")
@@ -335,7 +374,28 @@ void HTTP::readFile(int file_size, int fd)
 int HTTP::sendReq(std::string header, std::string responce)
 {
 //	std::string result;
+	int error_num;
+	int fd;
+	std::map<int, std::string>::const_iterator it;
+	struct stat st;
 
+	error_num = std::atoi(header.substr(9, 3).c_str());
+
+	if (error_num / 400 >= 1 && error_num / 400 < 2)
+	{
+		if ((it = servConf.getErrorPages().find(error_num)) != servConf.getErrorPages().end())
+		{
+			if ((fd = open(it->second.c_str(), O_RDWR, 0644)) < 0 || fstat(fd, &st) < 0)
+				return (-1);
+			char buf[st.st_size];
+			buf[st.st_size] = '\0';
+			if (read(fd, buf, st.st_size) < 0)
+				return (-1);
+			responce = buf;
+		}
+	}
+
+	std::cout << "Error num: " << error_num << std::endl;
 	if (reqMap["method"] == "HEAD")
 		responce = header;
 	result = header + responce;
@@ -389,6 +449,20 @@ std::string HTTP::postRoot()
 }
 
 
+bool HTTP::validateExtencion(std::string &root) //необходимое расширение должно начинаться с точки, надо валидировать в конфиге
+{
+	size_t pos = 0;
+
+	if ((pos = root.rfind('.')) == std::string::npos)
+		return (false);
+	if (it != servConf.getLocations().end())
+	{
+		if (root.substr(pos, root.size() - pos) == it->getCgiExtension())
+			return (true);
+	}
+	return (false);
+}
+
 void HTTP::post()
 {
 	int fd;
@@ -411,7 +485,13 @@ void HTTP::post()
 		post_root.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
-	fill_cgi(&cgi, file, post_root);
+	if (!(validateExtencion(post_root)))
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+	else
+	{
+		fill_cgi(&cgi, file, post_root);
+		sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
+	}
 //	CGI cgi();
 //	if (file.getMime() != "not_found")
 //	post_root += file.getMime();
@@ -426,7 +506,6 @@ void HTTP::post()
 //		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 //		return;
 //	}
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 }
 
 std::string &HTTP::getResponce()

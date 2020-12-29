@@ -50,7 +50,7 @@ int     Location::isRightDirective(const std::string &direct, const std::string 
 
 int     Location::isAllowedMethod(const std::string &method)
 {
-    if (method == "GET" || method == "POST" || method == "PUT" || method == "DELETE")
+    if (method == "GET" || method == "POST" || method == "PUT" || method == "DELETE" || method == "HEAD")
         return (1);
     return (0);
 }
