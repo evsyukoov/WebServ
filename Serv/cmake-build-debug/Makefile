@@ -170,6 +170,33 @@ CGI.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.s
 .PHONY : CGI.cpp.s
 
+File.o: File.cpp.o
+
+.PHONY : File.o
+
+# target to build an object file
+File.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/File.cpp.o
+.PHONY : File.cpp.o
+
+File.i: File.cpp.i
+
+.PHONY : File.i
+
+# target to preprocess a source file
+File.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/File.cpp.i
+.PHONY : File.cpp.i
+
+File.s: File.cpp.s
+
+.PHONY : File.s
+
+# target to generate assembly for a file
+File.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/File.cpp.s
+.PHONY : File.cpp.s
+
 HTTP.o: HTTP.cpp.o
 
 .PHONY : HTTP.o
@@ -386,6 +413,33 @@ utils.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils.cpp.s
 .PHONY : utils.cpp.s
 
+utils_for_file.o: utils_for_file.cpp.o
+
+.PHONY : utils_for_file.o
+
+# target to build an object file
+utils_for_file.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils_for_file.cpp.o
+.PHONY : utils_for_file.cpp.o
+
+utils_for_file.i: utils_for_file.cpp.i
+
+.PHONY : utils_for_file.i
+
+# target to preprocess a source file
+utils_for_file.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils_for_file.cpp.i
+.PHONY : utils_for_file.cpp.i
+
+utils_for_file.s: utils_for_file.cpp.s
+
+.PHONY : utils_for_file.s
+
+# target to generate assembly for a file
+utils_for_file.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/utils_for_file.cpp.s
+.PHONY : utils_for_file.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -398,6 +452,9 @@ help:
 	@echo "... CGI.o"
 	@echo "... CGI.i"
 	@echo "... CGI.s"
+	@echo "... File.o"
+	@echo "... File.i"
+	@echo "... File.s"
 	@echo "... HTTP.o"
 	@echo "... HTTP.i"
 	@echo "... HTTP.s"
@@ -422,6 +479,9 @@ help:
 	@echo "... utils.o"
 	@echo "... utils.i"
 	@echo "... utils.s"
+	@echo "... utils_for_file.o"
+	@echo "... utils_for_file.i"
+	@echo "... utils_for_file.s"
 .PHONY : help
 
 

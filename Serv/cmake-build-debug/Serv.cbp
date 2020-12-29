@@ -86,6 +86,12 @@
 		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/CGI.hpp">
 			<Option target="Serv"/>
 		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/File.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/File.hpp">
+			<Option target="Serv"/>
+		</Unit>
 		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/HTTP.cpp">
 			<Option target="Serv"/>
 		</Unit>
@@ -129,6 +135,12 @@
 			<Option target="Serv"/>
 		</Unit>
 		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils.hpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils_for_file.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils_for_file.hpp">
 			<Option target="Serv"/>
 		</Unit>
 		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/CMakeLists.txt">
