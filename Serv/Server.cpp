@@ -50,8 +50,9 @@ char*   Server::receiveData(int client_sock)
 
 
 
-Server::Server(const Config &config)
+Server::Server(input &in,const Config &config)
 {
+    this->in = in;
     this->config = config;
     FD_ZERO(&read_set);
 }
@@ -175,7 +176,7 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServCon
     {
 		if (FD_ISSET(it->first, &write_set))
 		{
-		    http.setFields(it->first, requests[i], it->second);
+		    http.setFields(it->first, requests[i], it->second, in);
 			http.manager();
 			shutdown(it->first, SHUT_RDWR);
             //close(it->first);

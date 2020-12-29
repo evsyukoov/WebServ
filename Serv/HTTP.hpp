@@ -15,6 +15,8 @@
 #include <limits>
 #include <sys/socket.h>
 #include "File.hpp"
+#include "utils.hpp"
+#include "CGI.hpp"
 
 class HTTP
 {
@@ -26,6 +28,7 @@ private:
 	std::list<Location>::const_iterator it;
 	std::string 	result;
 	int				client_fd;
+	struct input    in;
 //	std::vector<File> files;
 
 	//сформированная страничка со списком директорий для автоиндекса
@@ -77,7 +80,7 @@ public:
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(int client, char *buf, const ServConf &serv); // функция инициализации полей для дальнейшей обработки
+	void setFields(int client, char *buf, const ServConf &serv, struct input); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 

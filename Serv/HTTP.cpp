@@ -41,10 +41,11 @@ int 		HTTP::initListingHTML(const std::string &path)
 	return (1);
 }
 
-void HTTP::setFields(int client, char *buf, const ServConf &serv) {
+void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input in) {
 	buff_req = buf;
 	servConf = serv;
 	client_fd = client;
+    this->in = in;
 	initMap();
 }
 
@@ -352,13 +353,11 @@ void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
 	cgi->content_type = file.getContentType();
 	cgi->reques_method = reqMap["method"];
 	cgi->query_string = reqMap["body"];
-	cgi->script_name = it->getCgiScrypt();
 	cgi->request_uri = "/" + reqMap["location"];
 	cgi->path_translated = root;
 	cgi->path_info = "./" + reqMap["location"];
 	std::cout << "Lentght: " << cgi->content_length << std::endl;
 	std::cout << "Query string: " << cgi->query_string << std::endl;
-	std::cout << "Script name: " << cgi->script_name << std::endl;
 	std::cout << "Request uri: " << cgi->request_uri << std::endl;
 	std::cout << "Path translated: " << cgi->path_translated << std::endl;
 	std::cout << "Content type: " << cgi->content_type << std::endl;
@@ -413,6 +412,7 @@ void HTTP::post()
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
 	fill_cgi(&cgi, file, post_root);
+//	CGI cgi();
 //	if (file.getMime() != "not_found")
 //	post_root += file.getMime();
 //	else

@@ -41,7 +41,7 @@ void        CGI::initEnvironments()
     environments["CONTENT_LENGTH"] = "47";//std::to_string(request.size());
    environments["CONTENT_TYPE"] = "application/x-www-form-urlencoded";
    environments["GATEWAY_INTERFACE"] = "CGI/1.1";
-   environments["PATH_INFO"] = "/abc.cgi";
+   environments["PATH_INFO"] = "/example.cgi";
    environments["PATH_TRANSLATED"] = "/Users/ccarl/Desktop/WebServer2/Serv/example.cgi";
    environments["QUERY_STRING"] = "username=rgrd&password=rhyr&submit3=Take+A+Look";
    environments["REMOTE_ADDR"] = servConf.getServerName();

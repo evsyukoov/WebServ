@@ -25,13 +25,14 @@ class Server {
     //сет всех дескрипторов для select
     fd_set                      read_set;
     fd_set                      write_set;
+    struct input in;
 
     char     *receiveData(int client_sock);
 
 	int listen(const ServConf &servConf);
 
 public:
-    Server(const Config &config);
+   Server(input &in, const Config &config);
 
     virtual ~Server();
 

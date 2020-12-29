@@ -98,8 +98,8 @@ int main(int argc, char **argv, char **env)
     CGI cgi(request, *it, in);
 	cgi.run();
 	std::cout << "response = " << cgi.getResponse() << std::endl;
-    //Server server = Server(conf);
-//    server.run();
+    //Server server = Server(in, conf);
+   // server.run();
     return (1);
 }
 

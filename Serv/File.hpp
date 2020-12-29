@@ -54,7 +54,6 @@ typedef struct		s_cgi
 	std::string 	query_string;
 	std::string 	reques_method;
 	std::string 	request_uri;
-	std::string 	script_name;
 	std::string 	path_info;
 	std::string 	path_translated;
 }					t_cgi;
