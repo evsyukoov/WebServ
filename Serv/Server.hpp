@@ -37,7 +37,7 @@ public:
 
     int    openServers();
 
-    int     servLoop();
+    _Noreturn int     servLoop();
 
 
     int     run();

@@ -7,6 +7,14 @@
 
 #include <sys/stat.h>
 #include <cstdio>
+#include <string>
+
+struct      input
+{
+    std::string conf;
+    std::string interptretator;
+    std::string scrypt;
+};
 
 long  findFileSize(int fd);
 

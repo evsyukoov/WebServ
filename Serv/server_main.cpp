@@ -58,23 +58,48 @@ void    printCongig(const Config &config)
     }
 }
 
+//--->     ./program  /path/CGI_scrypt  /path/config.conf
+//                             или
+//-->      ./program  /path/interpretator  /path/CGI_scrypt    /path/config.conf
+
+int     parseCommandLineArgs(int argc, char **argv, input &in)
+{
+    if (argc < 3)
+        return (error("Bad number of arguments"));
+    std::string conf = std::string(argv[argc - 1]);
+    if (!(conf.substr(conf.size() - 5) == ".conf"))
+        return (error("Bad extension of config file"));
+    if (argc == 3)
+    {
+        in.scrypt = std::string(argv[1]);
+        in.conf = std::string(argv[2]);
+    }
+    if (argc == 4)
+    {
+        in.interptretator = std::string(argv[1]);
+        in.scrypt = std::string(argv[2]);
+        in.conf = std::string(argv[3]);
+    }
+    return (1);
+}
+
 int main(int argc, char **argv, char **env)
 {
-//    char buff[21] = "./CGI_Scrypts/simple";
-//    CGI cgi(buff, NULL, NULL, "azaza eppePeafp");
-//    cgi.run();
-//    std::cout << cgi.getResponse() << std::endl;
-
-//	DIR *dir = opendir("./");
-//	struct dirent *dir_info;
-//	while ((dir_info = readdir(dir)) != NULL)
-//		std::cout << dir_info->d_name << std::endl;
-//	closedir(dir);
-	Config conf("Config.txt");
-	if (conf.readConf() == -1)
-	    return (0);
-    Server server = Server(conf);
-    server.run();
+    struct input in;
+    if (parseCommandLineArgs(argc, argv, in) == -1)
+        return (0);
+    Config conf(in.conf);
+    if (conf.readConf() == -1)
+        return (0);
+    std::list<ServConf> lst = conf.getConfig();
+    std::list<ServConf>::iterator it = lst.begin();
+    //char buff[60] = "./CGI_Scrypts/cgi_tester";
+    std::string request = "tytejtej";
+    CGI cgi(request, *it, in);
+	cgi.run();
+	std::cout << "response = " << cgi.getResponse() << std::endl;
+    //Server server = Server(conf);
+//    server.run();
     return (1);
 }
 

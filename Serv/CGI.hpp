@@ -9,16 +9,22 @@
 #include <fcntl.h>
 #include <map>
 #include "utils.hpp"
+#include "Parser/Config.hpp"
 
 // 	CGI_scrypt(дочерний процесс)	----->	Server --- > Client(Browser)
 								//	<-----		 //<----
 
 class CGI
 {
-	//имя CGI скрипта
-	char *child_program;
+
+
+//имя CGI скрипта
 	char **env;
 	char **args;
+	input &in;
+
+	//настройки конфига
+	ServConf servConf;
 
 	// запрос от сервера на CGI
 	std::string request;
@@ -33,14 +39,19 @@ class CGI
 
     void       initEnvironments();
 
+    int        initARGS();
+
+    int     mapToEnv();
+
 public:
-	CGI(char *childProgram, char **env, char **args, const std::string &request);
+    CGI(const std::string &request, const ServConf &servConf, input &in);
 
 	int 	run();
 
 
 
     const std::string &getResponse() const;
+
 };
 
 

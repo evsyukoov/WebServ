@@ -98,7 +98,7 @@ void HTTP::manager() {
 
 //	ServConf servConf = getServerNum(server_num);
 	it = getMatchingLocation();
-	//initListingHTML("./Test");
+	//initListingHTML("./Parser");
 	if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")

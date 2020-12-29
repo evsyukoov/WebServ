@@ -6,37 +6,35 @@
 
 #IncludeRegexTransform: 
 
-/Users/denis/Desktop/WebServ/Serv/HTTP.cpp
-dirent.h
+/Users/ccarl/Desktop/WebServer2/Serv/CGI.cpp
+fstream
 -
-HTTP.hpp
-/Users/denis/Desktop/WebServ/Serv/HTTP.hpp
+CGI.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/CGI.hpp
 
-/Users/denis/Desktop/WebServ/Serv/HTTP.hpp
-sys/stat.h
+/Users/ccarl/Desktop/WebServer2/Serv/CGI.hpp
+zconf.h
+-
+iostream
 -
 fcntl.h
 -
-algorithm
+map
 -
+utils.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/utils.hpp
 Parser/Config.hpp
-/Users/denis/Desktop/WebServ/Serv/Parser/Config.hpp
-unistd.h
--
-limits
--
-sys/socket.h
--
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/Config.hpp
 
-/Users/denis/Desktop/WebServ/Serv/Parser/Config.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/Config.hpp
 ServConf.hpp
-/Users/denis/Desktop/WebServ/Serv/Parser/ServConf.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/ServConf.hpp
 iostream
 -
 fstream
 -
 
-/Users/denis/Desktop/WebServ/Serv/Parser/Location.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/Location.hpp
 string
 -
 list
@@ -44,27 +42,35 @@ list
 vector
 -
 parser_utils.hpp
-/Users/denis/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/parser_utils.hpp
 
-/Users/denis/Desktop/WebServ/Serv/Parser/ServConf.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/ServConf.hpp
 string
 -
 map
 -
 Location.hpp
-/Users/denis/Desktop/WebServ/Serv/Parser/Location.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/Location.hpp
 iostream
 -
 parser_utils.hpp
-/Users/denis/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/parser_utils.hpp
 vector
 -
 
-/Users/denis/Desktop/WebServ/Serv/Parser/parser_utils.hpp
+/Users/ccarl/Desktop/WebServer2/Serv/Parser/parser_utils.hpp
 iostream
 -
 list
 -
 sstream
+-
+
+/Users/ccarl/Desktop/WebServer2/Serv/utils.hpp
+sys/stat.h
+-
+cstdio
+-
+string
 -
 

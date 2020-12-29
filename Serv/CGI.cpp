@@ -7,23 +7,81 @@
 #include <fstream>
 #include "CGI.hpp"
 
-CGI::CGI(char *childProgram, char **env, char **args, const std::string &request) :
-child_program(childProgram), env(env), args(args), request(request)
-{}
+CGI::CGI(const std::string &request, const ServConf &servConf, input &in) : in(in) {
+    this->request = request;
+    this->servConf = servConf;
+    initEnvironments();
+    initARGS();
+}
 
+int        CGI::initARGS()
+{
+    if (in.interptretator.empty())
+    {
+        if (!(args = (char**)malloc(sizeof (char*) * 2)))
+            return (error("Malloc Error init args to execve"));
+        args[0] = (char*)in.scrypt.c_str();
+        args[1] = NULL;
+    }
+    else
+    {
+        if (!(args = (char**)malloc(sizeof (char*) * 3)))
+            return (error("Malloc Error init args to execve"));
+        args = (char**)malloc(sizeof(char*) * 3);
+        args[0] = (char*)in.interptretator.c_str();
+        args[1] = (char*)in.scrypt.c_str();
+        args[2] = 0;
+    }
+    return (1);
+}
 
 void        CGI::initEnvironments()
 {
     environments["AUTH_TYPE"] = "Basic";
-    //environments["CONTENT_LENGTH"] = ;
-   // environments["CONTENT_TYPE"] = ;
+    environments["CONTENT_LENGTH"] = "47";//std::to_string(request.size());
+   environments["CONTENT_TYPE"] = "application/x-www-form-urlencoded";
    environments["GATEWAY_INTERFACE"] = "CGI/1.1";
+   environments["PATH_INFO"] = "/abc.cgi";
+   environments["PATH_TRANSLATED"] = "/Users/ccarl/Desktop/WebServer2/Serv/example.cgi";
+   environments["QUERY_STRING"] = "username=rgrd&password=rhyr&submit3=Take+A+Look";
+   environments["REMOTE_ADDR"] = servConf.getServerName();
+   //environments["REMOTE_IDENT"]  =
+   //environments["REMOTE_USER"] = ;
+   environments["REQUEST_METHOD"] = "post";
+   environments["REQUEST_URI"] = "/example.cgi";
+   environments["SERVER_NAME"] = servConf.getServerName();
+   environments["SERVER_PORT"] = std::to_string(servConf.getPort());
+   environments["SERVER_PROTOCOL"] = "HTTP/1.1";
+   environments["SERVER_SOFTWARE"] = "webserv";
+    environments["BODY"] = "username=rgrd&password=rhyr&submit3=Take+A+Look";
+}
+
+int     CGI::mapToEnv()
+{
+    if (!(env = (char**)malloc(sizeof(char*) * (environments.size() + 1))))
+        return (0);
+    int i = 0;
+    for(std::map<std::string, std::string>::iterator it = environments.begin(); it != environments.end(); it++)
+    {
+        std::string envir = (it->first + "=" + it->second);
+        env[i] = (char*)malloc(sizeof(char) * (envir.size() + 1));
+        int j = 0;
+        while (j < envir.size()) {
+            env[i][j] = envir[j];
+            j++;
+        }
+        env[i][j] = '\0';
+        i++;
+    }
+    env[i] = 0;
+    return (1);
 }
 
 int	CGI::run()
 {
     int fd[2];
     int status;
+    mapToEnv();
     if (pipe(fd) < 0)
     {
         std::cerr << "Pipe error" << std::endl;
@@ -42,6 +100,7 @@ int	CGI::run()
     }
 	else if (child == 0)
 	{
+
         close(fd[1]); //ничего не пишем
         //заменяем stdout дочернего процесса на дескриптор временного файла
         dup2(tmp_fd, 1);
@@ -49,20 +108,22 @@ int	CGI::run()
         //читать запрос будем от родителя
         dup2(fd[0], 0);
         close(fd[0]);
-		if (!(execve(child_program, args, env)))
+		if (execve(args[0],  args, env) == -1)
 		{
 			std::cerr << "Problems with execve" << std::endl;
 			exit(EXIT_FAILURE);
 		}
+        //std::cout << "CHILD" << std::endl;
 		exit (EXIT_SUCCESS);
 	}
 	//родитель
 	else
     {
 	    close(fd[0]);
+	    //dup2(fd[1],1);
 	    write(fd[1], request.c_str(), request.size());
 	    close(fd[1]);
-	    wait(&status);
+	    waitpid(child, &status, 0);
 	    readFromCGI();
     }
 	return (1);
@@ -94,4 +155,10 @@ int     CGI::readFromCGI()
 const std::string &CGI::getResponse() const {
     return response;
 }
+
+
+
+
+
+
 
