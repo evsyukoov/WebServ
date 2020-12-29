@@ -41,7 +41,7 @@ int 		HTTP::initListingHTML(const std::string &path)
 	return (1);
 }
 
-void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input in) {
+void HTTP::setFields(int client, char *buf, const ServConf &serv, input in) {
 	buff_req = buf;
 	servConf = serv;
 	client_fd = client;

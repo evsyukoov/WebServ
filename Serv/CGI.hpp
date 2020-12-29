@@ -10,6 +10,7 @@
 #include <map>
 #include "utils.hpp"
 #include "Parser/Config.hpp"
+#include "HTTP.hpp"
 
 // 	CGI_scrypt(дочерний процесс)	----->	Server --- > Client(Browser)
 								//	<-----		 //<----
@@ -27,7 +28,7 @@ class CGI
 	ServConf servConf;
 
 	// запрос от сервера на CGI
-	std::string request;
+	t_cgi cgi;
 
 	//ответ после обработки
 
@@ -44,7 +45,7 @@ class CGI
     int     mapToEnv();
 
 public:
-    CGI(const std::string &request, const ServConf &servConf, input &in);
+    CGI(const t_cgi &cgi, const ServConf &servConf, input &in);
 
 	int 	run();
 

@@ -7,8 +7,8 @@
 #include <fstream>
 #include "CGI.hpp"
 
-CGI::CGI(const std::string &request, const ServConf &servConf, input &in) : in(in) {
-    this->request = request;
+CGI::CGI(const t_cgi &cgi, const ServConf &servConf, input &in) : in(in) {
+    this->cgi = cgi;
     this->servConf = servConf;
     initEnvironments();
     initARGS();
@@ -38,22 +38,21 @@ int        CGI::initARGS()
 void        CGI::initEnvironments()
 {
     environments["AUTH_TYPE"] = "Basic";
-    environments["CONTENT_LENGTH"] = "47";//std::to_string(request.size());
-   environments["CONTENT_TYPE"] = "application/x-www-form-urlencoded";
+    environments["CONTENT_LENGTH"] = std::to_string(cgi.content_length);//std::to_string(request.size());
+   environments["CONTENT_TYPE"] = cgi.content_type;
    environments["GATEWAY_INTERFACE"] = "CGI/1.1";
-   environments["PATH_INFO"] = "/example.cgi";
-   environments["PATH_TRANSLATED"] = "/Users/ccarl/Desktop/WebServer2/Serv/example.cgi";
-   environments["QUERY_STRING"] = "username=rgrd&password=rhyr&submit3=Take+A+Look";
+   environments["PATH_INFO"] = cgi.path_info;
+   environments["PATH_TRANSLATED"] = cgi.path_translated;
+   environments["QUERY_STRING"] = cgi.query_string;
    environments["REMOTE_ADDR"] = servConf.getServerName();
    //environments["REMOTE_IDENT"]  =
    //environments["REMOTE_USER"] = ;
-   environments["REQUEST_METHOD"] = "post";
-   environments["REQUEST_URI"] = "/example.cgi";
+   environments["REQUEST_METHOD"] = cgi.reques_method;
+   environments["REQUEST_URI"] = cgi.request_uri;
    environments["SERVER_NAME"] = servConf.getServerName();
    environments["SERVER_PORT"] = std::to_string(servConf.getPort());
    environments["SERVER_PROTOCOL"] = "HTTP/1.1";
    environments["SERVER_SOFTWARE"] = "webserv";
-    environments["BODY"] = "username=rgrd&password=rhyr&submit3=Take+A+Look";
 }
 
 int     CGI::mapToEnv()
@@ -121,7 +120,7 @@ int	CGI::run()
     {
 	    close(fd[0]);
 	    //dup2(fd[1],1);
-	    write(fd[1], request.c_str(), request.size());
+	    write(fd[1], cgi.query_string.c_str(), cgi.query_string.size());
 	    close(fd[1]);
 	    waitpid(child, &status, 0);
 	    readFromCGI();
