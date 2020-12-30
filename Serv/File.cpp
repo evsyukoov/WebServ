@@ -65,12 +65,27 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 
 }
 
-void File::contentType(std::map<std::string, std::string> &reqMap)
+void File::placeContentType(std::map<std::string, std::string> &reqMap)
+{
+	size_t pos = 0;
+
+	if (!contentType(reqMap))
+	{
+		if ((pos = reqMap["location"].rfind('.')) == std::string::npos)
+			content_type = getMime("");
+		else
+			content_type = getMime(reqMap["location"].substr(pos, reqMap["location"].size() - pos));
+	}
+	std::cout << "Content-Type: " << content_type << std::endl;
+}
+
+bool File::contentType(std::map<std::string, std::string> &reqMap)
 {
 //	std::map<std::string, std::string>::iterator iterator;
 	std::vector<std::string>    start_vector;
 	std::vector<std::string>	type_vector;
 	std::vector<std::string>	charset_vector;
+	size_t pos = 0;
 
 	if (reqMap.find(TYPE) != reqMap.end())
 	{
@@ -79,7 +94,7 @@ void File::contentType(std::map<std::string, std::string> &reqMap)
 		{
 			trimmer(start_vector[0]);
 			if (start_vector[0].find(' ') != std::string::npos)
-				return;
+				return (false);
 			type_vector = ft_split(start_vector[0], "/");
 			if (start_vector.size() == 2)
 			{
@@ -87,19 +102,20 @@ void File::contentType(std::map<std::string, std::string> &reqMap)
 				charset_vector = ft_split(start_vector[1], "=");
 			}
 			if (!typeValidity(charset_vector, type_vector))
-				return;
+				return (false);
 			content_type = type_vector[0] + "/" + type_vector[1];
 			if (charset_vector.size() > 1)
 				charset = charset_vector[1];
+			return (true);
 		}
 	}
-	else
-		content_type = "application/octet-stream";
+	return (false);
 }
 
-std::string File::getMime()
+std::string File::getMime(std::string extencion)
 {
 	std::map<std::string, std::string> mime_map;
+	std::map<std::string, std::string>::iterator it;
 
 	mime_map["audio/aac"] = ".aac";
 	mime_map["application/x-abiword"] = ".abw";
@@ -174,11 +190,22 @@ std::string File::getMime()
  	mime_map["video/3gpp2"] = ".3g2";
  	mime_map["audio/3gpp2"] = ".3g2";
  	mime_map["application/x-7z-compressed"] = ".7z";
- 	mime_map["application/octet-stream"] = "";
+ //	mime_map["application/octet-stream"] = "";
 
- 	if (mime_map.find(content_type) != mime_map.end())
-		return (mime_map[content_type]);
-	return ("");
+ 	it = mime_map.begin();
+ 	while (it != mime_map.end())
+	{
+ 		if (it->second == extencion)
+			return (it->first);
+ 		it++;
+	}
+ 	if (extencion == "")
+		return ("text/plain");
+ 	else
+		return ("application/octet-stream");
+// 	if (mime_map.find(content_type) != mime_map.end())
+//		return (mime_map[content_type]);
+//	return ("");
 }
 
 File::File(std::map<std::string, std::string> &reqMap)
@@ -186,7 +213,7 @@ File::File(std::map<std::string, std::string> &reqMap)
 	content_length = contentLength(reqMap);
 	contentWithComma(reqMap, LANG);
 	contentWithComma(reqMap, ENCODE);
-	contentType(reqMap);
+	placeContentType(reqMap);
 }
 
 long File::getContentLength() { return (content_length); }

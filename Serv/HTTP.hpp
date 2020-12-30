@@ -29,7 +29,7 @@ private:
 	std::string 	result;
 	int				client_fd;
 	struct input    in;
-//	std::vector<File> files;
+	std::vector<File> files;
 
 	//сформированная страничка со списком директорий для автоиндекса
 	std::string listing;
@@ -38,7 +38,11 @@ private:
 
 	void 	post();
 
+	void 	put();
+
 	bool checkForAllowedMethod();
+
+	bool postPutvalidation(std::string &put_post_root, File &file);
 
 //	const ServConf& getServerNum(int num);
 

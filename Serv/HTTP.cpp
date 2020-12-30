@@ -128,7 +128,7 @@ int HTTP::initMap() {
 	if (!validateHeaderMap())
 		return (1);
 	if (!second_pos)
-		return (1);
+		return (0);
 	if (second_pos >= buff_req.size())
 		return (0);
 	if (buff_req[second_pos] != '\r' || (second_pos + 1 < buff_req.size() && buff_req[second_pos + 1] != '\n'))
@@ -175,6 +175,8 @@ void HTTP::manager() {
 		get();
 	else if (reqMap["method"] == "POST")
 		post();
+	else if (reqMap["method"] == "PUT")
+		put();
 }
 
 bool HTTP::locationMatch(const std::string& location)
@@ -463,26 +465,35 @@ bool HTTP::validateExtencion(std::string &root) //необходимое рас�
 	return (false);
 }
 
+bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
+{
+	put_post_root = postRoot();
+
+	if (!checkForAllowedMethod())
+	{
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		return (false);
+	}
+	if (file.getContentLength() == -1)
+	{
+		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
+		return (false);
+	}
+	if (put_post_root.back() != '/')
+		put_post_root.push_back('/');
+	return (true);
+}
+
 void HTTP::post()
 {
 	int fd;
 //	long content_length = contentLength();
 	File file(reqMap);
 	t_cgi cgi;
-	std::string post_root = postRoot();
+	std::string post_root;
 
-	if (!checkForAllowedMethod())
-	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+	if (!postPutvalidation(post_root, file))
 		return;
-	}
-	if (file.getContentLength() == -1)
-	{
-		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
-		return;
-	}
-	if (post_root.back() != '/')
-		post_root.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
 	if (!(validateExtencion(post_root)))
@@ -493,19 +504,37 @@ void HTTP::post()
 		sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 	}
 //	CGI cgi();
-//	if (file.getMime() != "not_found")
-//	post_root += file.getMime();
-//	else
-//	{
-//		sendReq("", "");
-//	}
-//std::cout << post_root << std::endl;
-//	if ((fd = open(post_root.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0644)) < 0 ||
-//			(write(fd, reqMap["body"].c_str(), file.getContentLength())) < 0)
-//	{
-//		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
-//		return;
-//	}
+}
+
+void HTTP::put()
+{
+	int fd;
+	std::string put_root;
+	File new_file(reqMap);
+
+	if (!postPutvalidation(put_root, new_file))
+		return;
+	reqMap["location"].erase(0, it->getLocation().size());
+	put_root += reqMap["location"];
+	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
+	{
+		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
+		if (fd < 0 || write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
+		{
+			sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
+			return;
+		}
+		sendReq("HTTP/1.1 201 Created\r\n\r\n", "");
+		files.push_back(new_file);
+		return;
+	}
+	if (write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
+	{
+		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
+		return;
+	}
+	files.push_back(new_file);
+	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 }
 
 std::string &HTTP::getResponce()
