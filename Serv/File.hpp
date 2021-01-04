@@ -38,6 +38,8 @@ public:
 
 	long getContentLength();
 
+	void setRoot(std::string& root);
+
 	const std::vector<std::string>& getContentLanguage();
 
 	const std::vector<std::string>& getContentEncoding();

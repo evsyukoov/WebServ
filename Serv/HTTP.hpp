@@ -6,6 +6,8 @@
 #define GREEN "\033[1;32m"
 #define BLUE "\033[1;34m"
 #define RESET "\033[0m"
+#define AC_LANG "Accept-Language"
+#define AC_CHARSET "Accept-Charset"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -85,6 +87,12 @@ private:
 	bool postGet();
 
 	int		initListingHTML(const std::string &path);
+
+	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string lang);
+
+	bool	priorityValidation(std::string prior);
+
+	bool	accepts(std::map<std::string, float>& prior_map, std::string base);
 
 public:
 

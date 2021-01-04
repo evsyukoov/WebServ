@@ -47,10 +47,9 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 {
 	if (charset_vector.size() != 2 && charset_vector.size() != 0)
 		return (false);
-	if (charset_vector.size() > 0 && charset_vector[0] != "charset")
-		return (false);
-	if (charset_vector.size() > 1 && std::find_if_not(charset_vector[1].begin(), charset_vector[1].end(), charsetPredicate)
-	!= charset_vector[1].end())
+	if (charset_vector.size() > 1 && (std::find_if_not(charset_vector[1].begin(), charset_vector[1].end(), charsetPredicate)
+	!= charset_vector[1].end() || std::find_if_not(charset_vector[0].begin(), charset_vector[0].end(), charsetPredicate)
+								  != charset_vector[0].end()))
 		return (false);
 	if (type_vector.size() != 2)
 		return (false);
@@ -58,6 +57,8 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 		!= type_vector[0].end() || std::find_if_not(type_vector[1].begin(), type_vector[1].end(), charsetPredicate)
 		!= type_vector[1].end())
 		return (false);
+	std::transform(type_vector[0].begin(), type_vector[0].end(), type_vector[0].begin(), tolower);
+	std::transform(type_vector[1].begin(), type_vector[1].end(), type_vector[1].begin(), tolower);
 	trimmer(type_vector[0]);
 	trimmer(type_vector[1]);
 	return (true);
@@ -104,8 +105,20 @@ bool File::contentType(std::map<std::string, std::string> &reqMap)
 			if (!typeValidity(charset_vector, type_vector))
 				return (false);
 			content_type = type_vector[0] + "/" + type_vector[1];
-			if (charset_vector.size() > 1)
-				charset = charset_vector[1];
+			if (!charset_vector.empty())
+			{
+				std::transform(charset_vector[0].begin(), charset_vector[0].end(), charset_vector[0].begin(), tolower);
+				if (charset_vector[0] == "charset")
+				{
+					std::transform(charset_vector[1].begin(), charset_vector[1].end(), charset_vector[1].begin(), tolower);
+					if (charset_vector[1][0] == '\"' && charset_vector[1].back() == '\"')
+					{
+						charset_vector[1].erase(0, 1);
+						charset_vector[1].erase(charset_vector[1].size() - 1);
+					}
+					charset = charset_vector[1];
+				}
+			}
 			return (true);
 		}
 	}
@@ -214,6 +227,11 @@ File::File(std::map<std::string, std::string> &reqMap)
 	contentWithComma(reqMap, LANG);
 	contentWithComma(reqMap, ENCODE);
 	placeContentType(reqMap);
+}
+
+void File::setRoot(std::string &root)
+{
+	file_name = root;
 }
 
 long File::getContentLength() { return (content_length); }

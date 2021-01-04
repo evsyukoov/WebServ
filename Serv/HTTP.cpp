@@ -317,14 +317,87 @@ bool HTTP::postGet()
 	return (false);
 }
 
+bool HTTP::priorityValidation(std::string prior)
+{
+	for (size_t i = 0; i < prior.size(); i++)
+	{
+		if (i == 0 && (prior[i] != '1' && prior[i] != '0'))
+			return (false);
+		if (i == 1 && prior[i] != '.')
+			return (false);
+		if (i > 4)
+			return (false);
+		if (i != 0 && i != 1 && !isdigit(prior[i]))
+			return (false);
+	}
+	return (true);
+}
+
+bool HTTP::putInPriorMap(std::map<std::string, float>& prior_map, std::string lang)
+{
+	std::vector<std::string> priority;
+	std::vector<std::string> q_value;
+	float 					value;
+
+	if (lang.find(';') != std::string::npos)
+	{
+		priority = ft_split(lang, ";");
+		trimmer(priority[0]);
+		trimmer(priority[1]);
+		if (priority[1].find(' ') != std::string::npos || priority[0].find(' ') != std::string::npos)
+			return (false);
+		q_value = ft_split(priority[1], "=");
+		if (q_value.size() != 2 || (q_value[0] != "q" && q_value[0] != "Q") || !priorityValidation(q_value[1]))
+			return (false);
+		value = std::strtof(q_value[1].c_str(), nullptr);
+		if (value > 1)
+			return (false);
+		prior_map[priority[0]] = value;
+	}
+	else
+		prior_map[lang] = 1;
+	return (true);
+}
+
+bool HTTP::accepts(std::map<std::string, float>& prior_map, std::string base)
+{
+	std::vector<std::string> languages;
+
+	if (reqMap.find(base) != reqMap.end())
+	{
+		languages = ft_split(reqMap[base], ",");
+		for (size_t pos = 0; pos < languages.size(); pos++)
+		{
+			trimmer(languages[pos]);
+			std::transform(languages[pos].begin(), languages[pos].end(), languages[pos].begin(), tolower);
+			if (std::find_if_not(languages[pos].begin(), languages[pos].end(), acceptPredicete)
+				!= languages[pos].end())
+				return (false);
+			if (!putInPriorMap(prior_map, languages[pos]))
+				return (false);
+		}
+		//std::sort(prior_map.begin(), prior_map.end(), std::greater<float>());
+	}
+	return (true);
+}
+
+void printLMAP(std::map<std::string, float> map)
+{
+	for (std::map<std::string, float>::iterator it = map.begin(); it != map.end() ; ++it)
+	{
+		std::cout << RED << "MAP: " << it->first << ": " << it->second << std::endl;
+	}
+	std::cout << RESET;
+}
+
 // GET запрос
 void HTTP::get()
 {
-//	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
 	int fd;
 	struct stat structstat;
 	std::string path;
-//	std::vector<std::string>::const_iterator vector_iter = std::find(it->getMethods().begin(), it->getMethods().end(), "GET");
+	std::map<std::string, float> lang_prior_map;
+	std::map<std::string, float> accept_charset_map;
 
 	if (!checkForAllowedMethod())
 	{
@@ -337,6 +410,12 @@ void HTTP::get()
 		return;
 	}
 	path = pathFormerer();
+	accepts(lang_prior_map, AC_LANG);
+	accepts(accept_charset_map, AC_CHARSET);
+//	if (!acceptedLanguages(lang_prior_map))
+//		lang_prior_map.clear();
+	printLMAP(lang_prior_map);
+	printLMAP(accept_charset_map);
 	if (path.empty())
 		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
 	else
@@ -383,7 +462,7 @@ int HTTP::sendReq(std::string header, std::string responce)
 
 	error_num = std::atoi(header.substr(9, 3).c_str());
 
-	if (error_num / 400 >= 1 && error_num / 400 < 2)
+	if (error_num >= 400 && error_num < 600)
 	{
 		if ((it = servConf.getErrorPages().find(error_num)) != servConf.getErrorPages().end())
 		{
@@ -525,6 +604,7 @@ void HTTP::put()
 			return;
 		}
 		sendReq("HTTP/1.1 201 Created\r\n\r\n", "");
+		new_file.setRoot(put_root);
 		files.push_back(new_file);
 		return;
 	}
@@ -534,6 +614,7 @@ void HTTP::put()
 		return;
 	}
 	files.push_back(new_file);
+	new_file.setRoot(put_root);
 	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 }
 
