@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "Server.hpp"
+#include "Client.hpp"
 
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
@@ -36,16 +37,27 @@ int     set_nonblock(int fd)
 }
 
 
-char*   Server::receiveData(int client_sock)
+std::string   Server::receiveData(int client_sock)
 {
     char recieve[4096];
+    std::string res;
 
-    std::cout << "Wait for reading request from client" << std::endl;
-    int len = read(client_sock, recieve, 4096);
-    if (len == 0)
-        return (nullptr);
+    std::cout << "Wait for reading request from client: " << client_sock << std::endl;
+    int len;
+    len = read(client_sock, recieve, 4095);
+    if (len <= 0) {
+        std::cout << "Disconnect:" << client_sock << std::endl;
+        return res;
+    }
     recieve[len] = '\0';
-    return (recieve);
+    res += recieve;
+        //if (res.size() <= 4)
+        //    return (0);
+        //if (res.substr(res.size() - 4) == "\r\n\r\n")
+       //     break ;
+   // }
+    std::cout << "Reading request done!: " << res << std::endl;
+    return (res);
 }
 
 
@@ -73,7 +85,8 @@ int Server::openServers()
 
 void     Server::initReadSet()
 {
-    for(std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
+    for(std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++)
+    {
         FD_SET((*it).first, &read_set);
     }
 }
@@ -86,26 +99,30 @@ int     Server::run()
     return (1);
 }
 
+bool    Comparator(const Client *c1, const Client *c2)
+{
+    return (c1->getClientSock() > c2->getClientSock());
+}
+
 int Server::servLoop() {
     //ключ-сокет клиента  - value - конфиг сервера на котором коннект
-	std::map<int, ServConf> clients;
+	std::vector<Client*> clients;
 	while (true) {
 		FD_ZERO(&read_set);
 		FD_ZERO(&write_set);
 		initReadSet();
-		for (std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++) {
-			FD_SET((*it).first, &read_set);
-		}
+		for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+			FD_SET((*it)->getClientSock(), &read_set);
 
 		int max;
 		if (!clients.empty())
-		    max = std::max((--servers.end())->first, (--clients.end())->first);
+		    max = std::max((--servers.end())->first, (*std::max_element(clients.begin(), clients.end(), Comparator))->getClientSock());
 		else
 		    max = (--servers.end())->first;
 
         //ждем коннекта или готовности к чтению
 		std::cout << "select block" << std::endl;
-		select(max + 1, &read_set, NULL, NULL, NULL);
+		select(1024, &read_set,  &write_set, NULL, NULL);
 		std::cout << "select unblock, max: " << max << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
@@ -114,51 +131,65 @@ int Server::servLoop() {
 
 				int client_sock = accept((*it).first, NULL, NULL);
 				set_nonblock(client_sock);
-				std::pair<int, ServConf> pair = std::make_pair(client_sock, (*it).second);
-				clients.insert(pair);
-				//std::cout << "listener =  " << (*it).first << " client_sock = " << client_sock << std::endl;
+                Client *client = new Client(client_sock, it->second);
+                clients.push_back(client);
 			}
 		}
-		std::vector<char*> requests = readRequests(clients);
-		sendToAllClients(requests, clients);
-		requests.clear();
-		std::cout << "Clients: " << std::endl;
-		for(std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++)
-        {
-		    std::cout << RED << "CLIENTS: " << it->first << RESET << std::endl;
-        }
+		readRequests(clients);
+		//sendToAllClients(requests, clients);
+
 	}
 	return (1);
 }
 
-std::vector<char*>      Server::readRequests(std::map<int, ServConf> &clients)
+std::vector<char*>      Server::readRequests(std::vector<Client*> &clients)
 {
 	std::vector<char*> requests;
 	HTTP http;
+    std::string req;
 	//смотрим что кто то из клиентов что-то отправил(сервер готов читать)
-    std::map<int, ServConf>::iterator it = clients.begin();
-    std::map<int, ServConf>::iterator ite = clients.end();
+    std::vector<Client*>::iterator it = clients.begin();
+    std::vector<Client*>::iterator ite = clients.end();
+    //std::cout << "Clients: " << std::endl;
+    for(std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+    {
+     //   std::cout << RED << "CLIENTS: " << (*it)->getClientSock() << RESET << std::endl;
+    }
     int i = 0;
 	while (it != ite)
 	{
         //std::cout << "i1: " << i << std::endl;
-		if (FD_ISSET(it->first, &read_set))
+		if (FD_ISSET((*it)->getClientSock(), &read_set))
 		{
-            char *req = NULL;
+
 			//кто-то отключился
-			if (!(req = receiveData(it->first)))
+			if ((req = receiveData((*it)->getClientSock())).empty())
 			{
-				close(it->first);
-				it = clients.erase(it);
+				close((*it)->getClientSock());
+				//it = clients.erase(it);
 			}
 			//если не отключился значит готов принять ответ
-			else
+			//смотрим что запрос полный
+			else if ((*it)->addPieceOfRequest(req))
 			{
-				FD_SET(it->first, &write_set);
-				requests.push_back(req);
-				it++;
+			    http.setFields((*it)->getClientSock(), (char*)(*it)->getRequest().c_str(), (*it)->getServConf(), in);
+			    http.manager();
+                (*it)->clearRequest();
+                it++;
 			}
+			//иначе просто идем дальше
+			else
+			    it++;
 		}
+//		if (FD_ISSET(it->first, &write_set))
+//        {
+//		    http.setFields(it->first, req, it->second, in);
+//		    http.manager();
+//		    //shutdown(it->first, SHUT_WR);
+//		    close(it->first);
+//            std::cout << "Sending response to: " << it->first << std::endl;
+//            it = clients.erase(it);
+//        }
 		else
 		    it++;
 		i++;
@@ -178,9 +209,12 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServCon
 		{
 		    http.setFields(it->first, requests[i], it->second, in);
 			http.manager();
-			shutdown(it->first, SHUT_RDWR);
-            //close(it->first);
-			it = clients.erase(it);
+
+			//shutdown(it->first, SHUT_RDWR);
+            close(it->first);
+			//it = clients.erase(it);
+			//write(it->first, "\r\n\r\n", 4);
+			it++;
 		}
 		else {
             it++;

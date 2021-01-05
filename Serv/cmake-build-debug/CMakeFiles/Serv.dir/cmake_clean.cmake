@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Serv.dir/CGI.cpp.o"
+  "CMakeFiles/Serv.dir/Client.cpp.o"
   "CMakeFiles/Serv.dir/File.cpp.o"
   "CMakeFiles/Serv.dir/HTTP.cpp.o"
   "CMakeFiles/Serv.dir/Parser/Config.cpp.o"

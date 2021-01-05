@@ -17,5 +17,7 @@ struct      input
 };
 
 long  findFileSize(int fd);
+size_t  ft_strlen(char *str);
+char   *ft_strdup(char *str);
 
 #endif //SERV_UTILS_HPP

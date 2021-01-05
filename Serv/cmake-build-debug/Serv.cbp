@@ -86,6 +86,12 @@
 		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/CGI.hpp">
 			<Option target="Serv"/>
 		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Client.cpp">
+			<Option target="Serv"/>
+		</Unit>
+		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Client.hpp">
+			<Option target="Serv"/>
+		</Unit>
 		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/File.cpp">
 			<Option target="Serv"/>
 		</Unit>

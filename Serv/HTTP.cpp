@@ -329,7 +329,7 @@ void HTTP::readFile(int file_size, int fd)
 		return;
 //	responce = buf;
 //	responce += "\r\n\r\n";
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", buf);
+	sendReq("HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n", buf);
 }
 
 int HTTP::sendReq(std::string header, std::string responce)
@@ -399,7 +399,7 @@ void HTTP::post()
 
 	if (!checkForAllowedMethod())
 	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\n\r\n", "");
 		return;
 	}
 	if (file.getContentLength() == -1)
@@ -411,7 +411,7 @@ void HTTP::post()
 		post_root.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
-	fill_cgi(&cgi, file, post_root);
+	//fill_cgi(&cgi, file, post_root);
 //	CGI cgi();
 //	if (file.getMime() != "not_found")
 //	post_root += file.getMime();
@@ -426,7 +426,7 @@ void HTTP::post()
 //		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 //		return;
 //	}
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
+	sendReq("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n", "");
 }
 
 std::string &HTTP::getResponce()

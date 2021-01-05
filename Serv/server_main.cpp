@@ -94,6 +94,13 @@ int main(int argc, char **argv, char **env)
     std::list<ServConf> lst = conf.getConfig();
     std::list<ServConf>::iterator it = lst.begin();
     //char buff[60] = "./CGI_Scrypts/cgi_tester";
+//    std::string request = "tytejtej";
+//    t_cgi info;
+//    info.query_string = "wrgw";
+//    info.reques_method = "GET";
+//    CGI cgi(info, *it, in);
+//	cgi.run();
+//	std::cout << "response = " << cgi.getResponse() << std::endl;
     Server server = Server(in, conf);
     server.run();
     return (1);

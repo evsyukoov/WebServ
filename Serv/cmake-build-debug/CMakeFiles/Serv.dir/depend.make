@@ -12,6 +12,19 @@ CMakeFiles/Serv.dir/CGI.cpp.o: ../Parser/parser_utils.hpp
 CMakeFiles/Serv.dir/CGI.cpp.o: ../utils.hpp
 CMakeFiles/Serv.dir/CGI.cpp.o: ../utils_for_file.hpp
 
+CMakeFiles/Serv.dir/Client.cpp.o: ../CGI.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Client.cpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Client.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../File.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../HTTP.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Parser/Config.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Parser/Location.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Parser/ServConf.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Parser/parser_utils.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../Server.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../utils.hpp
+CMakeFiles/Serv.dir/Client.cpp.o: ../utils_for_file.hpp
+
 CMakeFiles/Serv.dir/File.cpp.o: ../File.cpp
 CMakeFiles/Serv.dir/File.cpp.o: ../File.hpp
 CMakeFiles/Serv.dir/File.cpp.o: ../utils_for_file.hpp
@@ -46,6 +59,7 @@ CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o: ../Parser/parser_utils.cpp
 CMakeFiles/Serv.dir/Parser/parser_utils.cpp.o: ../Parser/parser_utils.hpp
 
 CMakeFiles/Serv.dir/Server.cpp.o: ../CGI.hpp
+CMakeFiles/Serv.dir/Server.cpp.o: ../Client.hpp
 CMakeFiles/Serv.dir/Server.cpp.o: ../File.hpp
 CMakeFiles/Serv.dir/Server.cpp.o: ../HTTP.hpp
 CMakeFiles/Serv.dir/Server.cpp.o: ../Parser/Config.hpp
@@ -58,6 +72,7 @@ CMakeFiles/Serv.dir/Server.cpp.o: ../utils.hpp
 CMakeFiles/Serv.dir/Server.cpp.o: ../utils_for_file.hpp
 
 CMakeFiles/Serv.dir/server_main.cpp.o: ../CGI.hpp
+CMakeFiles/Serv.dir/server_main.cpp.o: ../Client.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../File.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../HTTP.hpp
 CMakeFiles/Serv.dir/server_main.cpp.o: ../Parser/Config.hpp
