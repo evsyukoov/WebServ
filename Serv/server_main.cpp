@@ -85,6 +85,7 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
 
 int main(int argc, char **argv, char **env)
 {
+	HTTP http;
     struct input in;
     if (parseCommandLineArgs(argc, argv, in) == -1)
         return (0);
@@ -95,7 +96,7 @@ int main(int argc, char **argv, char **env)
     std::list<ServConf>::iterator it = lst.begin();
     //char buff[60] = "./CGI_Scrypts/cgi_tester";
     Server server = Server(in, conf);
-    server.run();
+    server.run(http);
     return (1);
 }
 

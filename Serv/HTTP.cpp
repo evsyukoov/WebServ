@@ -128,11 +128,11 @@ int HTTP::initMap() {
 	if (!validateHeaderMap())
 		return (1);
 	if (!second_pos)
-		return (0);
+		return (1);
 	if (second_pos >= buff_req.size())
 		return (0);
 	if (buff_req[second_pos] != '\r' || (second_pos + 1 < buff_req.size() && buff_req[second_pos + 1] != '\n'))
-		return (0);
+		return (1);
 //	size_t len = buff_req.size();
 	second_pos += 2;
 //	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
@@ -159,6 +159,31 @@ void 	HTTP::printMap()
 	}
 }
 
+std::string HTTP::makeAllow(std::string exept)
+{
+	std::string allow("GET, HEAD, POST, PUT");
+
+	if (it != servConf.getLocations().end())
+	{
+		if (it->getMethods().empty())
+			return (allow);
+		else
+		{
+			allow.clear();
+			for (std::vector<std::string>::const_iterator iter = it->getMethods().begin(); iter != it->getMethods().end(); ++iter)
+			{
+				if (*iter == exept)
+					continue;
+				allow.append(*iter + ", ");
+			}
+			allow.pop_back();
+			allow.pop_back();
+			return (allow);
+		}
+	}
+	return (allow);
+}
+
 void HTTP::manager() {
 
 	if (initMap())
@@ -168,7 +193,10 @@ void HTTP::manager() {
 	}
 	it = getMatchingLocation();
 	if (!validateMethod())
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+	{
+		respMap[ALLOW] = makeAllow("");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", "");
+	}
 	else if (!validateProtocol())
 		sendReq("HTTP/1.1 505 HTTP Version Not Supported\r\n\r\n", "");
 	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
@@ -199,7 +227,7 @@ int HTTP::checkDirectory(const std::string& root)
 {
 	struct stat structstat;
 
-	std::cout << root + reqMap["location"] << std::endl;
+//	std::cout << root + reqMap["location"] << std::endl;
 //	if (stat("/Users/zcolleen/Desktop/webserv2/Serv/testfiles/test.txt", &structstat))
 //		std::cout << "working" << std::endl;
 	if (!stat((root + reqMap["location"]).c_str(), &structstat))
@@ -298,6 +326,13 @@ bool HTTP::checkForAllowedMethod()
 			else
 				return (true);
 		}
+		else if (reqMap["method"] == "PUT")
+		{
+			if (std::find(it->getMethods().begin(), it->getMethods().end(), "PUT") == it->getMethods().end())
+				return (false);
+			else
+				return (true);
+		}
 	}
 	return (true);
 }
@@ -390,6 +425,96 @@ void printLMAP(std::map<std::string, float> map)
 	std::cout << RESET;
 }
 
+void HTTP::printVec(std::vector<std::string> vector)
+{
+	for (std::vector<std::string>::iterator it = vector.begin(); it != vector.end() ; ++it)
+	{
+		std::cout << GREEN << "Sorted vector: " << *it << std::endl;
+	}
+	std::cout << RESET;
+}
+
+std::vector<std::string> HTTP::passMap(std::map<std::string, float> accept)
+{
+	std::vector<std::string> sorted_map;
+
+	while (!accept.empty())
+	{
+		std::map<std::string, float>::iterator max = std::max_element(accept.begin(), accept.end(), comparePriors);
+		sorted_map.push_back(max->first);
+		accept.erase(max);
+	}
+	return (sorted_map);
+}
+
+bool HTTP::compareContentLanguage(std::vector<File>::iterator matching_file, std::string language)
+{
+	std::vector<std::string>::const_iterator file_lang_it = matching_file->getContentLanguage().begin();
+	std::vector<std::string>::const_iterator file_lang_it_end = matching_file->getContentLanguage().end();
+
+	while (file_lang_it != file_lang_it_end) //content language
+	{
+		if (*file_lang_it == language || (!std::strncmp(file_lang_it->c_str(), language.c_str(), language.size()) &&
+		file_lang_it->size() > language.size() && (*file_lang_it)[language.size()] == '-'))//file_lang_it->substr(0, file_lang_it->find_last_of('-')) == language)//)
+			return (true);
+		file_lang_it++;
+	}
+	return (false);
+}
+
+std::string HTTP::searchForMatchingLanguage(std::map<std::string, float> accepts, std::string& path)
+{
+	std::vector<File>::iterator it = files.begin();
+	std::vector<std::string> sorted;
+
+	while (it != files.end())
+	{
+		if (it->getRoot() == path)
+			break;
+		it++;
+	}
+	if (it == files.end())
+		return ("no file");
+	else if (!it->getContentLanguage().empty())
+	{
+		sorted = passMap(accepts);
+		printVec(sorted);
+		for (std::vector<std::string>::iterator vec_it = sorted.begin(); vec_it != sorted.end(); ++vec_it)
+		{
+			if (*vec_it == "*")
+				continue;
+			if (compareContentLanguage(it, *vec_it) && accepts[*vec_it] != 0)
+				return (*vec_it);
+		}
+		if (std::find(sorted.begin(), sorted.end(), "*") != sorted.end())
+			return ("*");
+		return ("not acceptable");
+	}
+	return ("no file");
+}
+
+std::string HTTP::responceMapToString()
+{
+	std::string headers;
+
+	for (std::map<std::string, std::string>::iterator it = respMap.begin();  it != respMap.end() ; ++it)
+		headers.append(it->first + ": " + it->second + "\r\n");
+	return (headers);
+}
+
+bool HTTP::checkMatchingLanguage(std::string matching_language)
+{
+	if (matching_language == "not acceptable")
+		return (false);
+	else if (matching_language == "*" || matching_language == "no file")
+		return (true);
+	else
+	{
+		respMap[LANG] = matching_language;
+		return (true);
+	}
+}
+
 // GET запрос
 void HTTP::get()
 {
@@ -401,7 +526,8 @@ void HTTP::get()
 
 	if (!checkForAllowedMethod())
 	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		respMap[ALLOW] = makeAllow("");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", "");
 		return;
 	}
 	else if (postGet())
@@ -416,6 +542,11 @@ void HTTP::get()
 //		lang_prior_map.clear();
 	printLMAP(lang_prior_map);
 	printLMAP(accept_charset_map);
+	if (!checkMatchingLanguage(searchForMatchingLanguage(lang_prior_map, path)))
+	{
+		sendReq("HTTP/1.1 406 Not Acceptable\r\n\r\n", "");
+		return;
+	}
 	if (path.empty())
 		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
 	else
@@ -436,20 +567,12 @@ void HTTP::readFile(int file_size, int fd)
 //	std::string responce;
 //	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
 
-	if (it != servConf.getLocations().end())
-	{
-		if (it->getMaxBody() != -1 && it->getMaxBody() < file_size)
-		{
-			sendReq("HTTP/1.1 413 Payload Too Large\r\n\r\n", "");
-			return;
-		}
-	}
 	buf[file_size] = '\0';
 	if (read(fd, buf, file_size) < 0)
 		return;
 //	responce = buf;
 //	responce += "\r\n\r\n";
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", buf);
+	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", buf);
 }
 
 int HTTP::sendReq(std::string header, std::string responce)
@@ -550,13 +673,22 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
 
 	if (!checkForAllowedMethod())
 	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		respMap[ALLOW] = makeAllow("");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", "");
 		return (false);
 	}
 	if (file.getContentLength() == -1)
 	{
 		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
 		return (false);
+	}
+	if (it != servConf.getLocations().end())
+	{
+		if (it->getMaxBody() != -1 && it->getMaxBody() < file.getContentLength())
+		{
+			sendReq("HTTP/1.1 413 Payload Too Large\r\n\r\n", "");
+			return (false);
+		}
 	}
 	if (put_post_root.back() != '/')
 		put_post_root.push_back('/');
@@ -576,13 +708,32 @@ void HTTP::post()
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
 	if (!(validateExtencion(post_root)))
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+	{
+		respMap[ALLOW] = makeAllow("POST");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", "");
+	}
 	else
 	{
 		fill_cgi(&cgi, file, post_root);
 		sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 	}
 //	CGI cgi();
+}
+
+void HTTP::rewriteFileToVector(File &file)
+{
+	std::vector<File>::iterator it = files.begin();
+
+	while (it != files.end())
+	{
+		if (it->getRoot() == file.getRoot())
+		{
+			files.erase(it);
+			files.push_back(file);
+			break;
+		}
+		it++;
+	}
 }
 
 void HTTP::put()
@@ -606,6 +757,7 @@ void HTTP::put()
 		sendReq("HTTP/1.1 201 Created\r\n\r\n", "");
 		new_file.setRoot(put_root);
 		files.push_back(new_file);
+		std::cout << files.size() << std::endl;
 		return;
 	}
 	if (write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
@@ -613,8 +765,8 @@ void HTTP::put()
 		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 		return;
 	}
-	files.push_back(new_file);
 	new_file.setRoot(put_root);
+	rewriteFileToVector(new_file);
 	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
 }
 

@@ -40,6 +40,8 @@ public:
 
 	void setRoot(std::string& root);
 
+	const std::string& getRoot();
+
 	const std::vector<std::string>& getContentLanguage();
 
 	const std::vector<std::string>& getContentEncoding();

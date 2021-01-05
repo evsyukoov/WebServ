@@ -8,6 +8,7 @@
 #define RESET "\033[0m"
 #define AC_LANG "Accept-Language"
 #define AC_CHARSET "Accept-Charset"
+#define ALLOW "Allow"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -32,6 +33,7 @@ private:
 	int				client_fd;
 	struct input    in;
 	std::vector<File> files;
+	std::map<std::string, std::string> respMap; //map заголовков ответа
 
 	//сформированная страничка со списком директорий для автоиндекса
 	std::string listing;
@@ -45,8 +47,6 @@ private:
 	bool checkForAllowedMethod();
 
 	bool postPutvalidation(std::string &put_post_root, File &file);
-
-//	const ServConf& getServerNum(int num);
 
 	bool locationMatch(const std::string& location);
 
@@ -93,6 +93,22 @@ private:
 	bool	priorityValidation(std::string prior);
 
 	bool	accepts(std::map<std::string, float>& prior_map, std::string base);
+
+	void	printVec(std::vector<std::string> vector);
+
+	std::vector<std::string>	passMap(std::map<std::string, float> accept);
+
+	std::string					searchForMatchingLanguage(std::map<std::string, float> accepts, std::string& path);
+
+	bool	compareContentLanguage(std::vector<File>::iterator matching_file, std::string language);
+
+	void	rewriteFileToVector(File &file);
+
+	bool	checkMatchingLanguage(std::string matching_language);
+
+	std::string		responceMapToString();
+
+	std::string		makeAllow(std::string exept);
 
 public:
 

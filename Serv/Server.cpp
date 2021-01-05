@@ -78,15 +78,15 @@ void     Server::initReadSet()
     }
 }
 
-int     Server::run()
+int     Server::run(HTTP &http)
 {
     if (openServers() == -1)
         return (-1);
-    servLoop();
+    servLoop(http);
     return (1);
 }
 
-int Server::servLoop() {
+int Server::servLoop(HTTP &http) {
     //ключ-сокет клиента  - value - конфиг сервера на котором коннект
 	std::map<int, ServConf> clients;
 	while (true) {
@@ -120,7 +120,7 @@ int Server::servLoop() {
 			}
 		}
 		std::vector<char*> requests = readRequests(clients);
-		sendToAllClients(requests, clients);
+		sendToAllClients(requests, clients, http);
 		requests.clear();
 		std::cout << "Clients: " << std::endl;
 		for(std::map<int, ServConf>::iterator it = clients.begin(); it != clients.end(); it++)
@@ -166,10 +166,10 @@ std::vector<char*>      Server::readRequests(std::map<int, ServConf> &clients)
 	return (requests);
 }
 
-void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients)
+void	Server::sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients, HTTP &http)
 {
 	int i = 0;
-	HTTP http;
+//	HTTP http;
     std::map<int, ServConf>::iterator it = clients.begin();
     std::map<int, ServConf>::iterator ite = clients.end();
 	while (it != ite)

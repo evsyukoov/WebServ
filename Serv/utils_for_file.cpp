@@ -23,10 +23,10 @@ bool charsetPredicate(char c)
 	return (false);
 }
 
-//bool comparePriors(float a, float b)
-//{
-//	return
-//}
+bool comparePriors(const std::pair<std::string, float>& a, const std::pair<std::string, float>& b)
+{
+	return (a.second < b.second);
+}
 
 void trimmer(std::string &str)
 {

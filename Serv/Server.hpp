@@ -38,16 +38,16 @@ public:
 
     int    openServers();
 
-    _Noreturn int     servLoop();
+    _Noreturn int     servLoop(HTTP &http);
 
 
-    int     run();
+    int     run(HTTP &http);
 
     void    initReadSet();
 
     std::vector<char*>      readRequests(std::map<int, ServConf> &clients);
 
-	void 			sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients);
+	void 			sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients, HTTP &http);
 
 };
 

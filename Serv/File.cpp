@@ -25,10 +25,11 @@ void 	File::contentWithComma(std::map<std::string, std::string> &reqMap, std::st
 {
 	std::vector<std::string>	valid_vector;
 
+	std::cout << "Segf catcher1" << std::endl;
 	if (reqMap.find(base) != reqMap.end())
 	{
 		valid_vector = ft_split(reqMap[base], ",");
-		for (size_t pos = 0; pos < valid_vector[pos].size(); pos++)
+		for (size_t pos = 0; pos < valid_vector.size(); pos++)
 		{
 			trimmer(valid_vector[pos]);
 			std::transform(valid_vector[pos].begin(), valid_vector[pos].end(), valid_vector[pos].begin(), tolower);
@@ -223,7 +224,7 @@ std::string File::getMime(std::string extencion)
 
 File::File(std::map<std::string, std::string> &reqMap)
 {
-	content_length = contentLength(reqMap);
+	this->content_length = contentLength(reqMap);
 	contentWithComma(reqMap, LANG);
 	contentWithComma(reqMap, ENCODE);
 	placeContentType(reqMap);
@@ -243,4 +244,6 @@ const std::vector<std::string> &File::getContentEncoding() { return (content_enc
 const std::string &File::getContentType() { return (content_type); }
 
 const std::string &File::getCharset() { return (charset); }
+
+const std::string &File::getRoot() { return (file_name); }
 
