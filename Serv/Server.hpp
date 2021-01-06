@@ -28,7 +28,7 @@ class Server {
     fd_set                      write_set;
     struct input in;
 
-    std::string   receiveData(int client_sock);
+    int   receiveData(int client_sock, std::string &str);
 
 	int listen(const ServConf &servConf);
 
@@ -46,7 +46,7 @@ public:
 
     void    initReadSet();
 
-    std::vector<char*>      readRequests(std::vector<Client*> &clients);
+    std::vector<char*>      readRequests(std::list<Client*> &clients);
 
 	void 			sendToAllClients(std::vector<char*> requests, std::map<int, ServConf> &clients);
 

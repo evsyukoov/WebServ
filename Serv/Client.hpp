@@ -20,7 +20,7 @@ public:
 
     void setPieceOfRequest(const std::string &pieceOfRequest);
 
-    bool        addPieceOfRequest(std::string piece);
+    bool        addPieceOfRequest(const std::string &piece);
 
     void        clearRequest();
 

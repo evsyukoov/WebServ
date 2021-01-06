@@ -37,27 +37,24 @@ int     set_nonblock(int fd)
 }
 
 
-std::string   Server::receiveData(int client_sock)
+int   Server::receiveData(int client_sock, std::string &str)
 {
     char recieve[4096];
-    std::string res;
 
     std::cout << "Wait for reading request from client: " << client_sock << std::endl;
+    //usleep(50);
     int len;
     len = read(client_sock, recieve, 4095);
-    if (len <= 0) {
-        std::cout << "Disconnect:" << client_sock << std::endl;
-        return res;
-    }
     recieve[len] = '\0';
-    res += recieve;
-        //if (res.size() <= 4)
-        //    return (0);
-        //if (res.substr(res.size() - 4) == "\r\n\r\n")
-       //     break ;
-   // }
-    std::cout << "Reading request done!: " << res << std::endl;
-    return (res);
+    std::cout << "len: " << len << std::endl;
+    if (len == 0) {
+        return 0;
+    }
+    else if (len < 0)
+        return (-1);
+    else
+        str = recieve;
+    return (1);
 }
 
 
@@ -106,12 +103,12 @@ bool    Comparator(const Client *c1, const Client *c2)
 
 int Server::servLoop() {
     //ключ-сокет клиента  - value - конфиг сервера на котором коннект
-	std::vector<Client*> clients;
+	std::list<Client*> clients;
 	while (true) {
 		FD_ZERO(&read_set);
 		FD_ZERO(&write_set);
 		initReadSet();
-		for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+		for (std::list<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
 			FD_SET((*it)->getClientSock(), &read_set);
 
 		int max;
@@ -122,7 +119,7 @@ int Server::servLoop() {
 
         //ждем коннекта или готовности к чтению
 		std::cout << "select block" << std::endl;
-		select(1024, &read_set,  &write_set, NULL, NULL);
+		select(5, &read_set,  &write_set, NULL, NULL);
 		std::cout << "select unblock, max: " << max << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
@@ -130,6 +127,7 @@ int Server::servLoop() {
 			if (FD_ISSET((*it).first, &read_set)) {
 
 				int client_sock = accept((*it).first, NULL, NULL);
+				std::cout << "Accept done: " << client_sock << std::endl;
 				set_nonblock(client_sock);
                 Client *client = new Client(client_sock, it->second);
                 clients.push_back(client);
@@ -142,35 +140,38 @@ int Server::servLoop() {
 	return (1);
 }
 
-std::vector<char*>      Server::readRequests(std::vector<Client*> &clients)
+std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 {
 	std::vector<char*> requests;
 	HTTP http;
     std::string req;
 	//смотрим что кто то из клиентов что-то отправил(сервер готов читать)
-    std::vector<Client*>::iterator it = clients.begin();
-    std::vector<Client*>::iterator ite = clients.end();
+    std::list<Client*>::iterator it = clients.begin();
+    std::list<Client*>::iterator ite = clients.end();
     //std::cout << "Clients: " << std::endl;
-    for(std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+    for(std::list<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
     {
      //   std::cout << RED << "CLIENTS: " << (*it)->getClientSock() << RESET << std::endl;
     }
     int i = 0;
 	while (it != ite)
 	{
-        //std::cout << "i1: " << i << std::endl;
+        std::string data;
 		if (FD_ISSET((*it)->getClientSock(), &read_set))
 		{
-
+		    int ret = receiveData((*it)->getClientSock(), data);
+		    //произошла ошибка, попробуем позднее
+            if (ret < 0)
+               it++;
 			//кто-то отключился
-			if ((req = receiveData((*it)->getClientSock())).empty())
+			else if (ret == 0)
 			{
 				close((*it)->getClientSock());
-				//it = clients.erase(it);
+				it = clients.erase(it);
 			}
 			//если не отключился значит готов принять ответ
 			//смотрим что запрос полный
-			else if ((*it)->addPieceOfRequest(req))
+			else if (ret > 0 && (*it)->addPieceOfRequest(data))
 			{
 			    http.setFields((*it)->getClientSock(), (char*)(*it)->getRequest().c_str(), (*it)->getServConf(), in);
 			    http.manager();
@@ -192,7 +193,6 @@ std::vector<char*>      Server::readRequests(std::vector<Client*> &clients)
 //        }
 		else
 		    it++;
-		i++;
 	}
 	return (requests);
 }

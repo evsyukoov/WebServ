@@ -297,11 +297,11 @@ void HTTP::get()
 	}
 	path = pathFormerer();
 	if (path.empty())
-		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+		sendReq("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n", "");
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
-			sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+			sendReq("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n", "");
 		else
 		{
 			fstat(fd, &structstat);

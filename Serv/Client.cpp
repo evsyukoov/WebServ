@@ -20,7 +20,7 @@ void Client::setPieceOfRequest(const std::string &request) {
     this->request = request;
 }
 
-bool Client::addPieceOfRequest(std::string piece)
+bool Client::addPieceOfRequest(const std::string &piece)
 {
     //если не встретили \r\n\r\n то продолжаем наращивать запрос
     request += piece;
