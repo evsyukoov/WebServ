@@ -12,6 +12,7 @@
 #include "CGI.hpp"
 #include "Server.hpp"
 #include "Parser/Config.hpp"
+#include "Client.hpp"
 
 void    printCongig(const Config &config)
 {
@@ -85,6 +86,8 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
 
 int main(int argc, char **argv, char **env)
 {
+
+
     struct input in;
     if (parseCommandLineArgs(argc, argv, in) == -1)
         return (0);
