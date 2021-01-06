@@ -128,7 +128,7 @@ int Server::servLoop() {
 		    max = (--servers.end())->first;
         //ждем коннекта или готовности к чтению
 		std::cout << "select block" << std::endl;
-		select(max + 1, &read_set,  NULL, NULL, NULL);
+		select(max + 1, &read_set,  &write_set, NULL, NULL);
 		std::cout << "select unblock, max: " << max << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
@@ -177,9 +177,11 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 			}
 			//если не отключился значит готов принять ответ
 			//смотрим что запрос полный
-			else if (ret > 0 && (*it)->addPieceOfRequest(data))
+			else if (ret > 0)
 			{
-			    FD_SET((*it)->getClientSock(), &write_set);
+                (*it)->findState(data);
+                if ((*it)->getState() == FINISH)
+                    FD_SET((*it)->getClientSock(), &write_set);
                 it++;
 			}
 			//иначе просто идем дальше
@@ -203,7 +205,7 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> cl
 		if (FD_ISSET((*it)->getClientSock(), &write_set)) {
             http.setFields((*it)->getClientSock(), (char *) (*it)->getRequest().c_str(), (*it)->getServConf(), in);
             http.manager();
-            (*it)->clearRequest();
+            (*it)->clear();
         }
 		it++;
 	}
