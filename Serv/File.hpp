@@ -38,7 +38,7 @@ public:
 
 	long getContentLength();
 
-	void setRoot(std::string& root);
+	void setRoot(std::string root);
 
 	const std::string& getRoot();
 

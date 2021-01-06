@@ -98,17 +98,26 @@ private:
 
 	std::vector<std::string>	passMap(std::map<std::string, float> accept);
 
-	std::string					searchForMatchingLanguage(std::map<std::string, float> accepts, std::string& path);
+	std::string searchForMatchingAccept(std::map<std::string, float> accepts, std::string path,
+									 bool (*func)(std::vector<File>::iterator, std::string), std::string base);
 
-	bool	compareContentLanguage(std::vector<File>::iterator matching_file, std::string language);
+	static bool	compareContentLanguage(std::vector<File>::iterator matching_file, std::string language);
 
 	void	rewriteFileToVector(File &file);
 
-	bool	checkMatchingLanguage(std::string matching_language);
+	bool	checkMatchingAccept(std::string matching, std::string base);
+
+	static bool compareCharset(std::vector<File>::iterator matching_file, std::string charset);
 
 	std::string		responceMapToString();
 
 	std::string		makeAllow(std::string exept);
+
+	std::string getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, std::string), std::vector<File>::iterator iter);
+
+	static std::string removeAllUnnecessarySlash(std::string path);
+
+	bool		findMethod(std::string find);
 
 public:
 

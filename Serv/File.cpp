@@ -230,9 +230,10 @@ File::File(std::map<std::string, std::string> &reqMap)
 	placeContentType(reqMap);
 }
 
-void File::setRoot(std::string &root)
+void File::setRoot(std::string root)
 {
 	file_name = root;
+	std::cout << "Your file name: " + file_name << std::endl;
 }
 
 long File::getContentLength() { return (content_length); }
