@@ -31,7 +31,6 @@ private:
 
 	bool typeValidity(std::vector<std::string> &charset_vector, std::vector<std::string> &type_vector);
 
-	std::string getMime(std::string extencion);
 
 public:
 	File(std::map<std::string, std::string>&);
@@ -49,6 +48,8 @@ public:
 	const std::string &getCharset();
 
 	const std::string &getContentType();
+
+	static std::string getMime(std::string extencion);
 
 //	std::string getMime();
 

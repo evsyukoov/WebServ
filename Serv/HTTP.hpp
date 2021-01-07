@@ -9,6 +9,9 @@
 #define AC_LANG "Accept-Language"
 #define AC_CHARSET "Accept-Charset"
 #define ALLOW "Allow"
+#define DATE "Date"
+#define SERVER "Server"
+#define LAST_MOD "Last-Modified"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -20,6 +23,8 @@
 #include "File.hpp"
 #include "utils.hpp"
 #include "CGI.hpp"
+#include <sys/time.h>
+
 
 class HTTP
 {
@@ -58,11 +63,11 @@ private:
 
 	int sendReq(std::string header, std::string request);
 
-	void readFile(int file_size, int fd);
+	void readFile(struct stat &st, int fd, std::string &path);
 
 	std::list<Location>::const_iterator getMatchingLocation();
 
-	long contentLength();
+//	long contentLength();
 
 	bool validateExtencion(std::string &root);
 
@@ -118,6 +123,14 @@ private:
 	static std::string removeAllUnnecessarySlash(std::string path);
 
 	bool		findMethod(std::string find);
+
+	void 		formContentTypeLength(std::string &path, size_t file_size);
+
+	void		formTime(long long time_sec, std::string base);
+
+	void		formRespHeaderOK(std::string &path, struct stat st);
+
+	void		timer();
 
 public:
 

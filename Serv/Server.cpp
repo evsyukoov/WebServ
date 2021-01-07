@@ -10,6 +10,8 @@
 
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
+
+	std::cout << "Socket: " << listener << std::endl;
 	if (listener < 0)
 		return (error("sock error"));
 	int optval = 1;

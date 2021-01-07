@@ -113,6 +113,7 @@ int HTTP::initMap() {
 
 	reqMap.clear();
 	respMap.clear();
+	timer();
 	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
 		return (1);
 	second_pos = rev_pos + 2;
@@ -185,11 +186,19 @@ std::string HTTP::makeAllow(std::string exept)
 	return (allow);
 }
 
+void HTTP::timer()
+{
+	struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+	formTime(tv.tv_sec, DATE);
+}
+
 void HTTP::manager() {
 
 	if (initMap())
 	{
-		sendReq("HTTP/1.1 400 Bad Request\r\n\r\n", "");
+		sendReq("HTTP/1.1 400 Bad Request\r\n" + responceMapToString() + "\r\n", "");
 		return;
 	}
 	reqMap["location"] = removeAllUnnecessarySlash(reqMap["location"]);
@@ -200,7 +209,7 @@ void HTTP::manager() {
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", "");
 	}
 	else if (!validateProtocol())
-		sendReq("HTTP/1.1 505 HTTP Version Not Supported\r\n\r\n", "");
+		sendReq("HTTP/1.1 505 HTTP Version Not Supported\r\n" + responceMapToString() + "\r\n", "");
 	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
 	else if (reqMap["method"] == "POST")
@@ -556,44 +565,91 @@ void HTTP::get()
 		post();
 		return;
 	}
-	path = pathFormerer();
+	path = removeAllUnnecessarySlash(pathFormerer());
 	accepts(lang_prior_map, AC_LANG);
 	accepts(accept_charset_map, AC_CHARSET);
 //	if (!acceptedLanguages(lang_prior_map))
 //		lang_prior_map.clear();
+
 	printLMAP(lang_prior_map);
 	printLMAP(accept_charset_map);
 	if (path.empty())
-		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", "");
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
-			sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+			sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", "");
 		else if (!checkMatchingAccept(searchForMatchingAccept(lang_prior_map, removeAllUnnecessarySlash(path), compareContentLanguage, AC_LANG), LANG) ||
 				 !checkMatchingAccept(searchForMatchingAccept(accept_charset_map, removeAllUnnecessarySlash(path), compareCharset, AC_CHARSET), TYPE))
 		{
 			close(fd);
-			sendReq("HTTP/1.1 406 Not Acceptable\r\n\r\n", "");
+			sendReq("HTTP/1.1 406 Not Acceptable\r\n" + responceMapToString() + "\r\n", "");
 		}
 		else
 		{
 			fstat(fd, &structstat);
-			readFile(structstat.st_size, fd);
+			readFile(structstat, fd, path);
 		}
 	}
 }
 
-void HTTP::readFile(int file_size, int fd)
+void HTTP::formContentTypeLength(std::string &path, size_t file_size)
 {
-	char buf[file_size + 1];
+	int16_t pos = 0;
 
-	buf[file_size] = '\0';
-	if (read(fd, buf, file_size) < 0)
+	for (std::vector<File>::iterator iter = files.begin(); iter != files.end(); ++iter)
+	{
+		if (iter->getRoot() == path)
+		{
+			respMap[TYPE] = iter->getContentType();
+			respMap[LENGTH] = iter->getContentLength();
+			if (!iter->getCharset().empty())
+			{
+				respMap[TYPE].append("; charset=" + iter->getCharset());
+				return;
+			}
+		}
+	}
+	if ((pos = reqMap["location"].rfind('.')) == std::string::npos)
+		respMap[TYPE] = File::getMime("");
+	else
+		respMap[TYPE] = File::getMime(path.substr(pos, path.size() - pos));
+	respMap[LENGTH] = std::to_string(file_size);
+}
+
+void HTTP::formTime(long long time_sec, std::string base)
+{
+//	struct timeval tv;
+	struct tm time;
+	std::string t_str;
+	char buf[29];
+
+//	gettimeofday(&tv, NULL);
+	t_str = std::to_string(time_sec);
+	strptime(const_cast<char*>(t_str.c_str()), "%s", &time);
+	strftime(buf, 29, "%a, %d %b %Y %T GMT", &time);
+	respMap[base] = buf;
+}
+
+void HTTP::formRespHeaderOK(std::string &path, struct stat st)
+{
+	formContentTypeLength(path, st.st_size);
+	formTime(st.st_mtimespec.tv_sec, LAST_MOD);
+	respMap[SERVER] = "webserv/1.0";
+}
+
+void HTTP::readFile(struct stat &st, int fd, std::string &path)
+{
+	char buf[st.st_size + 1];
+
+	buf[st.st_size] = '\0';
+	if (read(fd, buf, st.st_size) < 0)
 	{
 		close(fd);
 		return;
 	}
 	close(fd);
+	formRespHeaderOK(path, st);
 	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", buf);
 }
 
@@ -699,14 +755,14 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
 	}
 	if (file.getContentLength() == -1)
 	{
-		sendReq("HTTP/1.1 411 Length Required\r\n\r\n", "");
+		sendReq("HTTP/1.1 411 Length Required\r\n" + responceMapToString() + "\r\n", "");
 		return (false);
 	}
 	if (it != servConf.getLocations().end())
 	{
 		if (it->getMaxBody() != -1 && it->getMaxBody() < file.getContentLength())
 		{
-			sendReq("HTTP/1.1 413 Payload Too Large\r\n\r\n", "");
+			sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", "");
 			return (false);
 		}
 	}
@@ -727,6 +783,7 @@ void HTTP::post()
 		return;
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
+	post_root = removeAllUnnecessarySlash(post_root);
 	if (!(validateExtencion(post_root)))
 	{
 		respMap[ALLOW] = makeAllow("POST");
@@ -735,7 +792,7 @@ void HTTP::post()
 	else
 	{
 		fill_cgi(&cgi, file, post_root);
-		sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
+		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
 	}
 //	CGI cgi();
 }
@@ -766,17 +823,18 @@ void HTTP::put()
 		return;
 	reqMap["location"].erase(0, it->getLocation().size());
 	put_root += reqMap["location"];
+	put_root = removeAllUnnecessarySlash(put_root);
 	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
 	{
 		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
 		if (fd < 0 || write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
 		{
-			sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
+			sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", "");
 			close(fd);
 			return;
 		}
-		sendReq("HTTP/1.1 201 Created\r\n\r\n", "");
-		new_file.setRoot(removeAllUnnecessarySlash(put_root));
+		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", "");
+		new_file.setRoot(put_root);
 		files.push_back(new_file);
 		close(fd);
 		return;
@@ -784,12 +842,12 @@ void HTTP::put()
 	if (write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
 	{
 		close(fd);
-		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
+		sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", "");
 		return;
 	}
-	new_file.setRoot(removeAllUnnecessarySlash(put_root));
+	new_file.setRoot(put_root);
 	rewriteFileToVector(new_file);
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
+	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
 	close(fd);
 }
 

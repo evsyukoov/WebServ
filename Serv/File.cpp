@@ -63,8 +63,6 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 	trimmer(type_vector[0]);
 	trimmer(type_vector[1]);
 	return (true);
-
-
 }
 
 void File::placeContentType(std::map<std::string, std::string> &reqMap)
@@ -129,7 +127,7 @@ bool File::contentType(std::map<std::string, std::string> &reqMap)
 std::string File::getMime(std::string extencion)
 {
 	std::map<std::string, std::string> mime_map;
-	std::map<std::string, std::string>::iterator it;
+	std::map<std::string, std::string>::iterator iter;
 
 	mime_map["audio/aac"] = ".aac";
 	mime_map["application/x-abiword"] = ".abw";
@@ -206,12 +204,12 @@ std::string File::getMime(std::string extencion)
  	mime_map["application/x-7z-compressed"] = ".7z";
  //	mime_map["application/octet-stream"] = "";
 
- 	it = mime_map.begin();
- 	while (it != mime_map.end())
+ 	iter = mime_map.begin();
+ 	while (iter != mime_map.end())
 	{
- 		if (it->second == extencion)
-			return (it->first);
- 		it++;
+ 		if (iter->second == extencion)
+			return (iter->first);
+ 		iter++;
 	}
  	if (extencion == "")
 		return ("text/plain");
