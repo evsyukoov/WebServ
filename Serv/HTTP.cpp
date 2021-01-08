@@ -113,6 +113,8 @@ int HTTP::initMap() {
 
 	reqMap.clear();
 	respMap.clear();
+	respMap[SERVER] = "webserv/1.0";
+	respMap[LENGTH] = "0";
 	timer();
 	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
 		return (1);
@@ -196,19 +198,14 @@ void HTTP::timer()
 
 void HTTP::manager() {
 
-	if (initMap())
+	if (initMap() || !validateMethod())
 	{
 		sendReq("HTTP/1.1 400 Bad Request\r\n" + responceMapToString() + "\r\n", "");
 		return;
 	}
 	reqMap["location"] = removeAllUnnecessarySlash(reqMap["location"]);
 	it = getMatchingLocation();
-	if (!validateMethod())
-	{
-		respMap[ALLOW] = makeAllow("");
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", "");
-	}
-	else if (!validateProtocol())
+	if (!validateProtocol())
 		sendReq("HTTP/1.1 505 HTTP Version Not Supported\r\n" + responceMapToString() + "\r\n", "");
 	else if (reqMap["method"] == "GET" || reqMap["method"] == "HEAD")
 		get();
@@ -602,7 +599,8 @@ void HTTP::formContentTypeLength(std::string &path, size_t file_size)
 		if (iter->getRoot() == path)
 		{
 			respMap[TYPE] = iter->getContentType();
-			respMap[LENGTH] = iter->getContentLength();
+			if (file_size != -1)
+				respMap[LENGTH] = std::to_string(iter->getContentLength());
 			if (!iter->getCharset().empty())
 			{
 				respMap[TYPE].append("; charset=" + iter->getCharset());
@@ -610,11 +608,12 @@ void HTTP::formContentTypeLength(std::string &path, size_t file_size)
 			}
 		}
 	}
-	if ((pos = reqMap["location"].rfind('.')) == std::string::npos)
+	if ((pos = path.rfind('.')) == std::string::npos)
 		respMap[TYPE] = File::getMime("");
 	else
 		respMap[TYPE] = File::getMime(path.substr(pos, path.size() - pos));
-	respMap[LENGTH] = std::to_string(file_size);
+	if (file_size != -1)
+		respMap[LENGTH] = std::to_string(file_size);
 }
 
 void HTTP::formTime(long long time_sec, std::string base)
@@ -635,7 +634,6 @@ void HTTP::formRespHeaderOK(std::string &path, struct stat st)
 {
 	formContentTypeLength(path, st.st_size);
 	formTime(st.st_mtimespec.tv_sec, LAST_MOD);
-	respMap[SERVER] = "webserv/1.0";
 }
 
 void HTTP::readFile(struct stat &st, int fd, std::string &path)
@@ -833,6 +831,7 @@ void HTTP::put()
 			close(fd);
 			return;
 		}
+		formContentTypeLength(put_root, -1);
 		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", "");
 		new_file.setRoot(put_root);
 		files.push_back(new_file);
@@ -847,6 +846,7 @@ void HTTP::put()
 	}
 	new_file.setRoot(put_root);
 	rewriteFileToVector(new_file);
+	formContentTypeLength(put_root, -1);
 	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
 	close(fd);
 }
