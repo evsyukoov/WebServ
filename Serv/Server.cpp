@@ -42,14 +42,13 @@ int   Server::receiveData(int client_sock, std::string &str)
     char recieve[4096];
 
     std::cout << "Wait for reading request from client: " << client_sock << std::endl;
-    usleep(1000);
+    //usleep(1000);
     int len;
     len = read(client_sock, recieve, 4095);
     recieve[len] = '\0';
     std::cout << "len: " << len << std::endl;
-    if (len == 0) {
+    if (len == 0)
         return (0);
-    }
     else if (len < 0)
         return (-1);
     else
@@ -128,8 +127,12 @@ int Server::servLoop() {
 		    max = (--servers.end())->first;
         //ждем коннекта или готовности к чтению
 		std::cout << "select block" << std::endl;
-		select(max + 1, &read_set,  &write_set, NULL, NULL);
-		std::cout << "select unblock, max: " << max << std::endl;
+		int ret = select(max + 1, &read_set,  &write_set, NULL, NULL);
+		if (ret < 0) {
+            std::cerr << "select error: " << ret << std::endl;
+            continue;
+        }
+		std::cout << "select unblock, ret: " << ret << std::endl;
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
 			// произошел коннект на n-ом сервере
@@ -171,6 +174,7 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 			//кто-то отключился
 			else if (ret == 0)
 			{
+			    //write((*it)->getClientSock(), "HTTP/1.1 500 Service Temporarily Unavailable\r\n\r\n", strlen("HTTP/1.1 503 Service Temporarily Unavailable\r\n\r\n"));
 				close((*it)->getClientSock());
 				delete (*it);
 				it = clients.erase(it);

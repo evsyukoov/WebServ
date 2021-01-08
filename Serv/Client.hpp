@@ -10,7 +10,8 @@
 
 #define HEADER 0
 #define BODY 1
-#define FINISH 2
+#define BODY_CHUNKED 2
+#define FINISH 3
 
 class Client {
 
@@ -20,20 +21,24 @@ class Client {
     int             state;
     int             body_size;
     std::string     body;
-    int             current_body_size;
+    std::string     raw_body;
+
     std::map<std::string, std::string>  head;
 
-    int     checkContentLength(std::string splitted);
+    int     checkBodyHeaders(std::string splitted);
 
     void    analizeBodySize();
+
+    int    decodeChunks(std::string input);
+
+    void    analizeChunked();
+
+    bool    isDigit(const std::string &digit);
+
 public:
     Client(int clientSock, const ServConf &servConf);
 
     int getClientSock() const;
-
-    void setPieceOfRequest(const std::string &pieceOfRequest);
-
-    bool        addPieceOfRequest(const std::string &piece);
 
     void    clear();
 
