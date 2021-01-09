@@ -51,6 +51,8 @@ public:
 
 	static std::string getMime(std::string extencion);
 
+	void setContentLength(size_t content_length);
+
 //	std::string getMime();
 
 };

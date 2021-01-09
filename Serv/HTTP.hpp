@@ -12,6 +12,8 @@
 #define DATE "Date"
 #define SERVER "Server"
 #define LAST_MOD "Last-Modified"
+#define TRANSFER "Transfer-Encoding"
+
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -136,6 +138,8 @@ private:
 	void		timer();
 
 	std::string	errorPageResponece(int error_num);
+
+	bool		validateTransferEncoding();
 
 public:
 

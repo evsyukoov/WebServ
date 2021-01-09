@@ -246,3 +246,4 @@ const std::string &File::getCharset() { return (charset); }
 
 const std::string &File::getRoot() { return (file_name); }
 
+void File::setContentLength(size_t content_length) { this->content_length = content_length; }

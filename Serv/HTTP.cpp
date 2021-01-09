@@ -282,9 +282,19 @@ std::string HTTP::rootSwitcher(const std::string& root, const std::string& serv_
 	else if (checkDirectoryRet == 1)
 	{
 		if (!loc_index.empty())
-			return (rootWithSlash + reqMap["location"] + loc_index);
+		{
+			rootWithSlash += reqMap["location"];
+			if (rootWithSlash.back() != '/')
+				rootWithSlash.push_back('/');
+			return (rootWithSlash + loc_index);
+		}
 		else if (!serv_index.empty())
-			return (rootWithSlash + reqMap["location"] + serv_index);
+		{
+			rootWithSlash += reqMap["location"];
+			if (rootWithSlash.back() != '/')
+				rootWithSlash.push_back('/');
+			return (rootWithSlash + serv_index);
+		}
 		else if (it != servConf.getLocations().end() && it->isAutoindex())
 			throw true;
 		else
@@ -718,6 +728,13 @@ std::string HTTP::errorPageResponece(int error_num)
 			close(fd);
 			return (buf);
 		}
+		else
+		{
+			std::string error_page(generateErrorPage(error_num));
+			respMap[TYPE] = "text/html";
+			respMap[LENGTH] = std::to_string(error_page.size());
+			return (error_page);
+		}
 	}
 	return ("");
 }
@@ -728,24 +745,6 @@ int HTTP::sendReq(std::string header, std::string responce)
 	int fd;
 	std::map<int, std::string>::const_iterator iter;
 	struct stat st;
-
-//	error_num = std::atoi(header.substr(9, 3).c_str());
-
-//	if (error_num >= 400 && error_num < 600)
-//	{
-//		if ((iter = servConf.getErrorPages().find(error_num)) != servConf.getErrorPages().end())
-//		{
-//			if ((fd = open(iter->second.c_str(), O_RDWR, 0644)) < 0 || fstat(fd, &st) < 0)
-//				return (-1);
-//			char buf[st.st_size];
-//			buf[st.st_size] = '\0';
-//		//	formContentTypeLength(iter->second, st.st_size);
-//			if (read(fd, buf, st.st_size) < 0)
-//				return (-1);
-//			close(fd);
-//			responce = buf;
-//		}
-//	}
 
 	std::cout << "Error num: " << error_num << std::endl;
 	if (reqMap["method"] == "HEAD")
@@ -813,10 +812,23 @@ bool HTTP::validateExtencion(std::string &root) //необходимое рас�
 	return (false);
 }
 
+bool HTTP::validateTransferEncoding()
+{
+	if (reqMap.find(TRANSFER) != reqMap.end())
+	{
+		std::vector<std::string> validation = ft_split(reqMap[TRANSFER], ",");
+		if (std::find(validation.begin(), validation.end(), "chunked") != validation.end())
+			return (true);
+		return (false);
+	}
+	return (false);
+}
+
 bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
 {
 	put_post_root = postRoot();
 	std::string error;
+	bool validate;
 
 	if (!checkForAllowedMethod())
 	{
@@ -825,12 +837,14 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
 		return (false);
 	}
-	if (file.getContentLength() == -1)
+	if (!(validate = validateTransferEncoding())&& file.getContentLength() == -1)
 	{
 		error = errorPageResponece(411);
 		sendReq("HTTP/1.1 411 Length Required\r\n" + responceMapToString() + "\r\n", error);
 		return (false);
 	}
+	if (validate)
+		file.setContentLength(reqMap["body"].size());
 	if (it != servConf.getLocations().end())
 	{
 		if (it->getMaxBody() != -1 && it->getMaxBody() < file.getContentLength())
