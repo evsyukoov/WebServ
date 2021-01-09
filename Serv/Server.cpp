@@ -53,6 +53,7 @@ int   Server::receiveData(int client_sock, std::string &str)
         return (-1);
     else
         str = recieve;
+    //std::cout << BLUE << "recieve: " << str  << RESET << std::endl;
     return (1);
 }
 
@@ -174,7 +175,6 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 			//кто-то отключился
 			else if (ret == 0)
 			{
-			    //write((*it)->getClientSock(), "HTTP/1.1 500 Service Temporarily Unavailable\r\n\r\n", strlen("HTTP/1.1 503 Service Temporarily Unavailable\r\n\r\n"));
 				close((*it)->getClientSock());
 				delete (*it);
 				it = clients.erase(it);
