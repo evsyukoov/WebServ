@@ -86,7 +86,7 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
 
 int main(int argc, char **argv, char **env)
 {
-
+	HTTP http;
     struct input in;
     if (parseCommandLineArgs(argc, argv, in) == -1)
         return (0);
@@ -104,7 +104,7 @@ int main(int argc, char **argv, char **env)
 //	cgi.run();
 //	std::cout << "response = " << cgi.getResponse() << std::endl;
     Server server = Server(in, conf);
-    server.run();
+    server.run(http);
     return (1);
 }
 

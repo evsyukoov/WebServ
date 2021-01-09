@@ -39,16 +39,16 @@ public:
 
     int    openServers();
 
-    _Noreturn int     servLoop();
+    int     servLoop(HTTP &http);
 
 
-    int     run();
+    int     run(HTTP &http);
 
     void    initReadSet();
 
     std::vector<char*>      readRequests(std::list<Client*> &clients);
 
-    void	sendToAllClients(std::vector<char*> requests, std::list<Client*> clients);
+    void	sendToAllClients(std::vector<char*> requests, std::list<Client*> &clients, HTTP &http);
 
 };
 

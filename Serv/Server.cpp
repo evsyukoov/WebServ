@@ -11,6 +11,8 @@
 
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
+
+	std::cout << "Socket: " << listener << std::endl;
 	if (listener < 0)
 		return (error("sock error"));
 	int optval = 1;
@@ -88,11 +90,11 @@ void     Server::initReadSet()
     }
 }
 
-int     Server::run()
+int     Server::run(HTTP &http)
 {
     if (openServers() == -1)
         return (-1);
-    servLoop();
+    servLoop(http);
     return (1);
 }
 
@@ -111,7 +113,7 @@ void        print(const std::list<Client*> &clients)
     std::cout << RESET << std::endl;
 }
 
-int Server::servLoop() {
+int Server::servLoop(HTTP &http) {
     //ключ-сокет клиента  - value - конфиг сервера на котором коннект
 	std::list<Client*> clients;
 	while (true) {
@@ -148,8 +150,7 @@ int Server::servLoop() {
 		}
         std::vector<char*> requests = readRequests(clients);
         print(clients);
-		sendToAllClients(requests, clients);
-
+		sendToAllClients(requests, clients, http);
 	}
 	return (1);
 }
@@ -157,7 +158,6 @@ int Server::servLoop() {
 std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 {
 	std::vector<char*> requests;
-	HTTP http;
     std::string req;
 
     std::list<Client*>::iterator it = clients.begin();
@@ -198,10 +198,9 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 	return (requests);
 }
 
-void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> clients)
+void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> &clients, HTTP &http)
 {
 	int i = 0;
-	HTTP http;
     std::list<Client*>::iterator it = clients.begin();
     std::list<Client*>::iterator ite = clients.end();
 	while (it != ite)
