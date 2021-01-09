@@ -87,15 +87,14 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
 int main(int argc, char **argv, char **env)
 {
 
-
     struct input in;
     if (parseCommandLineArgs(argc, argv, in) == -1)
         return (0);
     Config conf(in.conf);
     if (conf.readConf() == -1)
         return (0);
-    std::list<ServConf> lst = conf.getConfig();
-    std::list<ServConf>::iterator it = lst.begin();
+//    std::list<ServConf> lst = conf.getConfig();
+//    std::list<ServConf>::iterator it = lst.begin();
     //char buff[60] = "./CGI_Scrypts/cgi_tester";
 //    std::string request = "tytejtej";
 //    t_cgi info;
