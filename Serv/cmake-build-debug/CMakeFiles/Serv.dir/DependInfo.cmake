@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/ccarl/Desktop/WebServer2/Serv/CGI.cpp" "/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/CGI.cpp.o"
+  "/Users/ccarl/Desktop/WebServer2/Serv/Client.cpp" "/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Client.cpp.o"
   "/Users/ccarl/Desktop/WebServer2/Serv/File.cpp" "/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/File.cpp.o"
   "/Users/ccarl/Desktop/WebServer2/Serv/HTTP.cpp" "/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/HTTP.cpp.o"
   "/Users/ccarl/Desktop/WebServer2/Serv/Parser/Config.cpp" "/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/CMakeFiles/Serv.dir/Parser/Config.cpp.o"

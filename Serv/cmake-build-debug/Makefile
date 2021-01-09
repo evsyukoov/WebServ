@@ -170,6 +170,33 @@ CGI.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/CGI.cpp.s
 .PHONY : CGI.cpp.s
 
+Client.o: Client.cpp.o
+
+.PHONY : Client.o
+
+# target to build an object file
+Client.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Client.cpp.o
+.PHONY : Client.cpp.o
+
+Client.i: Client.cpp.i
+
+.PHONY : Client.i
+
+# target to preprocess a source file
+Client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Client.cpp.i
+.PHONY : Client.cpp.i
+
+Client.s: Client.cpp.s
+
+.PHONY : Client.s
+
+# target to generate assembly for a file
+Client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Serv.dir/build.make CMakeFiles/Serv.dir/Client.cpp.s
+.PHONY : Client.cpp.s
+
 File.o: File.cpp.o
 
 .PHONY : File.o
@@ -452,6 +479,9 @@ help:
 	@echo "... CGI.o"
 	@echo "... CGI.i"
 	@echo "... CGI.s"
+	@echo "... Client.o"
+	@echo "... Client.i"
+	@echo "... Client.s"
 	@echo "... File.o"
 	@echo "... File.i"
 	@echo "... File.s"

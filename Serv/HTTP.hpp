@@ -31,6 +31,7 @@ private:
 	struct input    in;
 //	std::vector<File> files;
 
+    std::map<int, std::string> errors;
 	//сформированная страничка со списком директорий для автоиндекса
 	std::string listing;
 
@@ -72,9 +73,13 @@ private:
 
 	bool postGet();
 
-	int		initListingHTML(const std::string &path);
+    //int 		HTTP::initListingHTML(const std::string &path);
+
+	void    initErrorMap();
 
 public:
+
+    int 		initListingHTML(std::string path, const std::string &root);
 
 	HTTP(int client, char *buf, const ServConf&);
 
@@ -89,6 +94,10 @@ public:
 	void 	printMap();  //для отладки
 
 	void 	manager();
+
+    std::string     generateErrorPage(int error_code);
+
+    const std::string &getListing() const;
 
 };
 

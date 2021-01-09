@@ -10,6 +10,7 @@
 #include "parser_utils.hpp"
 //конфиг одного локейшна
 
+
 class Location {
 	//after parse
 	std::string 		   location;

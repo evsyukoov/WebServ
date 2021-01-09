@@ -3,15 +3,19 @@
 #include <dirent.h>
 #include "HTTP.hpp"
 
-HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {}
+HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {
 
-HTTP::HTTP() {}
+}
+
+HTTP::HTTP() {
+    initErrorMap();
+}
 
 const std::map<std::string, std::string> &HTTP::getRequestMap() const {
 	return (reqMap);
 }
 
-int 		HTTP::initListingHTML(const std::string &path)
+int 		HTTP::initListingHTML(std::string path, const std::string &root)
 {
 	//сюда запишем ссылки на директории по указанному path чтобы потом отправить клиенту
 	listing = "<!DOCTYPE html>\n"
@@ -29,9 +33,22 @@ int 		HTTP::initListingHTML(const std::string &path)
 	struct dirent *dir_info;
 	std::string ref;
 
-	//<p><a href=dir_name> dir_name </a></p>
-	while ((dir_info = readdir(dir)) != NULL)
-		ref += "<p><a href=" + std::string(dir_info->d_name) + ">" + std::string(dir_info->d_name) + "</a></p>\n";
+	int i = 0;
+	int j = 0;
+	//обрежем путь
+	if (path.rfind('/') == path.size() - 1)
+	    path = path.substr(0, path.size() - 1);
+	while (root[j] == path[j] && root[j] && path[j])
+	    j++;
+	path = path.substr(j);
+	while ((dir_info = readdir(dir)) != NULL) {
+        if (i)
+        {
+            ref += "<p><a href=" + path + "/" + std::string(dir_info->d_name) + ">" + std::string(dir_info->d_name) +
+                   "</a></p>\n";
+        }
+        i++;
+    }
 	listing += ref;
 	listing += "</head>\n"
 			   "<body>\n"
@@ -297,11 +314,11 @@ void HTTP::get()
 	}
 	path = pathFormerer();
 	if (path.empty())
-		sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+		sendReq("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n", "");
 	else
 	{
 		if ((fd = open(path.c_str(), O_RDONLY)) < 0)
-			sendReq("HTTP/1.1 404 Not Found\r\n\r\n", "");
+			sendReq("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n", "");
 		else
 		{
 			fstat(fd, &structstat);
@@ -329,7 +346,7 @@ void HTTP::readFile(int file_size, int fd)
 		return;
 //	responce = buf;
 //	responce += "\r\n\r\n";
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", buf);
+	sendReq("HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n", buf);
 }
 
 int HTTP::sendReq(std::string header, std::string responce)
@@ -399,7 +416,7 @@ void HTTP::post()
 
 	if (!checkForAllowedMethod())
 	{
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n\r\n", "");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\n\r\n", "");
 		return;
 	}
 	if (file.getContentLength() == -1)
@@ -411,7 +428,7 @@ void HTTP::post()
 		post_root.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
 	post_root += reqMap["location"];
-	fill_cgi(&cgi, file, post_root);
+	//fill_cgi(&cgi, file, post_root);
 //	CGI cgi();
 //	if (file.getMime() != "not_found")
 //	post_root += file.getMime();
@@ -426,10 +443,68 @@ void HTTP::post()
 //		sendReq("HTTP/1.1 403 Forbidden\r\n\r\n", "");
 //		return;
 //	}
-	sendReq("HTTP/1.1 200 OK\r\n\r\n", "");
+	sendReq("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n", "");
 }
 
 std::string &HTTP::getResponce()
 {
 	return (result);
+}
+
+void HTTP::initErrorMap()
+{
+    errors[400] = "Bad Request";
+    errors[401] = "Unauthorized";
+    errors[402] = "Payment Required";
+    errors[403] = "Forbidden";
+    errors[404] = "Not Found";
+    errors[405] = "Method Not Allowed";
+    errors[406] = "Not Acceptable";
+    errors[407] = "Proxy Authentication Required";
+    errors[408] = "Request Timeout";
+    errors[409] = "Conflict";
+    errors[410] = "Gone";
+    errors[411] = "Length Required";
+    errors[412] = "Precondition Failed";
+    errors[413] = "Payload Too Large";
+    errors[414] = "URI Too Long";
+    errors[415] = "Unsupported Media Type";
+    errors[416] = "Range Not Satisfiable";
+    errors[417] = "Expectation Failed";
+    errors[418] = "I’m a teapot";
+    errors[419] = "Authentication Timeout (not in RFC 2616)";
+    errors[421] = "Misdirected Request";
+    errors[422] = "Unprocessable Entity";
+    errors[423] = "Locked";
+    errors[424] = "Failed Dependency";
+    errors[425] = "Too Early";
+    errors[426] = "Upgrade Required";
+    errors[428] = "Precondition Required";
+    errors[429] = "Too Many Requests";
+    errors[431] = "Request Header Fields Too Large";
+    errors[449] = "Retry With";
+    errors[451] = "Unavailable For Legal Reasons";
+    errors[499] = "Client Closed Request";
+    errors[505] = "HTTP Version Not Supported";
+}
+
+std::string     HTTP::generateErrorPage(int error_code)
+{
+    std::string error_html = "<!DOCTYPE html>\n"
+                             "<html lang=\"en\">\n"
+                             "<head>\n"
+                             "<meta charset=\"UTF-8\">\n"
+                             "<title>Error</title>\n";
+
+    error_html += "<h2>" + std::to_string(error_code) + "</h2>\n";
+    error_html += "<h4>" + errors[error_code] + "</h4>\n";
+    error_html += "</head>\n"
+                  "<body>\n"
+                  "</body>\n"
+                  "</html>";
+    return error_html;
+}
+
+const std::string &HTTP::getListing() const {
+    return listing;
 }
