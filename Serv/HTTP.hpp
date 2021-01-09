@@ -91,7 +91,7 @@ private:
 
 	bool postGet();
 
-	int		initListingHTML(const std::string &path);
+	int		initListingHTML(std::string path, const std::string &root);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string lang);
 
@@ -124,13 +124,15 @@ private:
 
 	bool		findMethod(std::string find);
 
-	void 		formContentTypeLength(std::string &path, size_t file_size);
+	void 		formContentTypeLength(const std::string &path, size_t file_size);
 
 	void		formTime(long long time_sec, std::string base);
 
 	void		formRespHeaderOK(std::string &path, struct stat st);
 
 	void		timer();
+
+	std::string	errorPageResponece(int error_num);
 
 public:
 
