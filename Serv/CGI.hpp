@@ -49,9 +49,7 @@ public:
 
 	int 	run();
 
-
-
-    const std::string &getResponse() const;
+	const std::string &getResponse() const;
 
 };
 
