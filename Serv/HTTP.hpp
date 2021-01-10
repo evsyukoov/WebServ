@@ -94,6 +94,7 @@ private:
 
 	bool postGet();
 
+
 	void    initErrorMap();
 
 	int		initListingHTML(std::string path, const std::string &root);
@@ -141,7 +142,10 @@ private:
 
 	bool		validateTransferEncoding();
 
+
 public:
+
+    int 		initListingHTML(std::string path, const std::string &root);
 
 	HTTP(int client, char *buf, const ServConf&);
 
