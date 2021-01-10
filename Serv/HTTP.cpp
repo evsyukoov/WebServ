@@ -167,7 +167,7 @@ int HTTP::initMap() {
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
 	//printMap();
-	std::cout << YELLOW << "Your request is finish !\n"  << RESET << std::endl;
+	//std::cout << YELLOW << "Your request is finish !\n" << buff_req << RESET << std::endl;
 	return (0);
 }
 
@@ -384,9 +384,9 @@ bool HTTP::postGet()
 	if ((pos = reqMap["location"].find('?')) != std::string::npos)
 	{
 		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
-		std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
+	//	std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
 		reqMap["location"].erase(pos);
-		std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
+	//	std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
 		return (true);
 	}
 	return (false);
@@ -709,7 +709,7 @@ void HTTP::readFile(struct stat &st, int fd, std::string &path)
 
 	char *buf = new char[st.st_size + 1];
 	buf[st.st_size] = '\0';
-	std::cout << st.st_size << std::endl;
+//	std::cout << st.st_size << std::endl;
 	if (read(fd, buf, st.st_size) < 0)
 	{
 		close(fd);
@@ -763,13 +763,22 @@ int HTTP::sendReq(std::string header, std::string responce)
 	if (reqMap["meethod"] == "HEAD")
 		responce.clear();
 	result = header + responce;
-	//std::cout << "Result responce: " << result << std::endl;
+//	std::cout << "Result responce: " << result << std::endl;
 
 //	int i = 1;
 //	while (!write(client_fd, (char*)result.c_str(), 10000))
 //	{
 //		result = result.substr(10000 * i, result.size());
 //		i++;
+//	}
+//
+//	int ret;
+//	int size = result.size();
+//	while (size)
+//	{
+//		ret = write(client_fd, result.substr(0, 10000).c_str(), 10000);
+//		result = result.substr(10000);
+//		size -= ret;
 //	}
 	if (send(client_fd, (char *)result.c_str(), result.size(), 0) < 0)
 		return (0);
@@ -785,12 +794,12 @@ void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
 	cgi->request_uri = "/" + reqMap["location"];
 	cgi->path_translated = root;
 	cgi->path_info = "./" + reqMap["location"];
-	std::cout << "Lentght: " << cgi->content_length << std::endl;
-	std::cout << "Query string: " << cgi->query_string << std::endl;
-	std::cout << "Request uri: " << cgi->request_uri << std::endl;
-	std::cout << "Path translated: " << cgi->path_translated << std::endl;
-	std::cout << "Content type: " << cgi->content_type << std::endl;
-	std::cout << "Path info: " << cgi->path_info << std::endl;
+//	std::cout << "Lentght: " << cgi->content_length << std::endl;
+//	std::cout << "Query string: " << cgi->query_string << std::endl;
+//	std::cout << "Request uri: " << cgi->request_uri << std::endl;
+//	std::cout << "Path translated: " << cgi->path_translated << std::endl;
+//	std::cout << "Content type: " << cgi->content_type << std::endl;
+//	std::cout << "Path info: " << cgi->path_info << std::endl;
 }
 
 std::string HTTP::postRoot()
@@ -918,7 +927,14 @@ void HTTP::post()
 	else
 	{
 		fill_cgi(&cgi, file, post_root);
-		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
+		CGI worker_cgi(cgi, servConf, in);
+
+
+		std::cout << "cgi in" << std::endl;
+		worker_cgi.run();
+		std::cout << "cgi out" << std::endl;
+		respMap[LENGTH] = std::to_string(worker_cgi.getResponse().size());
+		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", worker_cgi.getResponse());
 	}
 //	CGI cgi();
 }

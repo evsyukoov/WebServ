@@ -7,8 +7,8 @@
 #include <fstream>
 #include "CGI.hpp"
 
-CGI::CGI(const t_cgi &cgi, const ServConf &servConf, input &in) : in(in) {
-    this->cgi = cgi;
+CGI::CGI(const t_cgi &struct_cgi, const ServConf &servConf, input &in) : in(in) {
+    this->struct_cgi = struct_cgi;
     this->servConf = servConf;
     initEnvironments();
     initARGS();
@@ -38,21 +38,21 @@ int        CGI::initARGS()
 void        CGI::initEnvironments()
 {
     environments["AUTH_TYPE"] = "Basic";
-    environments["CONTENT_LENGTH"] = std::to_string(cgi.content_length);//std::to_string(request.size());
-   environments["CONTENT_TYPE"] = cgi.content_type;
-   environments["GATEWAY_INTERFACE"] = "CGI/1.1";
-   environments["PATH_INFO"] = "/wrtj/wj46[pl[j/ryjwrjyrth2tyie5uegg3g3j/wrht4/442jjwjwryjwjwj" ;        //путь к скрипту(относительный)
-   //environments["PATH_TRANSLATED"] = "o[ytptp";
-   environments["QUERY_STRING"] = cgi.query_string;
-   environments["REMOTE_ADDR"] = servConf.getServerName();
+    //environments["CONTENT_LENGTH"] = std::to_string(struct_cgi.content_length);//std::to_string(request.size());
+   //environments["CONTENT_TYPE"] = struct_cgi.content_type;
+  // environments["GATEWAY_INTERFACE"] = "CGI/1.1";
+   environments["PATH_INFO"] = "/" ;        //путь к скрипту(относительный)
+   //environments["PATH_TRANSLATED"] = "/Users/zcolleen/Desktop/webserv2/Serv/example.cgi";
+  // environments["QUERY_STRING"] = struct_cgi.query_string;
+   //environments["REMOTE_ADDR"] = servConf.getServerName();
    //environments["REMOTE_IDENT"]  =
    //environments["REMOTE_USER"] = ;
-   environments["REQUEST_METHOD"] = cgi.reques_method;
-   environments["REQUEST_URI"] = cgi.request_uri;
-   environments["SERVER_NAME"] = servConf.getServerName();
-   environments["SERVER_PORT"] = std::to_string(servConf.getPort());
+   environments["REQUEST_METHOD"] = struct_cgi.reques_method;
+   //environments["REQUEST_URI"] = struct_cgi.request_uri;
+  // environments["SERVER_NAME"] = servConf.getServerName();
+   //environments["SERVER_PORT"] = std::to_string(servConf.getPort());
    environments["SERVER_PROTOCOL"] = "HTTP/1.1";
-   environments["SERVER_SOFTWARE"] = "webserv";
+  //environments["SERVER_SOFTWARE"] = "webserv";
 }
 
 int     CGI::mapToEnv()
@@ -99,7 +99,6 @@ int	CGI::run()
     }
 	else if (child == 0)
 	{
-
         close(fd[1]); //ничего не пишем
         //заменяем stdout дочернего процесса на дескриптор временного файла
         dup2(tmp_fd, 1);
@@ -120,7 +119,7 @@ int	CGI::run()
     {
 	    close(fd[0]);
 	    //dup2(fd[1],1);
-	    write(fd[1], cgi.query_string.c_str(), cgi.query_string.size());
+	    write(fd[1], struct_cgi.query_string.c_str(), struct_cgi.query_string.size());
 	    close(fd[1]);
 	    waitpid(child, &status, 0);
 	    readFromCGI();
@@ -143,7 +142,13 @@ int     CGI::readFromCGI()
         return (0);
     }
 
-    char buff[size];
+    std::cout << "HELLO from cgi" << std::endl;
+    char *buff;
+    if (!(buff = (char*)malloc(sizeof(char) * (size + 1))))
+	{
+    	std::cerr << "Malloc error" << std::endl;
+    	return (0);
+	}
     int n = read(fd, buff, size);
     buff[n] = '\0';
     response = buff;
