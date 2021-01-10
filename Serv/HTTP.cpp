@@ -143,7 +143,7 @@ int HTTP::initMap() {
 		blanc_pos = str.find(":");
 		rev_pos = str.find("\r", blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
-		second_pos = buff_req.find("\n", second_pos) + 1;
+		second_pos = buff_req.find('\n', second_pos) + 1;
 		//std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
 	if (!validateHeaderMap())
@@ -163,8 +163,8 @@ int HTTP::initMap() {
 //	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
-	printMap();
-	std::cout << YELLOW << "Your request is:\n" << buff_req << RESET << std::endl;
+	//printMap();
+	std::cout << YELLOW << "Your request is finish !\n"  << RESET << std::endl;
 	return (0);
 }
 
@@ -750,7 +750,7 @@ int HTTP::sendReq(std::string header, std::string responce)
 	if (reqMap["method"] == "HEAD")
 		responce = header;
 	result = header + responce;
-	std::cout << "Result responce: " << result << std::endl;
+	//std::cout << "Result responce: " << result << std::endl;
 
 	send(client_fd, (char *)result.c_str(), result.size(), 0);
 	return (0);
@@ -867,6 +867,7 @@ void HTTP::post()
 	t_cgi cgi;
 	std::string post_root;
 
+	std::cout << "POST start!" << std::endl;
 	if (!postPutvalidation(post_root, file))
 		return;
 	reqMap["location"].erase(0, it->getLocation().size());

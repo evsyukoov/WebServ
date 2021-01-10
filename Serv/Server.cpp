@@ -41,12 +41,12 @@ int     set_nonblock(int fd)
 
 int   Server::receiveData(int client_sock, std::string &str)
 {
-    char recieve[4096];
+    char recieve[BUFFER_SIZE];
 
     std::cout << "Wait for reading request from client: " << client_sock << std::endl;
-    //usleep(1000);
+    usleep(1000);
     int len;
-    len = read(client_sock, recieve, 4095);
+    len = read(client_sock, recieve, BUFFER_SIZE - 1);
     recieve[len] = '\0';
     std::cout << "len: " << len << std::endl;
     if (len == 0)
@@ -184,6 +184,7 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 			else if (ret > 0)
 			{
                 (*it)->findState(data);
+                 std::cout << "State: " << (*it)->getState() << std::endl;
                 if ((*it)->getState() == FINISH)
                     FD_SET((*it)->getClientSock(), &write_set);
                 it++;
