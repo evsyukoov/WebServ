@@ -97,6 +97,7 @@ private:
 
 	bool postGet();
 
+
 	void    initErrorMap();
 
 	int		initListingHTML(std::string path, const std::string &root);
@@ -149,6 +150,8 @@ private:
 	void		former(std::string &root);
 
 public:
+
+    int 		initListingHTML(std::string path, const std::string &root);
 
 	HTTP(int client, char *buf, const ServConf&);
 

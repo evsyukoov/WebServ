@@ -146,7 +146,7 @@ int HTTP::initMap() {
 		blanc_pos = str.find(":");
 		rev_pos = str.find("\r", blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
-		second_pos = buff_req.find("\n", second_pos) + 1;
+		second_pos = buff_req.find('\n', second_pos) + 1;
 		//std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
 	if (!validateHeaderMap())
@@ -166,8 +166,8 @@ int HTTP::initMap() {
 //	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
-	printMap();
-	std::cout << YELLOW << "Your request is:\n" << buff_req << RESET << std::endl;
+	//printMap();
+	std::cout << YELLOW << "Your request is finish !\n"  << RESET << std::endl;
 	return (0);
 }
 
@@ -763,7 +763,7 @@ int HTTP::sendReq(std::string header, std::string responce)
 	if (reqMap["meethod"] == "HEAD")
 		responce.clear();
 	result = header + responce;
-	std::cout << "Result responce: " << result << std::endl;
+	//std::cout << "Result responce: " << result << std::endl;
 
 //	int i = 1;
 //	while (!write(client_fd, (char*)result.c_str(), 10000))

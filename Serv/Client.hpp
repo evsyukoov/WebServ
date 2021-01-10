@@ -22,6 +22,7 @@ class Client {
     int             body_size;
     std::string     body;
     std::string     raw_body;
+    long             chunk_size;
 
     std::map<std::string, std::string>  head;
 
@@ -29,7 +30,7 @@ class Client {
 
     void    analizeBodySize();
 
-    int    decodeChunks(std::string input);
+    int    decodeChunks();
 
     void    analizeChunked();
 

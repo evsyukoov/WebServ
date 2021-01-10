@@ -88,28 +88,31 @@ bool    Client::isDigit(const std::string &digit)
     return true;
 }
 
-int    Client::decodeChunks(std::string input)
+int    Client::decodeChunks()
 {
-    //input = 4 \r\n abcd \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
+    //input = 10 \r\n abcdefgrty \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
     int pos = 0;
-    int line = 0;
-    long hex;
-    while ((pos = input.find("\r\n")) != std::string::npos)
+    while ((pos = raw_body.find("\r\n")) != std::string::npos)
     {
-        if (line % 2 == 0) {
-            std::string digit = input.substr(0, pos);
+        if (!chunk_size) {
+            if (raw_body.find("0\r\n\r\n") != std::string::npos)
+                state = FINISH;
+            std::string digit = raw_body.substr(0, pos);
             if (!isDigit(digit))
                 return (0);
-            hex = std::strtol(input.substr(0, pos).c_str(), NULL, 16);
+            chunk_size = std::strtol(raw_body.substr(0, pos).c_str(), NULL, 16);
         }
         else
         {
-            std::string content = input.substr(0, pos);
-            body += content.substr(0, hex);
+            if (state == FINISH && !chunk_size)
+                break ;
+            std::string content = raw_body.substr(0, pos);
+            body += content.substr(0, chunk_size);
+            chunk_size = 0;
         }
-        input = input.substr(pos + 2);
-        line++;
+        raw_body = raw_body.substr(pos + 2);
     }
+    std::cout << "Decode finish!" << std::endl;
     return (1);
 }
 
@@ -119,7 +122,7 @@ void    Client::analizeChunked()
     {
         state = FINISH;
         raw_body = raw_body.substr(0, raw_body.size() - 5);
-        if (!decodeChunks(raw_body))
+        if (!decodeChunks())
             request = "UNKNOWN METHOD HTTP/1.1";
     }
 }
@@ -127,6 +130,7 @@ void    Client::analizeChunked()
 void Client::findState(std::string &piece) {
     int delimetr = 0;
 
+    std::cout << "State begin: " << state << std::endl;
     if (state == HEADER) {
         request += piece;
         if ((delimetr = request.find("\r\n\r\n")) != std::string::npos) {
@@ -142,7 +146,7 @@ void Client::findState(std::string &piece) {
                 state = BODY_CHUNKED;
                 raw_body = request.substr(delimetr + 4);
                 request = request.substr(0, delimetr + 4);
-                analizeChunked();
+                decodeChunks();
             }
 
         }
@@ -152,8 +156,9 @@ void Client::findState(std::string &piece) {
     }
     else if (state == BODY_CHUNKED)
     {
+        std::cout << "chunked..." << std::endl;
         raw_body += piece;
-        analizeChunked();
+        decodeChunks();
     }
 }
 
@@ -165,6 +170,8 @@ void Client::clear() {
     state = HEADER;
     body.clear();
     request.clear();
+    raw_body.clear();
+    chunk_size = 0;
 }
 
 int Client::getBodySize() const {
