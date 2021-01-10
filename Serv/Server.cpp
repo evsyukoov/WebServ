@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Debug.hpp"
 
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
@@ -43,16 +44,18 @@ int   Server::receiveData(int client_sock, std::string &str)
 {
     char recieve[BUFFER_SIZE];
 
+#ifdef D_READ
     std::cout << "Wait for reading request from client: " << client_sock << std::endl;
+#endif
     usleep(1000);
     int len;
     len = read(client_sock, recieve, BUFFER_SIZE - 1);
     recieve[len] = '\0';
+#ifdef D_READ
     std::cout << "len: " << len << std::endl;
-    if (len == 0)
-        return (0);
-    else if (len < 0)
-        return (-1);
+#endif
+    if (len <= 0)
+        return (len);
     else
         str = recieve;
     //std::cout << BLUE << "recieve: " << str  << RESET << std::endl;
@@ -129,27 +132,34 @@ int Server::servLoop(HTTP &http) {
 		else
 		    max = (--servers.end())->first;
         //ждем коннекта или готовности к чтению
+#ifdef D_SELECT
 		std::cout << "select block" << std::endl;
+#endif
 		int ret = select(max + 1, &read_set,  &write_set, NULL, NULL);
 		if (ret < 0) {
             std::cerr << "select error: " << ret << std::endl;
             continue;
         }
+#ifdef D_SELECT
 		std::cout << "select unblock, ret: " << ret << std::endl;
+#endif
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
 			// произошел коннект на n-ом сервере
 			if (FD_ISSET((*it).first, &read_set)) {
-
 				int client_sock = accept((*it).first, NULL, NULL);
-				std::cout << "Accept done: " << client_sock << std::endl;
 				set_nonblock(client_sock);
                 Client *client = new Client(client_sock, it->second);
                 clients.push_back(client);
+#ifdef D_SELECT
+				std::cout << "Accept done: " << client_sock << std::endl;
+#endif
 			}
 		}
         std::vector<char*> requests = readRequests(clients);
+#ifdef D_SELECT
         print(clients);
+#endif
 		sendToAllClients(requests, clients, http);
 	}
 	return (1);
@@ -184,10 +194,12 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 			else if (ret > 0)
 			{
                 (*it)->findState(data);
-                 std::cout << "State: " << (*it)->getState() << std::endl;
                 if ((*it)->getState() == FINISH)
                     FD_SET((*it)->getClientSock(), &write_set);
                 it++;
+#ifdef D_STATE
+                 std::cout << "State: " << (*it)->getState() << std::endl;
+#endif
 			}
 			//иначе просто идем дальше
 			else

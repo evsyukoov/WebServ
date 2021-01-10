@@ -1,6 +1,7 @@
 
 
 #include "File.hpp"
+#include "Debug.hpp"
 
 long File::contentLength(std::map<std::string, std::string> &reqMap)
 {
@@ -25,7 +26,12 @@ void 	File::contentWithComma(std::map<std::string, std::string> &reqMap, std::st
 {
 	std::vector<std::string>	valid_vector;
 
+<<<<<<< HEAD
+#ifdef D_CONTENT
 	std::cout << "Segf catcher1" << std::endl;
+#endif
+=======
+>>>>>>> 9864cdd68742f3a02b48e5479b2a27672f74af91
 	if (reqMap.find(base) != reqMap.end())
 	{
 		valid_vector = ft_split(reqMap[base], ",");
@@ -76,7 +82,9 @@ void File::placeContentType(std::map<std::string, std::string> &reqMap)
 		else
 			content_type = getMime(reqMap["location"].substr(pos, reqMap["location"].size() - pos));
 	}
+#ifdef D_MIME
 	std::cout << "Content-Type: " << content_type << std::endl;
+#endif
 }
 
 bool File::contentType(std::map<std::string, std::string> &reqMap)

@@ -130,7 +130,9 @@ void    Client::analizeChunked()
 void Client::findState(std::string &piece) {
     int delimetr = 0;
 
+#ifdef D_STATE
     std::cout << "State begin: " << state << std::endl;
+#endif
     if (state == HEADER) {
         request += piece;
         if ((delimetr = request.find("\r\n\r\n")) != std::string::npos) {
