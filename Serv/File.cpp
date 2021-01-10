@@ -25,10 +25,11 @@ void 	File::contentWithComma(std::map<std::string, std::string> &reqMap, std::st
 {
 	std::vector<std::string>	valid_vector;
 
+	std::cout << "Segf catcher1" << std::endl;
 	if (reqMap.find(base) != reqMap.end())
 	{
 		valid_vector = ft_split(reqMap[base], ",");
-		for (size_t pos = 0; pos < valid_vector[pos].size(); pos++)
+		for (size_t pos = 0; pos < valid_vector.size(); pos++)
 		{
 			trimmer(valid_vector[pos]);
 			std::transform(valid_vector[pos].begin(), valid_vector[pos].end(), valid_vector[pos].begin(), tolower);
@@ -47,10 +48,9 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 {
 	if (charset_vector.size() != 2 && charset_vector.size() != 0)
 		return (false);
-	if (charset_vector.size() > 0 && charset_vector[0] != "charset")
-		return (false);
-	if (charset_vector.size() > 1 && std::find_if_not(charset_vector[1].begin(), charset_vector[1].end(), charsetPredicate)
-	!= charset_vector[1].end())
+	if (charset_vector.size() > 1 && (std::find_if_not(charset_vector[1].begin(), charset_vector[1].end(), charsetPredicate)
+	!= charset_vector[1].end() || std::find_if_not(charset_vector[0].begin(), charset_vector[0].end(), charsetPredicate)
+								  != charset_vector[0].end()))
 		return (false);
 	if (type_vector.size() != 2)
 		return (false);
@@ -58,48 +58,76 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 		!= type_vector[0].end() || std::find_if_not(type_vector[1].begin(), type_vector[1].end(), charsetPredicate)
 		!= type_vector[1].end())
 		return (false);
+	std::transform(type_vector[0].begin(), type_vector[0].end(), type_vector[0].begin(), tolower);
+	std::transform(type_vector[1].begin(), type_vector[1].end(), type_vector[1].begin(), tolower);
+	trimmer(type_vector[0]);
+	trimmer(type_vector[1]);
 	return (true);
-
-
 }
 
-void File::contentType(std::map<std::string, std::string> &reqMap)
+void File::placeContentType(std::map<std::string, std::string> &reqMap)
+{
+	size_t pos = 0;
+
+	if (!contentType(reqMap))
+	{
+		if ((pos = reqMap["location"].rfind('.')) == std::string::npos)
+			content_type = getMime("");
+		else
+			content_type = getMime(reqMap["location"].substr(pos, reqMap["location"].size() - pos));
+	}
+	std::cout << "Content-Type: " << content_type << std::endl;
+}
+
+bool File::contentType(std::map<std::string, std::string> &reqMap)
 {
 //	std::map<std::string, std::string>::iterator iterator;
 	std::vector<std::string>    start_vector;
 	std::vector<std::string>	type_vector;
 	std::vector<std::string>	charset_vector;
+	size_t pos = 0;
 
 	if (reqMap.find(TYPE) != reqMap.end())
 	{
 		start_vector = ft_split(reqMap[TYPE], ";");
 		if (start_vector.size() > 0)
 		{
+			trimmer(start_vector[0]);
+			if (start_vector[0].find(' ') != std::string::npos)
+				return (false);
 			type_vector = ft_split(start_vector[0], "/");
-			if (type_vector.size() == 2)
-			{
-				trimmer(type_vector[0]);
-				trimmer(type_vector[1]);
-			}
 			if (start_vector.size() == 2)
 			{
 				trimmer(start_vector[1]);
 				charset_vector = ft_split(start_vector[1], "=");
 			}
 			if (!typeValidity(charset_vector, type_vector))
-				return;
+				return (false);
 			content_type = type_vector[0] + "/" + type_vector[1];
-			if (charset_vector.size() > 1)
-				charset = charset_vector[1];
+			if (!charset_vector.empty())
+			{
+				std::transform(charset_vector[0].begin(), charset_vector[0].end(), charset_vector[0].begin(), tolower);
+				if (charset_vector[0] == "charset")
+				{
+					std::transform(charset_vector[1].begin(), charset_vector[1].end(), charset_vector[1].begin(), tolower);
+					if (charset_vector[1][0] == '\"' && charset_vector[1].back() == '\"')
+					{
+						charset_vector[1].erase(0, 1);
+						charset_vector[1].erase(charset_vector[1].size() - 1);
+					}
+					charset = charset_vector[1];
+				}
+			}
+			return (true);
 		}
 	}
-	else
-		content_type = "application/octet-stream";
+	return (false);
 }
 
-std::string File::getMime()
+std::string File::getMime(std::string extencion)
 {
 	std::map<std::string, std::string> mime_map;
+	std::map<std::string, std::string>::iterator iter;
 
 	mime_map["audio/aac"] = ".aac";
 	mime_map["application/x-abiword"] = ".abw";
@@ -174,19 +202,36 @@ std::string File::getMime()
  	mime_map["video/3gpp2"] = ".3g2";
  	mime_map["audio/3gpp2"] = ".3g2";
  	mime_map["application/x-7z-compressed"] = ".7z";
- 	mime_map["application/octet-stream"] = "";
+ //	mime_map["application/octet-stream"] = "";
 
- 	if (mime_map.find(content_type) != mime_map.end())
-		return (mime_map[content_type]);
-	return ("");
+ 	iter = mime_map.begin();
+ 	while (iter != mime_map.end())
+	{
+ 		if (iter->second == extencion)
+			return (iter->first);
+ 		iter++;
+	}
+ 	if (extencion == "")
+		return ("text/plain");
+ 	else
+		return ("application/octet-stream");
+// 	if (mime_map.find(content_type) != mime_map.end())
+//		return (mime_map[content_type]);
+//	return ("");
 }
 
 File::File(std::map<std::string, std::string> &reqMap)
 {
-	content_length = contentLength(reqMap);
+	this->content_length = contentLength(reqMap);
 	contentWithComma(reqMap, LANG);
 	contentWithComma(reqMap, ENCODE);
-	contentType(reqMap);
+	placeContentType(reqMap);
+}
+
+void File::setRoot(std::string root)
+{
+	file_name = root;
+	std::cout << "Your file name: " + file_name << std::endl;
 }
 
 long File::getContentLength() { return (content_length); }
@@ -199,3 +244,6 @@ const std::string &File::getContentType() { return (content_type); }
 
 const std::string &File::getCharset() { return (charset); }
 
+const std::string &File::getRoot() { return (file_name); }
+
+void File::setContentLength(size_t content_length) { this->content_length = content_length; }

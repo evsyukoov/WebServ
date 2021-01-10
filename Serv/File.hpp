@@ -25,14 +25,21 @@ private:
 
 	void contentWithComma(std::map<std::string, std::string> &reqMap, std::string base);
 
-	void contentType(std::map<std::string, std::string> &reqMap);
+	bool contentType(std::map<std::string, std::string> &reqMap);
+
+	void placeContentType(std::map<std::string, std::string> &reqMap);
 
 	bool typeValidity(std::vector<std::string> &charset_vector, std::vector<std::string> &type_vector);
+
 
 public:
 	File(std::map<std::string, std::string>&);
 
 	long getContentLength();
+
+	void setRoot(std::string root);
+
+	const std::string& getRoot();
 
 	const std::vector<std::string>& getContentLanguage();
 
@@ -42,7 +49,11 @@ public:
 
 	const std::string &getContentType();
 
-	std::string getMime();
+	static std::string getMime(std::string extencion);
+
+	void setContentLength(size_t content_length);
+
+//	std::string getMime();
 
 };
 

@@ -9,11 +9,23 @@ bool predicate(char c)
 	return (false);
 }
 
+bool acceptPredicete(char c)
+{
+	if (std::isalnum(c) || c == '-' || c == '=' || c == ';' || c == ' ' || c == '.' || c == '*')
+		return (true);
+	return (false);
+}
+
 bool charsetPredicate(char c)
 {
 	if (std::isprint(c) && c != ' ')
 		return (true);
 	return (false);
+}
+
+bool comparePriors(const std::pair<std::string, float>& a, const std::pair<std::string, float>& b)
+{
+	return (a.second < b.second);
 }
 
 void trimmer(std::string &str)

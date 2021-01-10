@@ -16,6 +16,7 @@
 #define GREEN "\033[1;32m"
 #define BLUE "\033[1;34m"
 #define RESET "\033[0m"
+#define BUFFER_SIZE 100000
 
 class Server {
     //сервера ключ-listener, значение -  ServConf
@@ -39,16 +40,16 @@ public:
 
     int    openServers();
 
-    _Noreturn int     servLoop();
+    int     servLoop(HTTP &http);
 
 
-    int     run();
+    int     run(HTTP &http);
 
     void    initReadSet();
 
     std::vector<char*>      readRequests(std::list<Client*> &clients);
 
-    void	sendToAllClients(std::vector<char*> requests, std::list<Client*> clients);
+    void	sendToAllClients(std::vector<char*> requests, std::list<Client*> &clients, HTTP &http);
 
 };
 
