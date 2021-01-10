@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include "HTTP.hpp"
+#include "Debug.hpp"
 
 HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {
 
@@ -163,8 +164,10 @@ int HTTP::initMap() {
 //	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
-	//printMap();
+#ifdef D_REQUEST
+	printMap();
 	std::cout << YELLOW << "Your request is finish !\n"  << RESET << std::endl;
+#endif
 	return (0);
 }
 
@@ -746,7 +749,9 @@ int HTTP::sendReq(std::string header, std::string responce)
 	std::map<int, std::string>::const_iterator iter;
 	struct stat st;
 
+#ifdef D_SEND
 	std::cout << "Error num: " << error_num << std::endl;
+#endif
 	if (reqMap["method"] == "HEAD")
 		responce = header;
 	result = header + responce;
@@ -867,7 +872,9 @@ void HTTP::post()
 	t_cgi cgi;
 	std::string post_root;
 
+#ifdef D_POST
 	std::cout << "POST start!" << std::endl;
+#endif
 	if (!postPutvalidation(post_root, file))
 		return;
 	reqMap["location"].erase(0, it->getLocation().size());
