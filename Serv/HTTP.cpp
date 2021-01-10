@@ -118,6 +118,9 @@ bool HTTP::validateHeaderMap()
 		trimmer(iter->second);
 		iter++;
 	}
+	if (reqMap.find(LENGTH) != reqMap.end() &&
+	reqMap.find(TRANSFER) != reqMap.end())
+		return (false);
 	return (true);
 }
 
@@ -575,6 +578,28 @@ std::string HTTP::removeAllUnnecessarySlash(std::string path)
 	return (path);
 }
 
+bool HTTP::tryAutoindex(std::string &path)
+{
+	try
+	{
+		path = removeAllUnnecessarySlash(pathFormerer());
+	}
+	catch (bool is_autoindex)
+	{
+		path = postRoot();
+		if (path.back() != '/')
+			path.push_back('/');
+		std::string root(path);
+		path = removeAllUnnecessarySlash(root + reqMap["location"]);
+		initListingHTML(path, root);
+		respMap[LENGTH] = std::to_string(listing.size());
+		respMap[TYPE] = "text/html";
+		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", listing);
+		return (true);
+	}
+	return (false);
+}
+
 // GET запрос
 void HTTP::get()
 {
@@ -596,23 +621,8 @@ void HTTP::get()
 		post();
 		return;
 	}
-	try
-	{
-		path = removeAllUnnecessarySlash(pathFormerer());
-	}
-	catch (bool is_autoindex)
-	{
-		path = postRoot();
-		if (path.back() != '/')
-			path.push_back('/');
-		std::string root(path);
-		path = removeAllUnnecessarySlash(root + reqMap["location"]);
-		initListingHTML(path, root);
-		respMap[LENGTH] = std::to_string(listing.size());
-		respMap[TYPE] = "text/html";
-		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", listing);
+	if (tryAutoindex(path))
 		return;
-	}
 	accepts(lang_prior_map, AC_LANG);
 	accepts(accept_charset_map, AC_CHARSET);
 //	if (!acceptedLanguages(lang_prior_map))
@@ -695,17 +705,21 @@ void HTTP::formRespHeaderOK(std::string &path, struct stat st)
 
 void HTTP::readFile(struct stat &st, int fd, std::string &path)
 {
-	char buf[st.st_size + 1];
+//	char buf[st.st_size + 1];
 
+	char *buf = new char[st.st_size + 1];
 	buf[st.st_size] = '\0';
+	std::cout << st.st_size << std::endl;
 	if (read(fd, buf, st.st_size) < 0)
 	{
 		close(fd);
+		delete[] buf;
 		return;
 	}
 	close(fd);
 	formRespHeaderOK(path, st);
 	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", buf);
+	delete[] buf;
 }
 
 std::string HTTP::errorPageResponece(int error_num)
@@ -746,13 +760,19 @@ int HTTP::sendReq(std::string header, std::string responce)
 	std::map<int, std::string>::const_iterator iter;
 	struct stat st;
 
-	std::cout << "Error num: " << error_num << std::endl;
-	if (reqMap["method"] == "HEAD")
-		responce = header;
+	if (reqMap["meethod"] == "HEAD")
+		responce.clear();
 	result = header + responce;
 	std::cout << "Result responce: " << result << std::endl;
 
-	send(client_fd, (char *)result.c_str(), result.size(), 0);
+//	int i = 1;
+//	while (!write(client_fd, (char*)result.c_str(), 10000))
+//	{
+//		result = result.substr(10000 * i, result.size());
+//		i++;
+//	}
+	if (send(client_fd, (char *)result.c_str(), result.size(), 0) < 0)
+		return (0);
 	return (0);
 }
 
@@ -824,12 +844,32 @@ bool HTTP::validateTransferEncoding()
 	return (false);
 }
 
-bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
+bool HTTP::postRootConfig(std::string &post_root)
+{
+	former(post_root);
+	if (!(validateExtencion(post_root)))
+	{
+		std::string error(errorPageResponece(405));
+		respMap[ALLOW] = makeAllow("POST");
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
+		return (false);
+	}
+	return (true);
+}
+
+bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_flag)
 {
 	put_post_root = postRoot();
 	std::string error;
 	bool validate;
 
+	if (put_post_root.back() != '/')
+		put_post_root.push_back('/');
+	if (post_flag)
+	{
+		if (!postRootConfig(put_post_root))
+			return (false);
+	}
 	if (!checkForAllowedMethod())
 	{
 		respMap[ALLOW] = makeAllow("");
@@ -837,7 +877,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
 		return (false);
 	}
-	if (!(validate = validateTransferEncoding())&& file.getContentLength() == -1)
+	if (!(validate = validateTransferEncoding()) && file.getContentLength() == -1)
 	{
 		error = errorPageResponece(411);
 		sendReq("HTTP/1.1 411 Length Required\r\n" + responceMapToString() + "\r\n", error);
@@ -847,37 +887,34 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file)
 		file.setContentLength(reqMap["body"].size());
 	if (it != servConf.getLocations().end())
 	{
-		if (it->getMaxBody() != -1 && it->getMaxBody() < file.getContentLength())
+		if (it->getMaxBody() != -1 && it->getMaxBody() < file.getContentLength()) //|| it->getMaxBody() < reqMap.count("body"))
 		{
 			error = errorPageResponece(413);
 			sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", error);
 			return (false);
 		}
 	}
-	if (put_post_root.back() != '/')
-		put_post_root.push_back('/');
 	return (true);
 }
 
 void HTTP::post()
 {
-	int fd;
 //	long content_length = contentLength();
 	File file(reqMap);
 	t_cgi cgi;
 	std::string post_root;
 
-	if (!postPutvalidation(post_root, file))
+	if (!postPutvalidation(post_root, file, true))
 		return;
-	reqMap["location"].erase(0, it->getLocation().size());
-	post_root += reqMap["location"];
-	post_root = removeAllUnnecessarySlash(post_root);
-	if (!(validateExtencion(post_root)))
-	{
-		std::string error(errorPageResponece(405));
-		respMap[ALLOW] = makeAllow("POST");
-		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
-	}
+//	reqMap["location"].erase(0, it->getLocation().size());
+//	post_root += reqMap["location"];
+//	post_root = removeAllUnnecessarySlash(post_root);
+//	if (!(validateExtencion(post_root)))
+//	{
+//		std::string error(errorPageResponece(405));
+//		respMap[ALLOW] = makeAllow("POST");
+//		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
+//	}
 	else
 	{
 		fill_cgi(&cgi, file, post_root);
@@ -902,17 +939,26 @@ void HTTP::rewriteFileToVector(File &file)
 	}
 }
 
+void HTTP::former(std::string &root)
+{
+	reqMap["location"].erase(0, it->getLocation().size());
+	root += reqMap["location"];
+	root = removeAllUnnecessarySlash(root);
+}
+
 void HTTP::put()
 {
 	int fd;
 	std::string put_root;
+	std::string location_saver(reqMap["location"]);
 	File new_file(reqMap);
 
-	if (!postPutvalidation(put_root, new_file))
+	if (!postPutvalidation(put_root, new_file, false))
 		return;
-	reqMap["location"].erase(0, it->getLocation().size());
-	put_root += reqMap["location"];
-	put_root = removeAllUnnecessarySlash(put_root);
+	former(put_root);
+//	reqMap["location"].erase(0, it->getLocation().size());
+//	put_root += reqMap["location"];
+//	put_root = removeAllUnnecessarySlash(put_root);
 	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
 	{
 		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
@@ -924,6 +970,7 @@ void HTTP::put()
 			return;
 		}
 		formContentTypeLength(put_root, -1);
+		respMap[LOCATION] = location_saver;
 		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", "");
 		new_file.setRoot(put_root);
 		files.push_back(new_file);
