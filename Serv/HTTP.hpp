@@ -13,6 +13,7 @@
 #define SERVER "Server"
 #define LAST_MOD "Last-Modified"
 #define TRANSFER "Transfer-Encoding"
+#define LOCATION "Location"
 
 
 #include <sys/stat.h>
@@ -35,16 +36,16 @@ private:
 	ServConf		servConf;
 	std::string 	buff_req;
 	std::map<std::string, std::string>	reqMap;  //map запроса включает в себя все заголовки
-	std::list<Location>::const_iterator it;
+	std::list<Location>::const_iterator it; // нахождение нужного location
 	std::string 	result;
 	int				client_fd;
 	struct input    in;
-	std::vector<File> files;
+	std::vector<File> files; // вектор отслеживаемых файлов
 	std::map<std::string, std::string> respMap; //map заголовков ответа
 
-    std::map<int, std::string> errors;
+    std::map<int, std::string> errors; //карта ошибок
 	//сформированная страничка со списком директорий для автоиндекса
-	std::string listing;
+	std::string listing; // автоиндекс
 
 	void 	get();
 
@@ -54,7 +55,9 @@ private:
 
 	bool checkForAllowedMethod();
 
-	bool postPutvalidation(std::string &put_post_root, File &file);
+	bool postPutvalidation(std::string &put_post_root, File &file, bool post_flag);
+
+	bool postRootConfig(std::string &post_root);
 
 	bool locationMatch(const std::string& location);
 
@@ -142,6 +145,9 @@ private:
 
 	bool		validateTransferEncoding();
 
+	bool 		tryAutoindex(std::string &path);
+
+	void		former(std::string &root);
 
 public:
 
