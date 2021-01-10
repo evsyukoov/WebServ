@@ -11,7 +11,7 @@ int main()
 	map["Content-Language"] = "    en,d-54a,                     en-su, TYRW";
 	map["Content-Length"] = "123549867945";
 	map["Content-Encoding"] = ",  gzip, cpmpr";
-	map["Content-Type"] = "type          /             subtype         ;          charset=tuf32-32";
+	map["Content-Type"] = "tyPe/subtype         ;          charsEt=tuf32-32";
 
 	File new_file(map);
 	file_vector.push_back(new_file);

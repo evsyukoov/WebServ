@@ -1,12 +1,18 @@
 NAME1=server
-NAME2=client
 
-SRC = Net.cpp \
-	  lib.cpp \
-	  HttpRequest.cpp \
-	  HttpResponse.cpp \
+SRC = HTTP.cpp \
 	  CGI.cpp   \
-	  Parser/Config.cpp
+	  Parser/Config.cpp \
+	  Parser/Location.cpp \
+	  Parser/ServConf.cpp \
+	  File.cpp \
+	  utils.cpp \
+	  utils_for_file.cpp \
+	  Client.cpp \
+	  Parser/parser_utils.cpp \
+	  Server.cpp \
+	  server_main.cpp
+
 
 FLAGS = -Wall -Wextra -Werror
 
@@ -15,10 +21,8 @@ OBJS=$(SRC:.cpp=.o)
 all: $(NAME1) $(NAME2)
 
 $(NAME1): $(OBJS)
-	clang++ $(OBJS) server_main.cpp -o $(NAME1)
+	clang++ $(OBJS) -o $(NAME1)
 
-$(NAME2): $(OBJS)
-	clang++ $(OBJS) client_main.cpp -o $(NAME2)
 
 clean:
 	rm -f $(OBJS)

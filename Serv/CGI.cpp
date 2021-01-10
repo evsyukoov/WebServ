@@ -41,8 +41,8 @@ void        CGI::initEnvironments()
     environments["CONTENT_LENGTH"] = std::to_string(cgi.content_length);//std::to_string(request.size());
    environments["CONTENT_TYPE"] = cgi.content_type;
    environments["GATEWAY_INTERFACE"] = "CGI/1.1";
-   environments["PATH_INFO"] = cgi.path_info;
-   environments["PATH_TRANSLATED"] = cgi.path_translated;
+   environments["PATH_INFO"] = "/wrtj/wj46[pl[j/ryjwrjyrth2tyie5uegg3g3j/wrht4/442jjwjwryjwjwj" ;        //путь к скрипту(относительный)
+   //environments["PATH_TRANSLATED"] = "o[ytptp";
    environments["QUERY_STRING"] = cgi.query_string;
    environments["REMOTE_ADDR"] = servConf.getServerName();
    //environments["REMOTE_IDENT"]  =
