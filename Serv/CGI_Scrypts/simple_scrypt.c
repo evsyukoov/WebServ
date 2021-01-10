@@ -2,8 +2,8 @@
 // Created by Casie Carl on 12/15/20.
 //
 
-#include <iostream>
 #include <unistd.h>
+#include <stdio.h>
 
 int 	main(int argc, char **argv, char **env)
 {
@@ -11,7 +11,7 @@ int 	main(int argc, char **argv, char **env)
     char buff[100];
     int n = read(0, buff, 100);
     buff[n] = '\0';
-    std::cout << buff << " modified by child " << std::endl;
+    pritf("%s modified by child\n", buff);
 //	while(env && env[i])
 //	    std::cout << env[i++] << std::endl;
 }

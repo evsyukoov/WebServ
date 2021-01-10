@@ -12,9 +12,15 @@ SRC = HTTP.cpp \
 	  Parser/parser_utils.cpp \
 	  Server.cpp \
 	  server_main.cpp
+#SRC := $(shell find . -name \*.cpp | grep -v client_main | grep -v test_for_file)
 
+CXX := clang++
 
-FLAGS = -Wall -Wextra -Werror
+ifndef DEBUG
+CXXFLAGS := -std=c++98 #-Wall -Wextra -Werror
+else
+CXXFLAGS := -std=c++98 -D D_REQUEST #-Wall -Wextra -Werror
+endif
 
 OBJS=$(SRC:.cpp=.o)
 
@@ -23,12 +29,15 @@ all: $(NAME1) $(NAME2)
 $(NAME1): $(OBJS)
 	clang++ $(OBJS) -o $(NAME1)
 
+run:
+	$(MAKE) DEBUG=1
+	./server info.php Config.conf
 
 clean:
 	rm -f $(OBJS)
 
-%.o: %.c
-	clang++ -c -Wall -Wextra -Werror -c $< -o $@
+#%.o: %.cpp
+	#clang++ -c -Wall -Wextra -Werror -c $< -o $@
 
 fclean: clean
 	rm -f $(NAME1)
