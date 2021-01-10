@@ -8,38 +8,38 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug"/>
+				<Option working_dir="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug"/>
+				<Option working_dir="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug"/>
+				<Option working_dir="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Serv">
-				<Option output="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Serv" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug"/>
+				<Option output="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Serv" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -52,15 +52,15 @@
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 Serv"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 Serv"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Serv/fast">
-				<Option output="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Serv" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug"/>
+				<Option output="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Serv" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -73,77 +73,77 @@
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 Serv/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/ccarl/Desktop/WebServer2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 Serv/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/zcolleen/Desktop/webserv2/Serv/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/CGI.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/CGI.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/CGI.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/CGI.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/File.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/File.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/File.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/File.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/HTTP.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/HTTP.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/HTTP.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/HTTP.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/Config.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/Config.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/Config.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/Config.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/Location.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/Location.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/Location.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/Location.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/ServConf.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/ServConf.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/ServConf.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/ServConf.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/parser_utils.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/parser_utils.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Parser/parser_utils.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Parser/parser_utils.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Server.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Server.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/Server.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/Server.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/server_main.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/server_main.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/utils.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/utils.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils_for_file.cpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.cpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/utils_for_file.hpp">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/utils_for_file.hpp">
 			<Option target="Serv"/>
 		</Unit>
-		<Unit filename="/Users/ccarl/Desktop/WebServer2/Serv/CMakeLists.txt">
+		<Unit filename="/Users/zcolleen/Desktop/webserv2/Serv/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>
