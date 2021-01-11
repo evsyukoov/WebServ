@@ -267,7 +267,7 @@ int HTTP::checkDirectory(const std::string& root)
 //	std::cout << root + reqMap["location"] << std::endl;
 //	if (stat("/Users/zcolleen/Desktop/webserv2/Serv/testfiles/test.txt", &structstat))
 //		std::cout << "working" << std::endl;
-	if (!stat((root + reqMap["location"]).c_str(), &structstat))
+	if (!stat(root.c_str(), &structstat))
 	{
 		if (S_ISREG(structstat.st_mode))
 			return (0);
@@ -285,7 +285,7 @@ std::string HTTP::rootSwitcher(const std::string& root, const std::string& serv_
 	if (rootWithSlash.back() != '/')
 		rootWithSlash.push_back('/');
 	reqMap["location"].erase(0, it->getLocation().size());
-	if ((checkDirectoryRet = checkDirectory(rootWithSlash)) == 0)
+	if ((checkDirectoryRet = checkDirectory(rootWithSlash + reqMap["location"])) == 0)
 		return (rootWithSlash + reqMap["location"]);
 	else if (checkDirectoryRet == 1)
 	{
@@ -946,19 +946,22 @@ bool HTTP::validateTransferEncoding()
 	return (false);
 }
 
+
+
 bool HTTP::postRootConfig(std::string &post_root)
 {
 	former(post_root);
-	if (reqMap["location"] == "" && it->getLocation() == "/post_body")
-    {
-	    if (it->getMaxBody() < reqMap["body"].size())
-        {
-            sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", "");
-            return false;
-        }
-	    sendReq("HTTP/1.1 200 Bad Request\r\n" + responceMapToString() + "\r\n", "");
-        return (false);
-    }
+	if (checkDirectory(post_root) == 1)
+//	if (reqMap["location"] == "" && it->getLocation() == "/post_body")
+//    {
+//	    if (it->getMaxBody() < reqMap["body"].size())
+//        {
+//            sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", "");
+//            return false;
+//        }
+//	    sendReq("HTTP/1.1 200 Bad Request\r\n" + responceMapToString() + "\r\n", "");
+//        return (false);
+//    }
 	if (!(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
@@ -1076,6 +1079,42 @@ void HTTP::former(std::string &root)
 	root = removeAllUnnecessarySlash(root);
 }
 
+bool HTTP::putManager(std::string &put_root, File &file, std::string uri, const std::string &responce)
+{
+	int fd;
+
+	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
+	{
+		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
+		if (fd < 0 || x_write(fd, reqMap["body"], file.getContentLength()) < 0)
+		{
+			std::string error(errorPageResponece(403));
+			sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
+			close(fd);
+			return (false);
+		}
+		formContentTypeLength(put_root, -1);
+		respMap[LOCATION] = uri;
+		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", responce);
+		file.setRoot(put_root);
+		files.push_back(file);
+		close(fd);
+		return (true);
+	}
+	if (x_write(fd, reqMap["body"], file.getContentLength()) < 0)
+	{
+		close(fd);
+		std::string error(errorPageResponece(403));
+		sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
+		return (false);
+	}
+	file.setRoot(put_root);
+	rewriteFileToVector(file);
+	formContentTypeLength(put_root, -1);
+	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", responce);
+	close(fd);
+}
+
 void HTTP::put()
 {
 	int fd;
@@ -1086,36 +1125,37 @@ void HTTP::put()
 	if (!postPutvalidation(put_root, new_file, false))
 		return;
 	former(put_root);
-	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
-	{
-		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
-		if (fd < 0 || x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
-		{
-			std::string error(errorPageResponece(403));
-			sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
-			close(fd);
-			return;
-		}
-		formContentTypeLength(put_root, -1);
-		respMap[LOCATION] = location_saver;
-		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", "");
-		new_file.setRoot(put_root);
-		files.push_back(new_file);
-		close(fd);
-		return;
-	}
-	if (x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
-	{
-		close(fd);
-		std::string error(errorPageResponece(403));
-		sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
-		return;
-	}
-	new_file.setRoot(put_root);
-	rewriteFileToVector(new_file);
-	formContentTypeLength(put_root, -1);
-	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
-	close(fd);
+	putManager(put_root, new_file, location_saver);
+//	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
+//	{
+//		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
+//		if (fd < 0 || x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
+//		{
+//			std::string error(errorPageResponece(403));
+//			sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
+//			close(fd);
+//			return;
+//		}
+//		formContentTypeLength(put_root, -1);
+//		respMap[LOCATION] = location_saver;
+//		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", "");
+//		new_file.setRoot(put_root);
+//		files.push_back(new_file);
+//		close(fd);
+//		return;
+//	}
+//	if (x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
+//	{
+//		close(fd);
+//		std::string error(errorPageResponece(403));
+//		sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
+//		return;
+//	}
+//	new_file.setRoot(put_root);
+//	rewriteFileToVector(new_file);
+//	formContentTypeLength(put_root, -1);
+//	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
+//	close(fd);
 }
 
 std::string &HTTP::getResponce()

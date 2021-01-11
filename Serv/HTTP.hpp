@@ -151,8 +151,9 @@ private:
 
 	static int			x_write(int fd, std::string buf, size_t len);
 
+	bool				putManager(std::string &put_root, File &file, std::string uri, const std::string &responce = std::string(""));
 
-	void hardcodeMap(std::string body);
+	void				hardcodeMap(std::string body);
 
 public:
 
