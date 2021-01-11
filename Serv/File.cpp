@@ -26,12 +26,6 @@ void 	File::contentWithComma(std::map<std::string, std::string> &reqMap, std::st
 {
 	std::vector<std::string>	valid_vector;
 
-<<<<<<< HEAD
-#ifdef D_CONTENT
-	std::cout << "Segf catcher1" << std::endl;
-#endif
-=======
->>>>>>> 9864cdd68742f3a02b48e5479b2a27672f74af91
 	if (reqMap.find(base) != reqMap.end())
 	{
 		valid_vector = ft_split(reqMap[base], ",");
