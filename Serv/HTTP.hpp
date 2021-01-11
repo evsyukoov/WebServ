@@ -14,7 +14,7 @@
 #define LAST_MOD "Last-Modified"
 #define TRANSFER "Transfer-Encoding"
 #define LOCATION "Location"
-
+#define BYTES_TO_WRITE 10000
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -47,7 +47,7 @@ private:
 	//сформированная страничка со списком директорий для автоиндекса
 	std::string listing; // автоиндекс
 
-	void 	get();
+	int 	get();
 
 	void 	post();
 
@@ -148,6 +148,12 @@ private:
 	bool 		tryAutoindex(std::string &path);
 
 	void		former(std::string &root);
+
+	static int			x_write(int fd, std::string buf, size_t len);
+
+	void				putManager();
+
+	std::map<std::string, std::string>	hardcodeMap();
 
 public:
 

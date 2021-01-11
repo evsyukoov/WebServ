@@ -606,7 +606,7 @@ bool HTTP::tryAutoindex(std::string &path)
 }
 
 // GET запрос
-void HTTP::get()
+int HTTP::get()
 {
 	int fd;
 	struct stat structstat;
@@ -619,15 +619,15 @@ void HTTP::get()
 		respMap[ALLOW] = makeAllow("");
 		std::string error(errorPageResponece(405));
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
-		return;
+		return (0);
 	}
 	else if (postGet())
 	{
 		post();
-		return;
+		return (0);
 	}
 	if (tryAutoindex(path))
-		return;
+		return (0);
 	accepts(lang_prior_map, AC_LANG);
 	accepts(accept_charset_map, AC_CHARSET);
 //	if (!acceptedLanguages(lang_prior_map))
@@ -662,6 +662,7 @@ void HTTP::get()
 			readFile(structstat, fd, path);
 		}
 	}
+	return (0);
 }
 
 void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
@@ -760,36 +761,42 @@ std::string HTTP::errorPageResponece(int error_num)
 	return ("");
 }
 
+int HTTP::x_write(int fd, std::string buf, size_t len)
+{
+	int ret = 1;
+//	write(client_fd, (char*)result.c_str(), 10000);
+
+	while (ret > 0)
+	{
+		if (len > BYTES_TO_WRITE)
+		{
+			if ((ret = write(fd, (char*)buf.c_str(), BYTES_TO_WRITE)) < 0)
+				break;
+			buf = buf.substr(BYTES_TO_WRITE, len);
+			len -= BYTES_TO_WRITE;
+		}
+		else
+		{
+			ret = write(fd, (char *)buf.c_str(), len);
+			break;
+		}
+	}
+	if (ret == -1)
+		return (-1);
+	return (0);
+}
+
 int HTTP::sendReq(std::string header, std::string responce)
 {
-	int error_num;
-	int fd;
-	std::map<int, std::string>::const_iterator iter;
-	struct stat st;
 
 	if (reqMap["meethod"] == "HEAD")
 		responce.clear();
 	result = header + responce;
 //	std::cout << "Result responce: " << result << std::endl;
 
-//	int i = 1;
-//	while (!write(client_fd, (char*)result.c_str(), 10000))
-//	{
-//		result = result.substr(10000 * i, result.size());
-//		i++;
-//	}
-//
-//	int ret;
-//	int size = result.size();
-//	while (size)
-//	{
-//		ret = write(client_fd, result.substr(0, 10000).c_str(), 10000);
-//		result = result.substr(10000);
-//		size -= ret;
-//	}
-	if (send(client_fd, (char *)result.c_str(), result.size(), 0) < 0)
+	if (x_write(client_fd, result, result.size()) < 0)
 		return (0);
-	return (0);
+	return (1);
 }
 
 void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
@@ -916,6 +923,14 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 	return (true);
 }
 
+std::map<std::string, std::string> HTTP::hardcodeMap()
+{
+	std::map<std::string, std::string> hardcode;
+
+	hardcode["Status"] = "200 HTTP/1.1";
+	hardcode["Content-Type"] = "text/html; charset=iso";
+}
+
 void HTTP::post()
 {
 //	long content_length = contentLength();
@@ -947,8 +962,11 @@ void HTTP::post()
 #ifdef D_CGI
 		std::cout << "cgi out" << std::endl;
 #endif
-		respMap[LENGTH] = std::to_string(worker_cgi.getResponse().size());
-		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", worker_cgi.getResponse());
+		std::string responce(worker_cgi.getResponse());
+		respMap[LENGTH] = std::to_string(responce.size());
+		std::string headers = ft_split(responce, "\r\n\r\n")[0];
+		//std::cout << headers << std::endl;
+		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", responce);
 	}
 //	CGI cgi();
 }
@@ -986,13 +1004,10 @@ void HTTP::put()
 	if (!postPutvalidation(put_root, new_file, false))
 		return;
 	former(put_root);
-//	reqMap["location"].erase(0, it->getLocation().size());
-//	put_root += reqMap["location"];
-//	put_root = removeAllUnnecessarySlash(put_root);
 	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
 	{
 		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
-		if (fd < 0 || write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
+		if (fd < 0 || x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
 		{
 			std::string error(errorPageResponece(403));
 			sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
@@ -1007,7 +1022,7 @@ void HTTP::put()
 		close(fd);
 		return;
 	}
-	if (write(fd, reqMap["body"].c_str(), new_file.getContentLength()) < 0)
+	if (x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
 	{
 		close(fd);
 		std::string error(errorPageResponece(403));
