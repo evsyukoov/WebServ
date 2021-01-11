@@ -88,7 +88,7 @@ int main(int argc, char **argv, char **env)
 {
 
 	HTTP http;
-  
+
     struct input in;
     if (parseCommandLineArgs(argc, argv, in) == -1)
         return (0);

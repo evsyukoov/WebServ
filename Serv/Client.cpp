@@ -92,27 +92,35 @@ int    Client::decodeChunks()
 {
     //input = 10 \r\n abcdefgrty \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
     int pos = 0;
+    if (raw_body.find("0\r\n\r\n") != std::string::npos) {
+        //std::cout << "LAST CHUNK: " << piece << std::endl;
+        //std::cout << "size of last: " << piece.size() << std::endl;
+        state = FINISH;
+    }
     while ((pos = raw_body.find("\r\n")) != std::string::npos)
     {
-        if (!chunk_size) {
-            if (raw_body.find("0\r\n\r\n") != std::string::npos)
-                state = FINISH;
+        if (!chunk_size)
+        {
             std::string digit = raw_body.substr(0, pos);
             if (!isDigit(digit))
                 return (0);
-            chunk_size = std::strtol(raw_body.substr(0, pos).c_str(), NULL, 16);
+            chunk_size = std::strtol(digit.c_str(), NULL, 16);
         }
         else
         {
-            if (state == FINISH && !chunk_size)
-                break ;
+            if (!chunk_size) {
+                state = FINISH;
+                break;
+            }
             std::string content = raw_body.substr(0, pos);
-            body += content.substr(0, chunk_size);
+            piece = content.substr(0, chunk_size);
+            body += piece;
             chunk_size = 0;
         }
         raw_body = raw_body.substr(pos + 2);
     }
-    //std::cout << "Decode finish!" << std::endl;
+//    if (!piece.empty())
+//        std::cout << "Decode finish!, piece: " << piece.substr(piece.size() - 2) << " piece size: "<< piece.size()  << " ,summary_size: " << body.size() << " ,state: " << state << std::endl;
     return (1);
 }
 
@@ -158,7 +166,7 @@ void Client::findState(std::string &piece) {
     }
     else if (state == BODY_CHUNKED)
     {
-        //std::cout << "chunked..." << std::endl;
+        //std::cout << "chunke: " << piece << std::endl;
         raw_body += piece;
         decodeChunks();
     }

@@ -22,6 +22,7 @@ class Client {
     int             body_size;
     std::string     body;
     std::string     raw_body;
+    std::string     piece;
     long             chunk_size;
 
     std::map<std::string, std::string>  head;
