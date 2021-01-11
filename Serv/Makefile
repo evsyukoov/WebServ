@@ -12,37 +12,38 @@ SRC = HTTP.cpp \
 	  Parser/parser_utils.cpp \
 	  Server.cpp \
 	  server_main.cpp
-#SRC := $(shell find . -name \*.cpp | grep -v client_main | grep -v test_for_file)
 
 CXX := clang++
-CXXFLAGS := -std=c++98 
+CXXFLAGS := -std=c++98 #-Wall -Wextra -Werror
 
 ifdef DEBUG
-CXXFLAGS += -D WS_DEBUG#-Wall -Wextra -Werror
+CXXFLAGS += -D WS_DEBUG
 endif
-ifdef D_REQUEST
-CXXFLAGS += -D D_REQUEST #-Wall -Wextra -Werror
+ifeq ($(D_REQUEST), 1)
+CXXFLAGS += -D D_REQUEST
+else ifeq ($(D_CGI), 1)
+CXXFLAGS += -D D_CGI
 endif
 
 OBJS=$(SRC:.cpp=.o)
 
 all: $(NAME1) $(NAME2)
 
-$(NAME1): $(OBJS)
+$(NAME1): $(OBJS) | config
 	clang++ $(OBJS) -o $(NAME1)
 
 run: $(NAME1)
-	./server info.php Config.conf
+	./server info.php ./conf/webserv.conf
 
-debug:
-	$(MAKE) D_REQUEST=1
+debug: fclean
+	$(MAKE) DEBUG=1
 	./server info.php Config.conf
 
 clean:
 	rm -f $(OBJS)
 
-#%.o: %.cpp
-	#clang++ -c -Wall -Wextra -Werror -c $< -o $@
+config:
+	cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > webserv.conf
 
 fclean: clean
 	rm -f $(NAME1)

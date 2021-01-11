@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include "HTTP.hpp"
+#include "Debug.hpp"
 
 HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {
 
