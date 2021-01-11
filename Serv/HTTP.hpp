@@ -152,7 +152,7 @@ private:
 	static int			x_write(int fd, std::string buf, size_t len);
 
 
-	std::map<std::string, std::string>	hardcodeMap();
+	void hardcodeMap(std::string body);
 
 public:
 

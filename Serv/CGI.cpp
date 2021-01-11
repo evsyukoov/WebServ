@@ -53,6 +53,7 @@ void        CGI::initEnvironments()
    environments["SERVER_PORT"] = std::to_string(servConf.getPort());
    environments["SERVER_PROTOCOL"] = "HTTP/1.1";
   environments["SERVER_SOFTWARE"] = "webserv";
+  environments["HTTP_X-Secret-Header-For-Test"] = "1";
 }
 
 int     CGI::mapToEnv()
@@ -138,6 +139,9 @@ int     CGI::readFromCGI()
     buff[n] = '\0';
     response = buff;
     unlink("./tmp");
+//    map["status"] = "";
+//    map["content-type"] = "";
+//    map["body"] = "";
     return (1);
 }
 

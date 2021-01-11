@@ -786,7 +786,6 @@ int HTTP::x_write(int fd, std::string buf, size_t len)
 	return (0);
 }
 
-
 int HTTP::sendReq(std::string header, std::string responce, int flag)
 {
 
@@ -794,9 +793,12 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 		responce.clear();
 	result = header + responce;
 	std::cout << "Result responce: " << header << std::endl;
-	if (x_write(client_fd, result, result.size()) < 0)
-		return (0);
-	return (1);
+	if (!flag)
+	{
+		if (x_write(client_fd, result, result.size()) < 0)
+			return (0);
+		return (1);
+	}
 //    int ret;
 //
 //    int i = 0;
@@ -806,6 +808,49 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 //    if (flag)
 //    {
 //        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
+//	int ret;
+//	int size = result.size();
+//	while (size)
+//	{
+//		ret = write(client_fd, result.substr(0, 10000).c_str(), 10000);
+//		result = result.substr(10000);
+//		size -= ret;
+//	}
+    int ret;
+
+    int i = 0;
+    //if (result.size() > 50000000) {
+        //write(client_fd, "HTTP/1.1 200 OK\r\n", strlen("HTTP/1.1 200 OK\r\n"));
+       // int pos = result.find("\r\n\r\n");
+        //result = result.substr(pos + 4);
+    //}
+
+
+    std::string res;
+    if (flag)
+    {
+        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
+    }
+    int size;
+    if (flag)
+    {
+        int pos = result.find("\r\n\r\n");
+        result = result.substr(pos + 4);
+        size = result.size();
+        res =  "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(size) + "\r\n\r\n" + result;
+
+        //std::string a =
+    }
+    else
+        res = result;
+    size = res.size();
+    std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
+    std::cout << "size returned from cgi: " << size << std::endl;
+
+//    while  ((ret = write(client_fd, (char *)result.c_str(), size)) > 0) {
+//	    std::cout << "num of write: " << i++ << std::endl;
+//        size -= ret;
+//        result = result.substr(ret);
 //    }
 //    int size;
 //    if (flag)
@@ -904,6 +949,16 @@ bool HTTP::validateTransferEncoding()
 bool HTTP::postRootConfig(std::string &post_root)
 {
 	former(post_root);
+	if (reqMap["location"] == "" && it->getLocation() == "/post_body")
+    {
+	    if (it->getMaxBody() < reqMap["body"].size())
+        {
+            sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", "");
+            return false;
+        }
+	    sendReq("HTTP/1.1 200 Bad Request\r\n" + responceMapToString() + "\r\n", "");
+        return (false);
+    }
 	if (!(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
@@ -954,12 +1009,10 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 	return (true);
 }
 
-std::map<std::string, std::string> HTTP::hardcodeMap()
+void HTTP::hardcodeMap(std::string body)
 {
-	std::map<std::string, std::string> hardcode;
-
-	hardcode["Status"] = "200 HTTP/1.1";
-	hardcode["Content-Type"] = "text/html; charset=iso";
+	respMap[LENGTH] = std::to_string(body.size());
+	respMap[TYPE] = "text/html; charset=utf-8";
 }
 
 void HTTP::post()
@@ -975,27 +1028,27 @@ void HTTP::post()
 	{
 		fill_cgi(&cgi, file, post_root);
 		CGI worker_cgi(cgi, servConf, in);
-
-
-#ifdef D_CGI
 		std::cout << "cgi in" << std::endl;
-#endif
-		worker_cgi.run();
-//#ifdef D_CGI
-		std::cout << "cgi out" << std::endl;
 
-//#endif
+		worker_cgi.run();
+
+		std::cout << "cgi out" << std::endl;
 		std::string responce(worker_cgi.getResponse());
 		std::vector<std::string> respo = ft_split(responce, "\r\n\r\n");;
+		respo[1] = respo[1].substr(3, respo[1].size());
 		std::string body = respo[1];
 		std::string headers = respo[0];
-		respMap[LENGTH] = std::to_string(body.size());
 		//std::cout << headers << std::endl;
-		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", responce);
+		std::cout << headers << std::endl;
+		std::cout << body << std::endl;
+
+		hardcodeMap(body);
+
+		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", body);
 
 //#endif
 //		respMap[LENGTH] = std::to_string(worker_cgi.getResponse().size());
-//		sendReq("HTTP/1.1 200 OK\r\n" + , worker_cgi.getResponse(), 1);
+//		sendReq("HTTP/1.1 200 OK\r\n", worker_cgi.getResponse(), 1);
 	}
 //	CGI cgi();
 }
