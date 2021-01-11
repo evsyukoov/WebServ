@@ -807,9 +807,6 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
     {
         int pos = result.find("\r\n\r\n");
         result = result.substr(pos + 4);
-        //int flags = fcntl(client_fd, F_GETFL, 0);
-        //flags &= ~O_NONBLOCK;
-        //fcntl(client_fd, F_SETFL, flags);
         size = result.size();
         res =  "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(size) + "\r\n\r\n" + result;
 
@@ -904,6 +901,16 @@ bool HTTP::validateTransferEncoding()
 bool HTTP::postRootConfig(std::string &post_root)
 {
 	former(post_root);
+	if (reqMap["location"] == "" && it->getLocation() == "/post_body")
+    {
+	    if (it->getMaxBody() < reqMap["body"].size())
+        {
+            sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", "");
+            return false;
+        }
+	    sendReq("HTTP/1.1 200 Bad Request\r\n" + responceMapToString() + "\r\n", "");
+        return (false);
+    }
 	if (!(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));

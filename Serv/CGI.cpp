@@ -41,7 +41,7 @@ void        CGI::initEnvironments()
     environments["CONTENT_LENGTH"] = std::to_string(struct_cgi.content_length);//std::to_string(request.size());
    environments["CONTENT_TYPE"] = struct_cgi.content_type;
    environments["GATEWAY_INTERFACE"] = "CGI/1.1";
-   environments["PATH_INFO"] = "/dgberb" ;        //путь к скрипту(относительный)
+   environments["PATH_INFO"] = "/" ;        //путь к скрипту(относительный)
    environments["PATH_TRANSLATED"] = "/Users/zcolleen/Desktop/webserv2/Serv/example.cgi";
     //@TODO environments["QUERY_STRING"] = struct_cgi.query_string;
    //environments["REMOTE_ADDR"] = servConf.getServerName();
@@ -53,6 +53,7 @@ void        CGI::initEnvironments()
    environments["SERVER_PORT"] = std::to_string(servConf.getPort());
    environments["SERVER_PROTOCOL"] = "HTTP/1.1";
   environments["SERVER_SOFTWARE"] = "webserv";
+  environments["HTTP_X-Secret-Header-For-Test"] = "1";
 }
 
 int     CGI::mapToEnv()
@@ -138,6 +139,9 @@ int     CGI::readFromCGI()
     buff[n] = '\0';
     response = buff;
     unlink("./tmp");
+//    map["status"] = "";
+//    map["content-type"] = "";
+//    map["body"] = "";
     return (1);
 }
 
