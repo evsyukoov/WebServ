@@ -67,7 +67,7 @@ private:
 
 	std::string rootSwitcher(const std::string& root, const std::string& serv_index, const std::string& loc_index);
 
-	int sendReq(std::string header, std::string request);
+	int sendReq(std::string header, std::string request, int flag = int());
 
 	void readFile(struct stat &st, int fd, std::string &path);
 
@@ -151,7 +151,6 @@ private:
 
 	static int			x_write(int fd, std::string buf, size_t len);
 
-	void				putManager();
 
 	std::map<std::string, std::string>	hardcodeMap();
 

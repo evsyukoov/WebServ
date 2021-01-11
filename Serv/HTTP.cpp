@@ -167,10 +167,10 @@ int HTTP::initMap() {
 //	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
-#ifdef D_REQUEST 
+//#ifdef D_REQUEST
 	//printMap();
-	std::cout << YELLOW << "Your request is finish !\n" << buff_req << RESET << std::endl;
-#endif
+	std::cout << YELLOW << "Your request is finish !\n" << buff_req.substr(0, 250) << RESET << std::endl;
+//#endif
 	return (0);
 }
 
@@ -786,17 +786,48 @@ int HTTP::x_write(int fd, std::string buf, size_t len)
 	return (0);
 }
 
-int HTTP::sendReq(std::string header, std::string responce)
+
+int HTTP::sendReq(std::string header, std::string responce, int flag)
 {
 
-	if (reqMap["meethod"] == "HEAD")
+	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
-//	std::cout << "Result responce: " << result << std::endl;
-
+	std::cout << "Result responce: " << header << std::endl;
 	if (x_write(client_fd, result, result.size()) < 0)
 		return (0);
 	return (1);
+//    int ret;
+//
+//    int i = 0;
+//
+//
+//    std::string res;
+//    if (flag)
+//    {
+//        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
+//    }
+//    int size;
+//    if (flag)
+//    {
+//        int pos = result.find("\r\n\r\n");
+//        result = result.substr(pos + 4);
+//        //int flags = fcntl(client_fd, F_GETFL, 0);
+//        //flags &= ~O_NONBLOCK;
+//        //fcntl(client_fd, F_SETFL, flags);
+//        size = result.size();
+//        res =  "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(size) + "\r\n\r\n" + result;
+//
+//        //std::string a =
+//    }
+//    else
+//        res = result;
+//    size = res.size();
+//    std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
+//    std::cout << "size returned from cgi: " << size << std::endl;
+//
+//    write(client_fd, (char*)res.c_str(), size);
+	return (0);
 }
 
 void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
@@ -810,12 +841,12 @@ void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
 	cgi->path_info = "./" + reqMap["location"];
 
 #ifdef D_CGI
-	std::cout << "Lentght: " << cgi->content_length << std::endl;
-	std::cout << "Query string: " << cgi->query_string << std::endl;
+	//std::cout << "Lentght: " << cgi->content_length << std::endl;
+	//std::cout << "Query string: " << cgi->query_string << std::endl;
 	std::cout << "Request uri: " << cgi->request_uri << std::endl;
-	std::cout << "Path translated: " << cgi->path_translated << std::endl;
-	std::cout << "Content type: " << cgi->content_type << std::endl;
-	std::cout << "Path info: " << cgi->path_info << std::endl;
+	//std::cout << "Path translated: " << cgi->path_translated << std::endl;
+	//std::cout << "Content type: " << cgi->content_type << std::endl;
+	//std::cout << "Path info: " << cgi->path_info << std::endl;
 #endif
 }
 
@@ -940,15 +971,6 @@ void HTTP::post()
 
 	if (!postPutvalidation(post_root, file, true))
 		return;
-//	reqMap["location"].erase(0, it->getLocation().size());
-//	post_root += reqMap["location"];
-//	post_root = removeAllUnnecessarySlash(post_root);
-//	if (!(validateExtencion(post_root)))
-//	{
-//		std::string error(errorPageResponece(405));
-//		respMap[ALLOW] = makeAllow("POST");
-//		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
-//	}
 	else
 	{
 		fill_cgi(&cgi, file, post_root);
@@ -959,14 +981,21 @@ void HTTP::post()
 		std::cout << "cgi in" << std::endl;
 #endif
 		worker_cgi.run();
-#ifdef D_CGI
+//#ifdef D_CGI
 		std::cout << "cgi out" << std::endl;
-#endif
+
+//#endif
 		std::string responce(worker_cgi.getResponse());
-		respMap[LENGTH] = std::to_string(responce.size());
-		std::string headers = ft_split(responce, "\r\n\r\n")[0];
+		std::vector<std::string> respo = ft_split(responce, "\r\n\r\n");;
+		std::string body = respo[1];
+		std::string headers = respo[0];
+		respMap[LENGTH] = std::to_string(body.size());
 		//std::cout << headers << std::endl;
 		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", responce);
+
+//#endif
+//		respMap[LENGTH] = std::to_string(worker_cgi.getResponse().size());
+//		sendReq("HTTP/1.1 200 OK\r\n" + , worker_cgi.getResponse(), 1);
 	}
 //	CGI cgi();
 }

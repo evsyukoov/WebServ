@@ -112,7 +112,7 @@ int    Client::decodeChunks()
         }
         raw_body = raw_body.substr(pos + 2);
     }
-    std::cout << "Decode finish!" << std::endl;
+    //std::cout << "Decode finish!" << std::endl;
     return (1);
 }
 
@@ -158,7 +158,7 @@ void Client::findState(std::string &piece) {
     }
     else if (state == BODY_CHUNKED)
     {
-        std::cout << "chunked..." << std::endl;
+        //std::cout << "chunked..." << std::endl;
         raw_body += piece;
         decodeChunks();
     }
