@@ -82,20 +82,13 @@ int	CGI::run()
     int status;
     mapToEnv();
     if (pipe(fd) < 0)
-    {
-        std::cerr << "Pipe error" << std::endl;
-        return (0);
-    }
+        throw (std::runtime_error(strerror(errno)));
 	int child = fork();
 	int tmp_fd = open("./tmp", O_RDWR | O_CREAT, S_IRWXU);
 	if (tmp_fd < 0)
-    {
-	    std::cerr << "Error with tmp file on CGI" << std::endl;
-	    return (0);
-    }
+        throw (std::runtime_error(strerror(errno)));
 	if (child < 0) {
-        std::cerr << "Problems with fork" << std::endl;
-        return (0);
+        throw (std::runtime_error(strerror(errno)));
     }
 	else if (child == 0)
 	{
@@ -131,24 +124,16 @@ int     CGI::readFromCGI()
 {
     int fd = open("./tmp", O_RDONLY);
     if (fd < 0)
-    {
-        std::cerr << "Error open tmp file from CGI scrypt" << std::endl;
-        return (0);
-    }
+        throw (std::runtime_error(strerror(errno)));
+
     long size = findFileSize(fd);
     if (size < 0)
-    {
-        std::cerr << "Error reading from tmp file" << std::endl;
-        return (0);
-    }
+        throw (std::runtime_error(strerror(errno)));
 
     std::cout << "HELLO from cgi" << std::endl;
     char *buff;
     if (!(buff = (char*)malloc(sizeof(char) * (size + 1))))
-	{
-    	std::cerr << "Malloc error" << std::endl;
-    	return (0);
-	}
+        throw (std::runtime_error(strerror(errno)));
     int n = read(fd, buff, size);
     buff[n] = '\0';
     response = buff;

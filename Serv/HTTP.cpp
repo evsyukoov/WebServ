@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include "HTTP.hpp"
+#include "Debug.hpp"
 
 HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {
 
@@ -27,7 +28,7 @@ int 		HTTP::initListingHTML(std::string path, const std::string &root)
 	DIR *dir = opendir(path.c_str());
 	if (!dir)
 	{
-		std::cout << "Error open dir" << std::endl;
+		std::cerr << "Error open dir" << std::endl;
 		return (0);
 	}
 	struct dirent *dir_info;
@@ -166,8 +167,10 @@ int HTTP::initMap() {
 //	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
+#ifdef D_REQUEST 
 	//printMap();
-	//std::cout << YELLOW << "Your request is finish !\n" << buff_req << RESET << std::endl;
+	std::cout << YELLOW << "Your request is finish !\n" << buff_req << RESET << std::endl;
+#endif
 	return (0);
 }
 
@@ -252,7 +255,9 @@ void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
 	reqMap["location"].erase(0, it->getLocation().size());
 //	if (reqMap["location"][0] == '/')
 //		reqMap["location"].erase(0, 1);
+#ifdef D_REQUEST
 	std::cout << "Your new request is: " << reqMap["location"] << std::endl;
+#endif
 }
 
 int HTTP::checkDirectory(const std::string& root)
@@ -628,8 +633,10 @@ void HTTP::get()
 //	if (!acceptedLanguages(lang_prior_map))
 //		lang_prior_map.clear();
 
+ #ifdef D_GET
 	printLMAP(lang_prior_map);
 	printLMAP(accept_charset_map);
+#endif
 	if (path.empty())
 	{
 		std::string error(errorPageResponece(404));
@@ -794,12 +801,15 @@ void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
 	cgi->request_uri = "/" + reqMap["location"];
 	cgi->path_translated = root;
 	cgi->path_info = "./" + reqMap["location"];
-//	std::cout << "Lentght: " << cgi->content_length << std::endl;
-//	std::cout << "Query string: " << cgi->query_string << std::endl;
-//	std::cout << "Request uri: " << cgi->request_uri << std::endl;
-//	std::cout << "Path translated: " << cgi->path_translated << std::endl;
-//	std::cout << "Content type: " << cgi->content_type << std::endl;
-//	std::cout << "Path info: " << cgi->path_info << std::endl;
+
+#ifdef D_CGI
+	std::cout << "Lentght: " << cgi->content_length << std::endl;
+	std::cout << "Query string: " << cgi->query_string << std::endl;
+	std::cout << "Request uri: " << cgi->request_uri << std::endl;
+	std::cout << "Path translated: " << cgi->path_translated << std::endl;
+	std::cout << "Content type: " << cgi->content_type << std::endl;
+	std::cout << "Path info: " << cgi->path_info << std::endl;
+#endif
 }
 
 std::string HTTP::postRoot()
@@ -930,9 +940,13 @@ void HTTP::post()
 		CGI worker_cgi(cgi, servConf, in);
 
 
+#ifdef D_CGI
 		std::cout << "cgi in" << std::endl;
+#endif
 		worker_cgi.run();
+#ifdef D_CGI
 		std::cout << "cgi out" << std::endl;
+#endif
 		respMap[LENGTH] = std::to_string(worker_cgi.getResponse().size());
 		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", worker_cgi.getResponse());
 	}

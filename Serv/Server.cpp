@@ -198,6 +198,7 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
                     FD_SET((*it)->getClientSock(), &write_set);
                 it++;
 #ifdef D_STATE
+				if (it != ite)
                  std::cout << "State: " << (*it)->getState() << std::endl;
 #endif
 			}
