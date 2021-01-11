@@ -14,7 +14,10 @@
 #define LAST_MOD "Last-Modified"
 #define TRANSFER "Transfer-Encoding"
 #define LOCATION "Location"
+#define CONT_LOC "Content-Location"
 #define BYTES_TO_WRITE 10000
+
+
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -57,9 +60,11 @@ private:
 
 	bool postPutvalidation(std::string &put_post_root, File &file, bool post_flag);
 
-	bool postRootConfig(std::string &post_root);
+	bool	postRootConfig(std::string &post_root, File &file);
 
-	bool locationMatch(const std::string& location);
+	bool	locationMatch(const std::string& location);
+
+	bool	createNewRepresent(std::string &post_root, File &file);
 
 	std::string pathFormerer();
 
@@ -151,7 +156,7 @@ private:
 
 	static int			x_write(int fd, std::string buf, size_t len);
 
-	bool				putManager(std::string &put_root, File &file, std::string uri, const std::string &responce = std::string(""));
+	bool				putManager(std::string &put_root, File &file, std::string uri, int put_flag = 0, const std::string &responce = std::string(""));
 
 	void				hardcodeMap(std::string body);
 

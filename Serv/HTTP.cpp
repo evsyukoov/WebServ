@@ -946,23 +946,25 @@ bool HTTP::validateTransferEncoding()
 	return (false);
 }
 
+bool HTTP::createNewRepresent(std::string &post_root, File &file)
+{
+	std::string location_saver(reqMap["location"]);
+	if (location_saver.empty())
+		location_saver = "/";
+	if (checkDirectory(post_root) == 1)
+	{
+		std::string new_representation(post_root + "save_form");
+		respMap[LENGTH] = std::to_string(file.getContentLength());
+		putManager(new_representation, file, location_saver, 1, reqMap["body"]);
+		return (false);
+	}
+	return (true);
+}
 
-
-bool HTTP::postRootConfig(std::string &post_root)
+bool HTTP::postRootConfig(std::string &post_root, File &file)
 {
 	former(post_root);
-	if (checkDirectory(post_root) == 1)
-//	if (reqMap["location"] == "" && it->getLocation() == "/post_body")
-//    {
-//	    if (it->getMaxBody() < reqMap["body"].size())
-//        {
-//            sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", "");
-//            return false;
-//        }
-//	    sendReq("HTTP/1.1 200 Bad Request\r\n" + responceMapToString() + "\r\n", "");
-//        return (false);
-//    }
-	if (!(validateExtencion(post_root)))
+	if (checkDirectory(post_root) != 1 && !(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
 		respMap[ALLOW] = makeAllow("POST");
@@ -982,7 +984,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 		put_post_root.push_back('/');
 	if (post_flag)
 	{
-		if (!postRootConfig(put_post_root))
+		if (!postRootConfig(put_post_root, file))
 			return (false);
 	}
 	if (!checkForAllowedMethod())
@@ -1008,6 +1010,11 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 			sendReq("HTTP/1.1 413 Payload Too Large\r\n" + responceMapToString() + "\r\n", error);
 			return (false);
 		}
+	}
+	if (post_flag)
+	{
+		if (!createNewRepresent(put_post_root, file))
+			return (false);
 	}
 	return (true);
 }
@@ -1079,7 +1086,7 @@ void HTTP::former(std::string &root)
 	root = removeAllUnnecessarySlash(root);
 }
 
-bool HTTP::putManager(std::string &put_root, File &file, std::string uri, const std::string &responce)
+bool HTTP::putManager(std::string &put_root, File &file, std::string uri, int flag,  const std::string &responce)
 {
 	int fd;
 
@@ -1111,6 +1118,8 @@ bool HTTP::putManager(std::string &put_root, File &file, std::string uri, const 
 	file.setRoot(put_root);
 	rewriteFileToVector(file);
 	formContentTypeLength(put_root, -1);
+	if (flag == 1)
+		respMap[CONT_LOC] = uri;
 	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", responce);
 	close(fd);
 }
@@ -1120,42 +1129,14 @@ void HTTP::put()
 	int fd;
 	std::string put_root;
 	std::string location_saver(reqMap["location"]);
+	if (location_saver.empty())
+		location_saver = "/";
 	File new_file(reqMap);
 
 	if (!postPutvalidation(put_root, new_file, false))
 		return;
 	former(put_root);
 	putManager(put_root, new_file, location_saver);
-//	if ((fd = open(put_root.c_str(), O_RDWR | O_TRUNC, 0644)) < 0)
-//	{
-//		fd = open(put_root.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
-//		if (fd < 0 || x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
-//		{
-//			std::string error(errorPageResponece(403));
-//			sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
-//			close(fd);
-//			return;
-//		}
-//		formContentTypeLength(put_root, -1);
-//		respMap[LOCATION] = location_saver;
-//		sendReq("HTTP/1.1 201 Created\r\n" + responceMapToString() + "\r\n", "");
-//		new_file.setRoot(put_root);
-//		files.push_back(new_file);
-//		close(fd);
-//		return;
-//	}
-//	if (x_write(fd, reqMap["body"], new_file.getContentLength()) < 0)
-//	{
-//		close(fd);
-//		std::string error(errorPageResponece(403));
-//		sendReq("HTTP/1.1 403 Forbidden\r\n" + responceMapToString() + "\r\n", error);
-//		return;
-//	}
-//	new_file.setRoot(put_root);
-//	rewriteFileToVector(new_file);
-//	formContentTypeLength(put_root, -1);
-//	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", "");
-//	close(fd);
 }
 
 std::string &HTTP::getResponce()
