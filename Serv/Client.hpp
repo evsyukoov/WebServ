@@ -6,6 +6,7 @@
 #define SERV_CLIENT_HPP
 #include <string>
 #include "Parser/ServConf.hpp"
+#include <netinet/in.h>
 #include <map>
 
 #define HEADER 0
@@ -16,6 +17,7 @@
 class Client {
 
     int             client_sock;
+    std::string     remoteAddr;
     std::string     request;
     ServConf        servConf;
     int             state;
@@ -23,7 +25,7 @@ class Client {
     std::string     body;
     std::string     raw_body;
     std::string     piece;
-    long             chunk_size;
+    long            chunk_size;
     std::string 	chunk_end;
 
     std::map<std::string, std::string>  head;
@@ -39,7 +41,7 @@ class Client {
     bool    isDigit(const std::string &digit);
 
 public:
-    Client(int clientSock, const ServConf &servConf);
+    Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr);
 
     int getClientSock() const;
 
@@ -50,6 +52,7 @@ public:
 
 
     std::string getRequest();
+    std::string &getRemoteAddr();
 
     void                findState(std::string &piece);
 

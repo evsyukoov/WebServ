@@ -5,8 +5,19 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-Client::Client(int clientSock, const ServConf &servConf)
+static void inet_toip4(void * sAddr, std::string &buffer)
 {
+    unsigned char *sss = reinterpret_cast<unsigned char *>(sAddr);
+
+    buffer.clear();
+    for (int i = 0; i < 4; ++i)
+        buffer += std::to_string(int(sss[i])) + '.';
+    buffer.pop_back();
+}
+
+Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
+{
+    inet_toip4(&sAddr.sin_addr, this->remoteAddr);
     this->client_sock = clientSock;
     this->servConf = servConf;
     this->request = "";
@@ -25,6 +36,10 @@ const ServConf &Client::getServConf() const {
 std::string Client::getRequest(){
     std::string res = request + body;
     return res;
+}
+
+std::string &Client::getRemoteAddr() {
+    return remoteAddr;
 }
 
 int     Client::checkBodyHeaders(std::string splitted)

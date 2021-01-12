@@ -27,6 +27,7 @@ class Server {
     //сет всех дескрипторов для select
     fd_set                      read_set;
     fd_set                      write_set;
+    int                         max;
     struct input in;
 
     int   receiveData(int client_sock, std::string &str);
@@ -46,6 +47,7 @@ public:
     int     run(HTTP &http);
 
     void    initReadSet();
+    void    resetFdSets();
 
     std::vector<char*>      readRequests(std::list<Client*> &clients);
 
