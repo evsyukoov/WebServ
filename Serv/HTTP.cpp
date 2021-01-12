@@ -59,11 +59,12 @@ int 		HTTP::initListingHTML(std::string path, const std::string &root)
 	return (1);
 }
 
-void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input &income) {
+void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input &income, std::string &remoteAddr) {
 	buff_req = buf;
 	servConf = serv;
 	client_fd = client;
     this->in = income;
+	this->remoteAddr = remoteAddr;
 }
 
 
@@ -827,24 +828,11 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 	return (0);
 }
 
-void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
+void HTTP::fill_cgi(s_cgi *cgi, File &file, std::string &root)
 {
 	cgi->content_length = file.getContentLength();
 	cgi->content_type = file.getContentType();
-	cgi->reques_method = reqMap["method"];
-	cgi->query_string = reqMap["body"];
-	cgi->request_uri = "/" + reqMap["location"];
-	cgi->path_translated = root;
-	cgi->path_info = "./" + reqMap["location"];
-
-#ifdef D_CGI
-	//std::cout << "Lentght: " << cgi->content_length << std::endl;
-	//std::cout << "Query string: " << cgi->query_string << std::endl;
-	std::cout << "Request uri: " << cgi->request_uri << std::endl;
-	//std::cout << "Path translated: " << cgi->path_translated << std::endl;
-	//std::cout << "Content type: " << cgi->content_type << std::endl;
-	//std::cout << "Path info: " << cgi->path_info << std::endl;
-#endif
+	cgi->reqMap = &this->reqMap;
 }
 
 std::string HTTP::postRoot()
@@ -965,7 +953,7 @@ void HTTP::post()
 {
 //	long content_length = contentLength();
 	File file(reqMap);
-	t_cgi cgi;
+	s_cgi cgi;
 	std::string post_root;
 
 	if (!postPutvalidation(post_root, file, true))
@@ -981,10 +969,8 @@ void HTTP::post()
 //	}
 	else
 	{
-		fill_cgi(&cgi, file, post_root);
+		fill_cgi(&cgi, file, post_root);//, remotAaddr);
 		CGI worker_cgi(cgi, servConf, in);
-
-
 #ifdef D_CGI
 		std::cout << "cgi in" << std::endl;
 #endif

@@ -5,17 +5,34 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-Client::Client(int clientSock, const ServConf &servConf)
+static void inet_ntop(in_addr *sAddr, std::string &str)
 {
+    unsigned char *sss = (unsigned char *)sAddr;
+
+    str.clear();
+    for (int i = 0; i < 4; ++i)
+        str += std::to_string(int(sss[i])) + '.';
+    str.pop_back();
+}
+
+Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
+{
+    inet_ntop(&sAddr.sin_addr, this->remoteAddr);
     this->client_sock = clientSock;
     this->servConf = servConf;
     this->request = "";
     this->body = "";
+    this->sAddr = sAddr;
     state = HEADER;
 }
 
 int Client::getClientSock() const {
     return client_sock;
+}
+
+std::string &Client::getRemoteAddr()
+{
+    return (remoteAddr);
 }
 
 const ServConf &Client::getServConf() const {

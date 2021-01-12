@@ -33,11 +33,13 @@ $(NAME1): $(OBJS) | config
 	clang++ $(OBJS) -o $(NAME1)
 
 run: $(NAME1)
-	./server info.php ./conf/webserv.conf
+	./server $(PWD)/CGI_Scrypts/cgi_tester $(PWD)/conf/webserv.conf
 
 debug: fclean
-	$(MAKE) DEBUG=1
-	./server info.php Config.conf
+	$(MAKE) DEBUG=1 run
+
+test:
+	./tester http://127.0.0.1:1234
 
 clean:
 	rm -f $(OBJS)

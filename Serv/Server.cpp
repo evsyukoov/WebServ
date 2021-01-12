@@ -147,9 +147,11 @@ int Server::servLoop(HTTP &http) {
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
 			// произошел коннект на n-ом сервере
 			if (FD_ISSET((*it).first, &read_set)) {
-				int client_sock = accept((*it).first, NULL, NULL);
+				sockaddr_in sAddr;
+				socklen_t	len = sizeof(sAddr);
+				int client_sock = accept((*it).first, (sockaddr *)&sAddr, &len);
 				set_nonblock(client_sock);
-                Client *client = new Client(client_sock, it->second);
+                Client *client = new Client(client_sock, it->second, sAddr);
                 clients.push_back(client);
 #ifdef D_SELECT
 				std::cout << "Accept done: " << client_sock << std::endl;
@@ -220,7 +222,7 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> &c
 	while (it != ite)
     {
 		if (FD_ISSET((*it)->getClientSock(), &write_set)) {
-            http.setFields((*it)->getClientSock(), (char *) (*it)->getRequest().c_str(), (*it)->getServConf(), in);
+            http.setFields((*it)->getClientSock(), (char *) (*it)->getRequest().c_str(), (*it)->getServConf(), in, (*it)->getRemoteAddr());
             http.manager();
             (*it)->clear();
         }

@@ -39,6 +39,7 @@ private:
 	std::list<Location>::const_iterator it; // нахождение нужного location
 	std::string 	result;
 	int				client_fd;
+	std::string		remoteAddr;
 	struct input    in;
 	std::vector<File> files; // вектор отслеживаемых файлов
 	std::map<std::string, std::string> respMap; //map заголовков ответа
@@ -85,7 +86,7 @@ private:
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
-	void	fill_cgi(t_cgi *cgi, File &file, std::string &root);
+	void	fill_cgi(s_cgi *cgi, File &file, std::string &root);
 
 	std::string postRoot();
 
@@ -155,7 +156,7 @@ public:
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(int client, char *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
+	void setFields(int client, char *buf, const ServConf &serv, struct input&, std::string &remoteAddr); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 

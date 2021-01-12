@@ -21,20 +21,25 @@ class CGI
 
 //имя CGI скрипта
 	char **env;
-	char **args;
+	char *args[3];
+    char *buff;
+
 	input &in;
 
 	//настройки конфига
 	ServConf servConf;
 
 	// запрос от сервера на CGI
-	t_cgi struct_cgi;
+	s_cgi const _cgi;
+	
 
 	//ответ после обработки
 
 	std::string response;
+	std::string body;
 
 	std::map<std::string, std::string> environments;
+	const std::map<std::string, std::string> *reqMap;
 
     int    readFromCGI();
 
@@ -45,7 +50,7 @@ class CGI
     int     mapToEnv();
 
 public:
-    CGI(const t_cgi &struct_cgi, const ServConf &servConf, input &in);
+    CGI(const s_cgi &struct_cgi, const ServConf &servConf, input &in);
 
 	int 	run();
 

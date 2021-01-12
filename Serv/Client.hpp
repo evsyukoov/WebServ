@@ -7,6 +7,7 @@
 #include <string>
 #include "Parser/ServConf.hpp"
 #include <map>
+#include <netinet/in.h>
 
 #define HEADER 0
 #define BODY 1
@@ -16,6 +17,8 @@
 class Client {
 
     int             client_sock;
+    sockaddr_in     sAddr;
+    std::string     remoteAddr;
     std::string     request;
     ServConf        servConf;
     int             state;
@@ -32,28 +35,24 @@ class Client {
 
     void    analizeBodySize();
 
-    int    decodeChunks();
+    int     decodeChunks();
 
     void    analizeChunked();
 
     bool    isDigit(const std::string &digit);
 
 public:
-    Client(int clientSock, const ServConf &servConf);
-
-    int getClientSock() const;
+    Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr);
 
     void    clear();
 
-    const ServConf &getServConf() const;
+    void            findState(std::string &piece);
 
-
-
-    std::string getRequest();
-
-    void                findState(std::string &piece);
-
-    int getState() const;
+    const ServConf  &getServConf() const;
+    std::string     getRequest();
+    int             getClientSock() const;
+    std::string     &getRemoteAddr();
+    int             getState() const;
 
     int    findBodySize(std::string header);
 

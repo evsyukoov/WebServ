@@ -58,15 +58,12 @@ public:
 };
 
 
-typedef struct		s_cgi
+struct		s_cgi
 {
 	size_t 			content_length;
 	std::string 	content_type;
-	std::string 	query_string;
-	std::string 	reques_method;
-	std::string 	request_uri;
-	std::string 	path_info;
-	std::string 	path_translated;
-}					t_cgi;
+	std::string		remoteAddr;
+	std::map<std::string, std::string> *reqMap;
+};
 
 #endif //SERV_FILE_HPP
