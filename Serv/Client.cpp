@@ -180,7 +180,7 @@ void Client::findState(std::string &piece) {
             }
 
         }
-    } else if (state == BODY) {
+    } else if (state == BODY || state == BODY_CHUNKED)  {
         body += piece;
         analizeBodySize();
     }

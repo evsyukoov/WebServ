@@ -35,7 +35,7 @@ static void	trimQString(std::string &str)
 {
 	size_t delim;
 	if ((delim != str.find('?')) != str.npos)
-		str.erase(0, delim);
+		str.erase(0, delim + 1);
 }
 
 void        CGI::initEnvironments()
@@ -47,7 +47,9 @@ void        CGI::initEnvironments()
 
    	host = (*reqMap).find("Host")->second;
     environments["PATH_INFO"] = "/"; //difficult without cgi extension (.bla, .cgi, .php...)
-    environments["PATH_TRANSLATED"] = host + environments["PATH_INFO"];
+    //environments["PATH_TRANSLATED"] = host + environments["PATH_INFO"];
+	environments["PATH_TRANSLATED"].pop_back();
+	std::cout << environments["PATH_TRANSLATED"] << std::endl;
 
     environments["CONTENT_LENGTH"] = std::to_string(_cgi.content_length);
     environments["CONTENT_TYPE"] = _cgi.content_type;
@@ -58,7 +60,7 @@ void        CGI::initEnvironments()
     environments["QUERY_STRING"] = environments["REQUEST_URI"];
 	trimQString(environments["QUERY_STRING"]);
 
-	if ((*_cgi.reqMap).count("Authorization"))
+	if ((*reqMap).count("Authorization"))
 	{
 		environments["AUTH_TYPE"] = "Basic"; // auth header
 		environments["REMOTE_ADDR"] = _cgi.remoteAddr;
