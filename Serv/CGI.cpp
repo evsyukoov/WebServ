@@ -37,23 +37,31 @@ int        CGI::initARGS()
 
 void        CGI::initEnvironments()
 {
+    /*
+    ** https://tools.ietf.org/html/rfc3875#section-4.1.1
+    */
+
     environments["AUTH_TYPE"] = "Basic";
+    //environments["REMOTE_IDENT"]  =
+    //environments["REMOTE_USER"] = ;
+
+
     environments["CONTENT_LENGTH"] = std::to_string(struct_cgi.content_length);//std::to_string(request.size());
-   environments["CONTENT_TYPE"] = struct_cgi.content_type;
-   environments["GATEWAY_INTERFACE"] = "CGI/1.1";
-   environments["PATH_INFO"] = "/" ;        //путь к скрипту(относительный)
-   environments["PATH_TRANSLATED"] = "/Users/zcolleen/Desktop/webserv2/Serv/example.cgi";
-    //@TODO environments["QUERY_STRING"] = struct_cgi.query_string;
-   //environments["REMOTE_ADDR"] = servConf.getServerName();
-   //environments["REMOTE_IDENT"]  =
-   //environments["REMOTE_USER"] = ;
-   environments["REQUEST_METHOD"] = struct_cgi.reques_method;
-  //  environments["REQUEST_URI"] = "/directory/youpi.bla";
-   environments["SERVER_NAME"] = servConf.getServerName();
-   environments["SERVER_PORT"] = std::to_string(servConf.getPort());
-   environments["SERVER_PROTOCOL"] = "HTTP/1.1";
-  environments["SERVER_SOFTWARE"] = "webserv";
-  environments["HTTP_X-Secret-Header-For-Test"] = "1";
+    environments["CONTENT_TYPE"] = struct_cgi.content_type;
+    environments["GATEWAY_INTERFACE"] = "CGI/1.1";
+
+
+    environments["PATH_INFO"] = "/";//                      reqMap["location"] ;   "/" == NULL
+    //environments["PATH_TRANSLATED"] = //                  parse from reqMap["location"]
+    //@TODO environments["QUERY_STRING"] = //               parse from  reqMap["location"]
+    //environments["REMOTE_ADDR"] = servConf.getServerName();
+    environments["REQUEST_METHOD"] = struct_cgi.reques_method;
+    //  environments["REQUEST_URI"] = "/directory/youpi.bla"; // parse from reqMap["location"]
+    environments["SERVER_NAME"] = servConf.getServerName();
+    environments["SERVER_PORT"] = std::to_string(servConf.getPort());
+    environments["SERVER_PROTOCOL"] = "HTTP/1.1";
+    environments["SERVER_SOFTWARE"] = "webserv";
+    //environments["HTTP_X-Secret-Header-For-Test"] = "1";
 }
 
 int     CGI::mapToEnv()
