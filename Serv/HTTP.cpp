@@ -67,16 +67,18 @@ void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input &
 }
 
 
-bool HTTP::validateMethod()
+int HTTP::validateMethod()
 {
-	std::string methods[] = { "GET", "PUT", "POST", "DELETE",
-						   "HEAD", "CONNECT", "OPTIONS", "TRACE"};
-	for (int  i = 0;  i < 8; ++i)
+	std::string valid_methods[] = { "GET", "PUT", "POST", "HEAD"};
+	std::string unimplemented_methods[] = { "DELETE", "CONNECT", "OPTIONS", "TRACE"};
+	for (int  i = 0;  i < 4; ++i)
 	{
-		if (reqMap["method"] == methods[i])
-			return (true);
+		if (reqMap["method"] == unimplemented_methods[i])
+			return (2);
+		if (reqMap["method"] == valid_methods[i])
+			return (1);
 	}
-	return (false);
+	return (0);
 }
 
 bool HTTP::validateProtocol()
@@ -225,6 +227,12 @@ void HTTP::manager() {
 	{
 		std::string error(errorPageResponece(400));
 		sendReq("HTTP/1.1 400 Bad Request\r\n" + responceMapToString() + "\r\n", error);
+		return;
+	}
+	if (validateMethod() == 2)
+	{
+		std::string error(errorPageResponece(501));
+		sendReq("HTTP/1.1 501 Not Implemented\r\n" + responceMapToString() + "\r\n", error);
 		return;
 	}
 	reqMap["location"] = removeAllUnnecessarySlash(reqMap["location"]);
@@ -761,12 +769,17 @@ std::string HTTP::errorPageResponece(int error_num)
 	return ("");
 }
 
+int HTTP::ext_write()
+{
+	return (x_write(client_fd, result, result.size()));
+}
+
+
 int HTTP::x_write(int fd, std::string buf, size_t len)
 {
-	int ret = 1;
 //	write(client_fd, (char*)result.c_str(), 10000);
 
-	ret = write(fd, (char *)buf.c_str(), len);
+	int ret = write(fd, (char *)buf.c_str(), len);
 //	while (ret > 0)
 //	{
 //		if (len > BYTES_TO_WRITE)
@@ -778,7 +791,8 @@ int HTTP::x_write(int fd, std::string buf, size_t len)
 //		}
 //		else
 //		{
-//			ret = write(fd, (char *)buf.c_str(), len);
+//			if (len != 0)
+//				ret = write(fd, (char *)buf.c_str(), len);
 //			break;
 //		}
 //	}
@@ -787,93 +801,16 @@ int HTTP::x_write(int fd, std::string buf, size_t len)
 	return (0);
 }
 
-int HTTP::sendReq(std::string header, std::string responce, int flag)
+int HTTP::sendReq(std::string header, std::string responce)
 {
 
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
 	std::cout << "Result responce: " << header << std::endl;
-	if (!flag)
-	{
-		if (x_write(client_fd, result, result.size()) < 0)
-			return (0);
-		return (1);
-	}
-//    int ret;
-//
-//    int i = 0;
-//
-//
-//    std::string res;
-//    if (flag)
-//    {
-//        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
-//	int ret;
-//	int size = result.size();
-//	while (size)
-//	{
-//		ret = write(client_fd, result.substr(0, 10000).c_str(), 10000);
-//		result = result.substr(10000);
-//		size -= ret;
-//	}
-    int ret;
-
-    int i = 0;
-    //if (result.size() > 50000000) {
-        //write(client_fd, "HTTP/1.1 200 OK\r\n", strlen("HTTP/1.1 200 OK\r\n"));
-       // int pos = result.find("\r\n\r\n");
-        //result = result.substr(pos + 4);
-    //}
-
-
-    std::string res;
-    if (flag)
-    {
-        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
-    }
-    int size;
-    if (flag)
-    {
-        int pos = result.find("\r\n\r\n");
-        result = result.substr(pos + 4);
-        size = result.size();
-        res =  "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(size) + "\r\n\r\n" + result;
-
-        //std::string a =
-    }
-    else
-        res = result;
-    size = res.size();
-    std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
-    std::cout << "size returned from cgi: " << size << std::endl;
-
-//    while  ((ret = write(client_fd, (char *)result.c_str(), size)) > 0) {
-//	    std::cout << "num of write: " << i++ << std::endl;
-//        size -= ret;
-//        result = result.substr(ret);
-//    }
-//    int size;
-//    if (flag)
-//    {
-//        int pos = result.find("\r\n\r\n");
-//        result = result.substr(pos + 4);
-//        //int flags = fcntl(client_fd, F_GETFL, 0);
-//        //flags &= ~O_NONBLOCK;
-//        //fcntl(client_fd, F_SETFL, flags);
-//        size = result.size();
-//        res =  "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(size) + "\r\n\r\n" + result;
-//
-//        //std::string a =
-//    }
-//    else
-//        res = result;
-//    size = res.size();
-//    std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
-//    std::cout << "size returned from cgi: " << size << std::endl;
-//
-//    write(client_fd, (char*)res.c_str(), size);
-	return (0);
+	if (x_write(client_fd, result, result.size()) < 0)
+		return (0);
+	return (1);
 }
 
 void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
@@ -888,7 +825,7 @@ void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
 #ifdef D_CGI
 	//std::cout << "Lentght: " << cgi->content_length << std::endl;
 	//std::cout << "Query string: " << cgi->query_string << std::endl;
-	std::cout << "Request uri: " << cgi->request_uri << std::endl;
+	//std::cout << "Request uri: " << cgi->request_uri << std::endl;
 	//std::cout << "Path translated: " << cgi->path_translated << std::endl;
 	//std::cout << "Content type: " << cgi->content_type << std::endl;
 	//std::cout << "Path info: " << cgi->path_info << std::endl;
@@ -1180,6 +1117,7 @@ void HTTP::initErrorMap()
     errors[449] = "Retry With";
     errors[451] = "Unavailable For Legal Reasons";
     errors[499] = "Client Closed Request";
+    errors[501] = "Not Implemented";
     errors[505] = "HTTP Version Not Supported";
 }
 

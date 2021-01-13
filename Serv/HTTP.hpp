@@ -72,7 +72,7 @@ private:
 
 	std::string rootSwitcher(const std::string& root, const std::string& serv_index, const std::string& loc_index);
 
-	int sendReq(std::string header, std::string request, int flag = int());
+	int sendReq(std::string header, std::string request);
 
 	void readFile(struct stat &st, int fd, std::string &path);
 
@@ -84,9 +84,9 @@ private:
 
 	int 	initMap();
 
-	bool validateMethod();
+	int		validateMethod();
 
-	bool validateProtocol();
+	bool	validateProtocol();
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
@@ -179,6 +179,8 @@ public:
     std::string     generateErrorPage(int error_code);
 
     const std::string &getListing() const;
+
+	int		ext_write();
 
 };
 
