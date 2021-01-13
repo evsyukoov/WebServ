@@ -32,12 +32,8 @@ all: $(NAME1) $(NAME2)
 $(NAME1): $(OBJS) | config
 	clang++ $(OBJS) -o $(NAME1)
 
-run: $(NAME1)
-	./server info.php ./conf/webserv.conf
-
 debug: fclean
 	$(MAKE) DEBUG=1
-	./server info.php Config.conf
 
 clean:
 	rm -f $(OBJS)
@@ -46,8 +42,7 @@ config:
 	cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > webserv.conf
 
 fclean: clean
-	rm -f $(NAME1)
-	rm -f $(NAME2)
+	rm -f $(NAME1) $(NAME)
 
 re: fclean all
 

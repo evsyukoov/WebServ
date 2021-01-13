@@ -146,10 +146,13 @@ int Server::servLoop(HTTP &http) {
 		//бежим по всем серверам, смотрим на каком событие
 		for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++) {
 			// произошел коннект на n-ом сервере
-			if (FD_ISSET((*it).first, &read_set)) {
-				int client_sock = accept((*it).first, NULL, NULL);
+			if (FD_ISSET((*it).first, &read_set))
+			{
+				sockaddr_in sAddr = {0};
+				socklen_t	sLen = sizeof(sAddr);
+				int client_sock = accept((*it).first, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
 				set_nonblock(client_sock);
-                Client *client = new Client(client_sock, it->second);
+                Client *client = new Client(client_sock, it->second, sAddr);
                 clients.push_back(client);
 #ifdef D_SELECT
 				std::cout << "Accept done: " << client_sock << std::endl;

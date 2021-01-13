@@ -8,6 +8,9 @@
 #include <sys/stat.h>
 #include <cstdio>
 #include <string>
+#include <map>
+#include <netinet/in.h>
+#include <iostream>
 
 struct      input
 {

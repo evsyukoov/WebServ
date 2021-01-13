@@ -5,8 +5,19 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-Client::Client(int clientSock, const ServConf &servConf)
+static void inet_toip4(void * sAddr, std::string &buffer)
 {
+    unsigned char *sss = reinterpret_cast<unsigned char *>(sAddr);
+
+    buffer.clear();
+    for (int i = 0; i < 4; ++i)
+        buffer += std::to_string(int(sss[i])) + '.';
+    buffer.pop_back();
+}
+
+Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
+{
+    inet_toip4(&sAddr.sin_addr, this->remoteAddr);
     this->client_sock = clientSock;
     this->servConf = servConf;
     this->request = "";
@@ -25,6 +36,10 @@ const ServConf &Client::getServConf() const {
 std::string Client::getRequest(){
     std::string res = request + body;
     return res;
+}
+
+std::string &Client::getRemoteAddr() {
+    return remoteAddr;
 }
 
 int     Client::checkBodyHeaders(std::string splitted)
@@ -88,31 +103,40 @@ bool    Client::isDigit(const std::string &digit)
     return true;
 }
 
+
+
 int    Client::decodeChunks()
 {
     //input = 10 \r\n abcdefgrty \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
     int pos = 0;
+    int end_flag;
+    if ((raw_body.find("0\r\n\r\n") != std::string::npos) || chunk_end == "0\r\n\r\n") {
+        state = FINISH;
+    }
     while ((pos = raw_body.find("\r\n")) != std::string::npos)
     {
-        if (!chunk_size) {
-            if (raw_body.find("0\r\n\r\n") != std::string::npos)
-                state = FINISH;
+        if (!chunk_size)
+        {
             std::string digit = raw_body.substr(0, pos);
+			if (digit.size() == 1 && digit[0] == '0')
+				chunk_end = raw_body.substr(pos - 1);
             if (!isDigit(digit))
                 return (0);
-            chunk_size = std::strtol(raw_body.substr(0, pos).c_str(), NULL, 16);
+            chunk_size = std::strtol(digit.c_str(), NULL, 16);
         }
         else
         {
-            if (state == FINISH && !chunk_size)
-                break ;
+        	if (state == FINISH && chunk_size == 0)
+        		return (1);
             std::string content = raw_body.substr(0, pos);
-            body += content.substr(0, chunk_size);
+            piece = content.substr(0, chunk_size);
+            body += piece;
             chunk_size = 0;
         }
         raw_body = raw_body.substr(pos + 2);
     }
-    //std::cout << "Decode finish!" << std::endl;
+    //if (!piece.empty())
+   //     std::cout << "Decode finish!, piece: " << piece.substr(piece.size() - 2) << " piece size: "<< piece.size()  << " ,summary_size: " << body.size() << " ,state: " << state << std::endl;
     return (1);
 }
 
@@ -130,6 +154,8 @@ void    Client::analizeChunked()
 void Client::findState(std::string &piece) {
     int delimetr = 0;
 
+//    if (piece.substr(0, 3) != "GET")
+//    	std::cout << "ADDED PIECE: " << piece.size() << std::endl;
 #ifdef D_STATE
     std::cout << "State begin: " << state << std::endl;
 #endif
@@ -158,8 +184,12 @@ void Client::findState(std::string &piece) {
     }
     else if (state == BODY_CHUNKED)
     {
-        //std::cout << "chunked..." << std::endl;
+        //std::cout << "chunke: " << piece << std::endl;
         raw_body += piece;
+        if (!chunk_end.empty()) {
+			std::cout << "END: " << piece.size() << std::endl;
+			chunk_end += piece;
+		}
         decodeChunks();
     }
 }
@@ -174,6 +204,7 @@ void Client::clear() {
     request.clear();
     raw_body.clear();
     chunk_size = 0;
+    chunk_end.clear();
 }
 
 int Client::getBodySize() const {

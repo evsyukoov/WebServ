@@ -766,21 +766,22 @@ int HTTP::x_write(int fd, std::string buf, size_t len)
 	int ret = 1;
 //	write(client_fd, (char*)result.c_str(), 10000);
 
-	while (ret > 0)
-	{
-		if (len > BYTES_TO_WRITE)
-		{
-			if ((ret = write(fd, (char*)buf.c_str(), BYTES_TO_WRITE)) < 0)
-				break;
-			buf = buf.substr(BYTES_TO_WRITE, len);
-			len -= BYTES_TO_WRITE;
-		}
-		else
-		{
-			ret = write(fd, (char *)buf.c_str(), len);
-			break;
-		}
-	}
+	ret = write(fd, (char *)buf.c_str(), len);
+//	while (ret > 0)
+//	{
+//		if (len > BYTES_TO_WRITE)
+//		{
+//			if ((ret = write(fd, (char*)buf.c_str(), BYTES_TO_WRITE)) < 0)
+//				break;
+//			buf = buf.substr(BYTES_TO_WRITE, len);
+//			len -= BYTES_TO_WRITE;
+//		}
+//		else
+//		{
+//			ret = write(fd, (char *)buf.c_str(), len);
+//			break;
+//		}
+//	}
 	if (ret == -1)
 		return (-1);
 	return (0);
@@ -1044,7 +1045,7 @@ void HTTP::post()
 
 		std::cout << "cgi out" << std::endl;
 		std::string responce(worker_cgi.getResponse());
-		std::vector<std::string> respo = ft_split(responce, "\r\n\r\n");;
+		std::vector<std::string> respo = ft_split(responce, "\r\n\r\n");
 		respo[1] = respo[1].substr(3, respo[1].size());
 		std::string body = respo[1];
 		std::string headers = respo[0];

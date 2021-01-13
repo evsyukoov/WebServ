@@ -36,3 +36,23 @@ char   *ft_strdup(char *str)
     res[i] = '\0';
     return (res);
 }
+
+void inet_toip4(void *sAddr, std::string &buffer)
+{
+    unsigned char *sss = reinterpret_cast<unsigned char *>(sAddr);
+
+    buffer.clear();
+    for (int i = 0; i < 4; ++i)
+        buffer += std::to_string(int(sss[i])) + '.';
+    buffer.pop_back();
+}
+
+std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string> const &m)
+{
+    std::map<std::string, std::string>::const_iterator it = m.begin();
+    while (it != m.end())
+    {
+        std::cout << it->first << ": " << it->second << std::endl;
+        ++it;
+    }
+}
