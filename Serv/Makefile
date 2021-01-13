@@ -1,4 +1,4 @@
-NAME1=server
+NAME=server
 
 SRC = HTTP.cpp \
 	  CGI.cpp   \
@@ -27,10 +27,16 @@ endif
 
 OBJS=$(SRC:.cpp=.o)
 
-all: $(NAME1) $(NAME2)
+all: $(NAME)
 
-$(NAME1): $(OBJS) | config
-	clang++ $(OBJS) -o $(NAME1)
+$(NAME): $(OBJS) | config
+	clang++ $(OBJS) -o $(NAME)
+
+run: $(NAME)
+	./server ./CGI_Scrypts/cgi_tester ./conf/webserv.conf
+
+test: re
+	./tester http://127.0.0.1:1234
 
 debug: fclean
 	$(MAKE) DEBUG=1
@@ -42,7 +48,7 @@ config:
 	cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > webserv.conf
 
 fclean: clean
-	rm -f $(NAME1) $(NAME)
+	rm -f $(NAME)
 
 re: fclean all
 

@@ -13,7 +13,7 @@ long  findFileSize(int fd)
     return file_stat.st_size;
 }
 
-size_t  ft_strlen(char *str)
+size_t  ft_strlen(char const *str)
 {
     int i = 0;
     while (str[i])
@@ -21,7 +21,7 @@ size_t  ft_strlen(char *str)
     return (i);
 }
 
-char   *ft_strdup(char *str)
+char   *ft_strdup(char const *str)
 {
     int i = 0;
     char *res;
@@ -45,6 +45,18 @@ void inet_toip4(void *sAddr, std::string &buffer)
     for (int i = 0; i < 4; ++i)
         buffer += std::to_string(int(sss[i])) + '.';
     buffer.pop_back();
+}
+
+void    stringExtract(std::string const &needle, std::string &haystack)
+{
+    size_t delim = haystack.find(needle);
+    std::string tmp;
+
+    if (delim != std::string::npos)
+    {
+        tmp = haystack.substr(0, delim);
+        haystack = haystack.substr(delim + needle.size(), haystack.size());
+    }
 }
 
 std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string> const &m)

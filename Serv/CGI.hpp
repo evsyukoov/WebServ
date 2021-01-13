@@ -17,15 +17,16 @@
 
 class CGI
 {
-
-
-//имя CGI скрипта
+	std::string filename;
+	std::string extension;
+	std::string tmpFile;
 	char **env;
-	char **args;
+	char *args[3];
+	char *buff;
 	input &in;
 
 	//настройки конфига
-	ServConf servConf;
+	const ServConf &servConf;
 
 	// запрос от сервера на CGI
 
@@ -35,9 +36,10 @@ class CGI
 
 	std::map<std::string, std::string> environments;
 
-    int    readFromCGI();
-
-    void       initEnvironments();
+    void	    readFromCGI();
+    void        initEnvironments();
+    void        setUriAttributes();
+	void		setHttpHeaders();
 
     int        initARGS();
 
@@ -45,8 +47,9 @@ class CGI
 
 public:
     CGI(const ServConf &servConf, input &in);
+    ~CGI();
 
-	int 	run();
+	void 	run();
 
 	const std::string &getResponse() const;
 

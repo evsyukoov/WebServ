@@ -12,6 +12,7 @@
 #include <netinet/in.h>
 #include <iostream>
 #include "File.hpp"
+#define PRINT(x) { std::cerr << GREEN << x << RESET << std::endl; }
 
 struct      input
 {
@@ -23,8 +24,9 @@ struct      input
     std::string root;
 };
 
-long  findFileSize(int fd);
-size_t  ft_strlen(char *str);
-char   *ft_strdup(char *str);
+long    findFileSize(int fd);
+size_t  ft_strlen(char const *str);
+char    *ft_strdup(char const *str);
+void    stringExtract(std::string const &needle, std::string &haystack);
 
 #endif //SERV_UTILS_HPP

@@ -143,12 +143,12 @@ int HTTP::initMap() {
 	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
 	&& second_pos != 0)
 	{
-	    //std::cout << "Loop" << std::endl;
+	    ////std::cout << "Loop" << std::endl;
 		blanc_pos = str.find(":");
 		rev_pos = str.find("\r", blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
 		second_pos = buff_req.find('\n', second_pos) + 1;
-		//std::cout << buff_req.find("\n", second_pos) << std::endl;
+		////std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
 	if (!validateHeaderMap())
 		return (1);
@@ -162,26 +162,26 @@ int HTTP::initMap() {
 	second_pos += 2;
 //	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
 //	{
-//		//std::cout <<
+//		////std::cout <<
 //		second_pos++;
 //	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
 //#ifdef D_REQUEST
 	//printMap();
-	std::cout << YELLOW << "Your request is finish !\n" << buff_req.substr(0, 250) << RESET << std::endl;
+	//std::cout << YELLOW << "Your request is finish !\n" << buff_req.substr(0, 250) << RESET << std::endl;
 //#endif
 	return (0);
 }
 
 void 	HTTP::printMap()
 {
-	std::cout << "Your parced map is: " << std::endl;
+	//std::cout << "Your parced map is: " << std::endl;
 	std::map<std::string, std::string>::iterator i1 = reqMap.begin();
 	std::map<std::string, std::string>::iterator i2 = reqMap.end();
 	while (i1 != i2)
 	{
-		std::cout << i1->first << ": " << i1->second << std::endl;
+		//std::cout << i1->first << ": " << i1->second << std::endl;
 		i1++;
 	}
 }
@@ -256,7 +256,7 @@ void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
 //	if (reqMap["location"][0] == '/')
 //		reqMap["location"].erase(0, 1);
 #ifdef D_REQUEST
-	std::cout << "Your new request is: " << reqMap["location"] << std::endl;
+	//std::cout << "Your new request is: " << reqMap["location"] << std::endl;
 #endif
 }
 
@@ -264,9 +264,9 @@ int HTTP::checkDirectory(const std::string& root)
 {
 	struct stat structstat;
 
-//	std::cout << root + reqMap["location"] << std::endl;
+//	//std::cout << root + reqMap["location"] << std::endl;
 //	if (stat("/Users/zcolleen/Desktop/webserv2/Serv/testfiles/test.txt", &structstat))
-//		std::cout << "working" << std::endl;
+//		//std::cout << "working" << std::endl;
 	if (!stat(root.c_str(), &structstat))
 	{
 		if (S_ISREG(structstat.st_mode))
@@ -389,9 +389,9 @@ bool HTTP::postGet()
 	if ((pos = reqMap["location"].find('?')) != std::string::npos)
 	{
 		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
-	//	std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
+	//	//std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
 		reqMap["location"].erase(pos);
-	//	std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
+	//	//std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
 		return (true);
 	}
 	return (false);
@@ -531,7 +531,7 @@ std::string HTTP::searchForMatchingAccept(std::map<std::string, float> accepts, 
 	std::vector<File>::iterator iter = files.begin();
 	std::vector<std::string> sorted;
 
-	std::cout << "Path: " + path << std::endl;
+	//std::cout << "Path: " + path << std::endl;
 	while (iter != files.end())
 	{
 		if (iter->getRoot() == path)
@@ -717,7 +717,7 @@ void HTTP::readFile(struct stat &st, int fd, std::string &path)
 
 	char *buf = new char[st.st_size + 1];
 	buf[st.st_size] = '\0';
-//	std::cout << st.st_size << std::endl;
+//	//std::cout << st.st_size << std::endl;
 	if (read(fd, buf, st.st_size) < 0)
 	{
 		close(fd);
@@ -793,7 +793,7 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
-	std::cout << "Result responce: " << header << std::endl;
+	//std::cout << "Result responce: " << header << std::endl;
 	if (!flag)
 	{
 		if (x_write(client_fd, result, result.size()) < 0)
@@ -808,7 +808,7 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 //    std::string res;
 //    if (flag)
 //    {
-//        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
+//        //std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
 //	int ret;
 //	int size = result.size();
 //	while (size)
@@ -830,7 +830,7 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
     std::string res;
     if (flag)
     {
-        std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
+        //std::cout << RED << "RAW RETURN FROM CGI: " << result.substr(0, 150) << RESET << std::endl;
     }
     int size;
     if (flag)
@@ -845,11 +845,11 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
     else
         res = result;
     size = res.size();
-    std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
-    std::cout << "size returned from cgi: " << size << std::endl;
+    //std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
+    //std::cout << "size returned from cgi: " << size << std::endl;
 
 //    while  ((ret = write(client_fd, (char *)result.c_str(), size)) > 0) {
-//	    std::cout << "num of write: " << i++ << std::endl;
+//	    //std::cout << "num of write: " << i++ << std::endl;
 //        size -= ret;
 //        result = result.substr(ret);
 //    }
@@ -869,8 +869,8 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 //    else
 //        res = result;
 //    size = res.size();
-//    std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
-//    std::cout << "size returned from cgi: " << size << std::endl;
+//    //std::cout << BLUE << "From cgi: " << res.substr(0,120) << RESET << std::endl;
+//    //std::cout << "size returned from cgi: " << size << std::endl;
 //
 //    write(client_fd, (char*)res.c_str(), size);
 	return (0);
@@ -886,12 +886,12 @@ void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
 	reqMap[LOCATION] = location;
 
 #ifdef D_CGI
-	//std::cout << "Lentght: " << cgi->content_length << std::endl;
-	//std::cout << "Query string: " << cgi->query_string << std::endl;
-	std::cout << "Request uri: " << cgi->request_uri << std::endl;
-	//std::cout << "Path translated: " << cgi->path_translated << std::endl;
-	//std::cout << "Content type: " << cgi->content_type << std::endl;
-	//std::cout << "Path info: " << cgi->path_info << std::endl;
+	////std::cout << "Lentght: " << cgi->content_length << std::endl;
+	////std::cout << "Query string: " << cgi->query_string << std::endl;
+	//std::cout << "Request uri: " << cgi->request_uri << std::endl;
+	////std::cout << "Path translated: " << cgi->path_translated << std::endl;
+	////std::cout << "Content type: " << cgi->content_type << std::endl;
+	////std::cout << "Path info: " << cgi->path_info << std::endl;
 #endif
 }
 
@@ -1040,19 +1040,19 @@ void HTTP::post()
 		in.reqestMap = &reqMap;
 		in.root = post_root;
 		CGI worker_cgi(servConf, in);
-		std::cout << "cgi in" << std::endl;
+		//std::cout << "cgi in" << std::endl;
 
 		worker_cgi.run();
 
-		std::cout << "cgi out" << std::endl;
+		//std::cout << "cgi out" << std::endl;
 		std::string responce(worker_cgi.getResponse());
 		std::vector<std::string> respo = ft_split(responce, "\r\n\r\n");
 		respo[1] = respo[1].substr(3, respo[1].size());
 		std::string body = respo[1];
 		std::string headers = respo[0];
+		////std::cout << headers << std::endl;
 		//std::cout << headers << std::endl;
-		std::cout << headers << std::endl;
-		std::cout << body << std::endl;
+		//std::cout << body << std::endl;
 
 		hardcodeMap(body);
 
