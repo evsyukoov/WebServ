@@ -28,7 +28,6 @@ class CGI
 	ServConf servConf;
 
 	// запрос от сервера на CGI
-	t_cgi struct_cgi;
 
 	//ответ после обработки
 
@@ -45,7 +44,7 @@ class CGI
     int     mapToEnv();
 
 public:
-    CGI(const t_cgi &struct_cgi, const ServConf &servConf, input &in);
+    CGI(const ServConf &servConf, input &in);
 
 	int 	run();
 

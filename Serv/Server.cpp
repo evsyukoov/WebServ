@@ -223,6 +223,7 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> &c
 	while (it != ite)
     {
 		if (FD_ISSET((*it)->getClientSock(), &write_set)) {
+			in.remote_addr = (*it)->getRemoteAddr();
             http.setFields((*it)->getClientSock(), (char *) (*it)->getRequest().c_str(), (*it)->getServConf(), in);
             http.manager();
             (*it)->clear();

@@ -876,15 +876,14 @@ int HTTP::sendReq(std::string header, std::string responce, int flag)
 	return (0);
 }
 
-void HTTP::fill_cgi(t_cgi *cgi, File &file, std::string &root)
+void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
 {
-	cgi->content_length = file.getContentLength();
-	cgi->content_type = file.getContentType();
-	cgi->reques_method = reqMap["method"];
-	cgi->query_string = reqMap["body"];
-	cgi->request_uri = "/" + reqMap["location"];
-	cgi->path_translated = root;
-	cgi->path_info = "./" + reqMap["location"];
+	if (file.getContentLength() != -1)
+		reqMap[LENGTH] = std::to_string(file.getContentLength());
+	else
+		reqMap[LENGTH] = std::to_string(reqMap["body"].size());
+	reqMap[TYPE] = file.getContentType();
+	reqMap[LOCATION] = location;
 
 #ifdef D_CGI
 	//std::cout << "Lentght: " << cgi->content_length << std::endl;
@@ -1030,15 +1029,17 @@ void HTTP::post()
 {
 //	long content_length = contentLength();
 	File file(reqMap);
-	t_cgi cgi;
 	std::string post_root;
+	std::string save_lock(reqMap["location"]);
 
 	if (!postPutvalidation(post_root, file, true))
 		return;
 	else
 	{
-		fill_cgi(&cgi, file, post_root);
-		CGI worker_cgi(cgi, servConf, in);
+		cgiFiller(file, post_root, save_lock);
+		in.reqestMap = &reqMap;
+		in.root = post_root;
+		CGI worker_cgi(servConf, in);
 		std::cout << "cgi in" << std::endl;
 
 		worker_cgi.run();

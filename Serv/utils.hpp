@@ -11,12 +11,16 @@
 #include <map>
 #include <netinet/in.h>
 #include <iostream>
+#include "File.hpp"
 
 struct      input
 {
     std::string conf;
     std::string interptretator;
     std::string scrypt;
+    std::string remote_addr;
+    std::map<std::string, std::string> *reqestMap;
+    std::string root;
 };
 
 long  findFileSize(int fd);

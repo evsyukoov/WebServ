@@ -7,8 +7,7 @@
 #include <fstream>
 #include "CGI.hpp"
 
-CGI::CGI(const t_cgi &struct_cgi, const ServConf &servConf, input &in) : in(in) {
-	this->struct_cgi = struct_cgi;
+CGI::CGI(const ServConf &servConf, input &in) : in(in) {
 	this->servConf = servConf;
 	initEnvironments();
 	initARGS();
@@ -38,8 +37,8 @@ int        CGI::initARGS()
 void        CGI::initEnvironments()
 {
 	environments["AUTH_TYPE"] = "Basic";
-	environments["CONTENT_LENGTH"] = std::to_string(struct_cgi.content_length);//std::to_string(request.size());
-	environments["CONTENT_TYPE"] = struct_cgi.content_type;
+	environments["CONTENT_LENGTH"] = (*in.reqestMap)["Content-Length"];//std::to_string(request.size());
+	environments["CONTENT_TYPE"] = (*in.reqestMap)["Content-Type"];
 	environments["GATEWAY_INTERFACE"] = "CGI/1.1";
 	environments["PATH_INFO"] = "/" ;        //путь к скрипту(относительный)
 	environments["PATH_TRANSLATED"] = "/Users/zcolleen/Desktop/webserv2/Serv/example.cgi";
@@ -47,9 +46,9 @@ void        CGI::initEnvironments()
 	//environments["REMOTE_ADDR"] = servConf.getServerName();
 	//environments["REMOTE_IDENT"]  =
 	//environments["REMOTE_USER"] = ;
-	environments["REQUEST_METHOD"] = struct_cgi.reques_method;
+	environments["REQUEST_METHOD"] = (*in.reqestMap)["method"];
 	//  environments["REQUEST_URI"] = "/directory/youpi.bla";
-	environments["SERVER_NAME"] = servConf.getServerName();
+	environments["SERVER_NAME"] = (*in.reqestMap)["Host"];
 	environments["SERVER_PORT"] = std::to_string(servConf.getPort());
 	environments["SERVER_PROTOCOL"] = "HTTP/1.1";
 	environments["SERVER_SOFTWARE"] = "webserv";
@@ -113,7 +112,7 @@ int	CGI::run()
 	{
 		close(fd[0]);
 		//dup2(fd[1],1);
-		write(fd[1], struct_cgi.query_string.c_str(), struct_cgi.query_string.size());
+		write(fd[1], (*in.reqestMap)["body"].c_str(), (*in.reqestMap)["body"].size());
 		close(fd[1]);
 		waitpid(child, &status, 0);
 		readFromCGI();
