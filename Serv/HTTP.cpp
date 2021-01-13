@@ -709,7 +709,7 @@ void HTTP::formTime(long long time_sec, std::string base)
 //	gettimeofday(&tv, NULL);
 	t_str = std::to_string(time_sec);
 	strptime(const_cast<char*>(t_str.c_str()), "%s", &time);
-	strftime(buf, 29, "%a, %d %b %Y %T GMT", &time);
+	strftime(buf, 29, "%a, %d %b %Y %T %Z", &time);
 	respMap[base] = buf;
 }
 
