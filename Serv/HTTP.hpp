@@ -80,9 +80,9 @@ private:
 
 	int 	initMap();
 
-	bool validateMethod();
+	int		validateMethod();
 
-	bool validateProtocol();
+	bool	validateProtocol();
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
@@ -176,6 +176,8 @@ public:
     std::string     generateErrorPage(int error_code);
 
     const std::string &getListing() const;
+
+	int		ext_write();
 
 };
 

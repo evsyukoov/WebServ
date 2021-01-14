@@ -67,16 +67,18 @@ void HTTP::setFields(int client, char *buf, const ServConf &serv, struct input &
 }
 
 
-bool HTTP::validateMethod()
+int HTTP::validateMethod()
 {
-	std::string methods[] = { "GET", "PUT", "POST", "DELETE",
-						   "HEAD", "CONNECT", "OPTIONS", "TRACE"};
-	for (int  i = 0;  i < 8; ++i)
+	std::string valid_methods[] = { "GET", "PUT", "POST", "HEAD"};
+	std::string unimplemented_methods[] = { "DELETE", "CONNECT", "OPTIONS", "TRACE"};
+	for (int  i = 0;  i < 4; ++i)
 	{
-		if (reqMap["method"] == methods[i])
-			return (true);
+		if (reqMap["method"] == unimplemented_methods[i])
+			return (2);
+		if (reqMap["method"] == valid_methods[i])
+			return (1);
 	}
-	return (false);
+	return (0);
 }
 
 bool HTTP::validateProtocol()
@@ -215,6 +217,12 @@ void HTTP::manager() {
 	{
 		std::string error(errorPageResponece(400));
 		sendReq("HTTP/1.1 400 Bad Request\r\n" + responceMapToString() + "\r\n", error);
+		return;
+	}
+	if (validateMethod() == 2)
+	{
+		std::string error(errorPageResponece(501));
+		sendReq("HTTP/1.1 501 Not Implemented\r\n" + responceMapToString() + "\r\n", error);
 		return;
 	}
 	reqMap["location"] = removeAllUnnecessarySlash(reqMap["location"]);
@@ -684,7 +692,7 @@ void HTTP::formTime(long long time_sec, std::string base)
 //	gettimeofday(&tv, NULL);
 	t_str = std::to_string(time_sec);
 	strptime(const_cast<char*>(t_str.c_str()), "%s", &time);
-	strftime(buf, 29, "%a, %d %b %Y %T GMT", &time);
+	strftime(buf, 29, "%a, %d %b %Y %T %Z", &time);
 	respMap[base] = buf;
 }
 
@@ -744,6 +752,12 @@ std::string HTTP::errorPageResponece(int error_num)
 	return ("");
 }
 
+int HTTP::ext_write()
+{
+	return (x_write(client_fd, result, result.size()));
+}
+
+
 int HTTP::x_write(int fd, std::string buf, size_t len)
 {
 	int ret = write(fd, (char *)buf.c_str(), len);
@@ -753,13 +767,13 @@ int HTTP::x_write(int fd, std::string buf, size_t len)
 	return (0);
 }
 
+
 int HTTP::x_write(std::map<std::string, std::string> responseMap)
 {
 	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
 	ssize_t		nbyte;
 	char		*buffer = new char[BUFFER_SIZE + 1];
 	ssize_t		length = findFileSize(localfd) - std::stoul(respMap["#lseek"]);
-
 
 	std::string respLine = "HTTP/1.1 " + respMap["Status"] + "\r\n";
 	respLine += "Content-Length: " + std::to_string(length) + "\r\n";
@@ -1091,6 +1105,7 @@ void HTTP::initErrorMap()
     errors[449] = "Retry With";
     errors[451] = "Unavailable For Legal Reasons";
     errors[499] = "Client Closed Request";
+    errors[501] = "Not Implemented";
     errors[505] = "HTTP Version Not Supported";
 }
 

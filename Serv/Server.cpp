@@ -116,7 +116,7 @@ void        print(const std::list<Client*> &clients)
     std::cout << RESET << std::endl;
 }
 
-int Server::servLoop(HTTP &http) {
+_Noreturn int Server::servLoop(HTTP &http) {
     //ключ-сокет клиента  - value - конфиг сервера на котором коннект
 	std::list<Client*> clients;
 	while (true) {
