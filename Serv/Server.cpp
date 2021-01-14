@@ -42,14 +42,14 @@ int     set_nonblock(int fd)
 
 int   Server::receiveData(int client_sock, std::string &str)
 {
-    char recieve[BUFFER_SIZE];
+    char recieve[WS_BUFFER_SIZE];
 
 #ifdef D_READ
     std::cout << "Wait for reading request from client: " << client_sock << std::endl;
 #endif
     usleep(1000);
     int len;
-    len = read(client_sock, recieve, BUFFER_SIZE - 1);
+    len = read(client_sock, recieve, WS_BUFFER_SIZE - 1);
     recieve[len] = '\0';
 #ifdef D_READ
     std::cout << "len: " << len << std::endl;

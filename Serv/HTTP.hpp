@@ -17,11 +17,8 @@
 #define CONT_LOC "Content-Location"
 #define BYTES_TO_WRITE 10000
 
-
-
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <algorithm>
 #include "Parser/Config.hpp"
 #include <unistd.h>
 #include <limits>
@@ -30,7 +27,6 @@
 #include "utils.hpp"
 #include "CGI.hpp"
 #include <sys/time.h>
-
 
 class HTTP
 {
@@ -155,10 +151,11 @@ private:
 	void		former(std::string &root);
 
 	static int			x_write(int fd, std::string buf, size_t len);
+	int			x_write(std::map<std::string, std::string> respMap);
 
 	bool				putManager(std::string &put_root, File &file, std::string uri, int put_flag = 0, const std::string &responce = std::string(""));
 
-	void				hardcodeMap(std::string body);
+	void				hardcodeMap(std::map<std::string, std::string> responseMap);
 
 public:
 

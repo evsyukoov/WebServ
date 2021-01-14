@@ -145,12 +145,10 @@ int HTTP::initMap() {
 	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
 	&& second_pos != 0)
 	{
-	    //std::cout << "Loop" << std::endl;
 		blanc_pos = str.find(":");
 		rev_pos = str.find("\r", blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
 		second_pos = buff_req.find('\n', second_pos) + 1;
-		//std::cout << buff_req.find("\n", second_pos) << std::endl;
 	}
 	if (!validateHeaderMap())
 		return (1);
@@ -160,30 +158,22 @@ int HTTP::initMap() {
 		return (0);
 	if (buff_req[second_pos] != '\r' || (second_pos + 1 < buff_req.size() && buff_req[second_pos + 1] != '\n'))
 		return (1);
-//	size_t len = buff_req.size();
 	second_pos += 2;
-//	while ((buff_req[second_pos] == '\r' || buff_req[second_pos] == '\n') && second_pos < buff_req.size())
-//	{
-//		//std::cout <<
-//		second_pos++;
-//	}
 	if (buff_req.size() > second_pos)
 		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
-//#ifdef D_REQUEST
 	//printMap();
-	std::cout << YELLOW << "Your request is finish !\n" << buff_req.substr(0, 250) << RESET << std::endl;
-//#endif
+	//std::cout << YELLOW << "Your request is finish !\n" << buff_req.substr(0, 250) << RESET << std::endl;
 	return (0);
 }
 
 void 	HTTP::printMap()
 {
-	std::cout << "Your parced map is: " << std::endl;
+	//std::cout << "Your parced map is: " << std::endl;
 	std::map<std::string, std::string>::iterator i1 = reqMap.begin();
 	std::map<std::string, std::string>::iterator i2 = reqMap.end();
 	while (i1 != i2)
 	{
-		std::cout << i1->first << ": " << i1->second << std::endl;
+		//std::cout << i1->first << ": " << i1->second << std::endl;
 		i1++;
 	}
 }
@@ -261,20 +251,13 @@ void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
 {
 	//reqMap["location"].replace(0, it->getLocation().size(), root_with_slash);
 	reqMap["location"].erase(0, it->getLocation().size());
-//	if (reqMap["location"][0] == '/')
-//		reqMap["location"].erase(0, 1);
-#ifdef D_REQUEST
-	std::cout << "Your new request is: " << reqMap["location"] << std::endl;
-#endif
 }
 
 int HTTP::checkDirectory(const std::string& root)
 {
 	struct stat structstat;
 
-//	std::cout << root + reqMap["location"] << std::endl;
-//	if (stat("/Users/zcolleen/Desktop/webserv2/Serv/testfiles/test.txt", &structstat))
-//		std::cout << "working" << std::endl;
+//	//std::cout << root + reqMap["location"] << std::endl;
 	if (!stat(root.c_str(), &structstat))
 	{
 		if (S_ISREG(structstat.st_mode))
@@ -397,9 +380,9 @@ bool HTTP::postGet()
 	if ((pos = reqMap["location"].find('?')) != std::string::npos)
 	{
 		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
-	//	std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
+	//	//std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
 		reqMap["location"].erase(pos);
-	//	std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
+	//	//std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
 		return (true);
 	}
 	return (false);
@@ -539,7 +522,7 @@ std::string HTTP::searchForMatchingAccept(std::map<std::string, float> accepts, 
 	std::vector<File>::iterator iter = files.begin();
 	std::vector<std::string> sorted;
 
-	std::cout << "Path: " + path << std::endl;
+	//std::cout << "Path: " + path << std::endl;
 	while (iter != files.end())
 	{
 		if (iter->getRoot() == path)
@@ -725,7 +708,7 @@ void HTTP::readFile(struct stat &st, int fd, std::string &path)
 
 	char *buf = new char[st.st_size + 1];
 	buf[st.st_size] = '\0';
-//	std::cout << st.st_size << std::endl;
+//	//std::cout << st.st_size << std::endl;
 	if (read(fd, buf, st.st_size) < 0)
 	{
 		close(fd);
@@ -777,27 +760,46 @@ int HTTP::ext_write()
 
 int HTTP::x_write(int fd, std::string buf, size_t len)
 {
-//	write(client_fd, (char*)result.c_str(), 10000);
-
 	int ret = write(fd, (char *)buf.c_str(), len);
-//	while (ret > 0)
-//	{
-//		if (len > BYTES_TO_WRITE)
-//		{
-//			if ((ret = write(fd, (char*)buf.c_str(), BYTES_TO_WRITE)) < 0)
-//				break;
-//			buf = buf.substr(BYTES_TO_WRITE, len);
-//			len -= BYTES_TO_WRITE;
-//		}
-//		else
-//		{
-//			if (len != 0)
-//				ret = write(fd, (char *)buf.c_str(), len);
-//			break;
-//		}
-//	}
+
 	if (ret == -1)
 		return (-1);
+	return (0);
+}
+
+
+int HTTP::x_write(std::map<std::string, std::string> responseMap)
+{
+	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
+	ssize_t		nbyte;
+	char		*buffer = new char[BUFFER_SIZE + 1];
+	ssize_t		length = findFileSize(localfd) - std::stoul(respMap["#lseek"]);
+
+	std::string respLine = "HTTP/1.1 " + respMap["Status"] + "\r\n";
+	respLine += "Content-Length: " + std::to_string(length) + "\r\n";
+	lseek(localfd, std::stoul(respMap["#lseek"]), SEEK_SET); // start of body
+	std::map<std::string, std::string>::iterator it = this->respMap.begin();
+	while (it != respMap.end())
+	{
+		if (it->first[0] != '#')
+		{
+			std::string field = headerPairToStr(*it);
+			respLine += field;
+		}
+		++it;
+	}
+	respLine += "\r\n";
+	write(client_fd, respLine.c_str(), respLine.size());
+	while ((nbyte = read(localfd, buffer, BUFFER_SIZE)) > 0)
+	{
+		length = std::min(length, (ssize_t)BUFFER_SIZE);
+		length -= write(client_fd, buffer, length);
+		if (length == 0)
+			break ;
+	}
+	close(localfd);
+	delete[] buffer;
+	unlink(respMap["#file"].c_str());
 	return (0);
 }
 
@@ -807,7 +809,7 @@ int HTTP::sendReq(std::string header, std::string responce)
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
-	std::cout << "Result responce: " << header << std::endl;
+	//std::cout << "Result responce: " << header << std::endl;
 	if (x_write(client_fd, result, result.size()) < 0)
 		return (0);
 	return (1);
@@ -821,15 +823,6 @@ void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
 		reqMap[LENGTH] = std::to_string(reqMap["body"].size());
 	reqMap[TYPE] = file.getContentType();
 	reqMap[LOCATION] = location;
-
-#ifdef D_CGI
-	//std::cout << "Lentght: " << cgi->content_length << std::endl;
-	//std::cout << "Query string: " << cgi->query_string << std::endl;
-	//std::cout << "Request uri: " << cgi->request_uri << std::endl;
-	//std::cout << "Path translated: " << cgi->path_translated << std::endl;
-	//std::cout << "Content type: " << cgi->content_type << std::endl;
-	//std::cout << "Path info: " << cgi->path_info << std::endl;
-#endif
 }
 
 std::string HTTP::postRoot()
@@ -956,15 +949,25 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 	return (true);
 }
 
-void HTTP::hardcodeMap(std::string body)
+void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 {
-	respMap[LENGTH] = std::to_string(body.size());
-	respMap[TYPE] = "text/html; charset=utf-8";
+	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
+	ssize_t		length = findFileSize(localfd) - ft_atoi(responseMap["#lseek"].c_str());
+	//std::string respLine = "HTTP/1.1 " + responseMap["Status"] + "\r\n";
+	this->respMap["Content-Length"] = std::to_string(length);
+
+	std::map<std::string, std::string>::iterator it = responseMap.begin();
+	while (it != responseMap.end())
+	{
+		//if (it->first[0] != '#')
+			this->respMap[it->first] = it->second;
+		++it;
+	}
+	close(localfd);
 }
 
 void HTTP::post()
 {
-//	long content_length = contentLength();
 	File file(reqMap);
 	std::string post_root;
 	std::string save_lock(reqMap["location"]);
@@ -974,32 +977,17 @@ void HTTP::post()
 	else
 	{
 		cgiFiller(file, post_root, save_lock);
-		in.reqestMap = &reqMap;
+		in.requestMap = &reqMap;
 		in.root = post_root;
 		CGI worker_cgi(servConf, in);
-		std::cout << "cgi in" << std::endl;
 
 		worker_cgi.run();
 
-		std::cout << "cgi out" << std::endl;
-		std::string responce(worker_cgi.getResponse());
-		std::vector<std::string> respo = ft_split(responce, "\r\n\r\n");
-		respo[1] = respo[1].substr(3, respo[1].size());
-		std::string body = respo[1];
-		std::string headers = respo[0];
-		//std::cout << headers << std::endl;
-		std::cout << headers << std::endl;
-		std::cout << body << std::endl;
+		hardcodeMap(worker_cgi.getRespMap());
+		x_write(respMap);
+		//sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", body);
 
-		hardcodeMap(body);
-
-		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", body);
-
-//#endif
-//		respMap[LENGTH] = std::to_string(worker_cgi.getResponse().size());
-//		sendReq("HTTP/1.1 200 OK\r\n", worker_cgi.getResponse(), 1);
 	}
-//	CGI cgi();
 }
 
 void HTTP::rewriteFileToVector(File &file)
