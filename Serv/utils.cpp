@@ -13,31 +13,7 @@ long  findFileSize(int fd)
     return file_stat.st_size;
 }
 
-size_t  ft_strlen(char const *str)
-{
-    int i = 0;
-    while (str[i])
-        i++;
-    return (i);
-}
-
-char   *ft_strdup(char const *str)
-{
-    int i = 0;
-    char *res;
-
-    if (!(res = (char*)malloc(sizeof(char) * (ft_strlen(str) + 1))))
-        return NULL;
-    while (str[i])
-    {
-        res[i] = str[i];
-        i++;
-    }
-    res[i] = '\0';
-    return (res);
-}
-
-void inet_toip4(void *sAddr, std::string &buffer)
+void    inet_toip4(void *sAddr, std::string &buffer)
 {
     unsigned char *sss = reinterpret_cast<unsigned char *>(sAddr);
 
@@ -47,16 +23,35 @@ void inet_toip4(void *sAddr, std::string &buffer)
     buffer.pop_back();
 }
 
-void    stringExtract(std::string const &needle, std::string &haystack)
+std::string    stringExtract(std::string const &needle, std::string const &haystack)
 {
     size_t delim = haystack.find(needle);
-    std::string tmp;
+    std::string tmp, result;
 
     if (delim != std::string::npos)
     {
-        tmp = haystack.substr(0, delim);
-        haystack = haystack.substr(delim + needle.size(), haystack.size());
+        tmp = haystack.substr(0, delim - 1);
+        result = tmp + haystack.substr(delim + needle.size(), haystack.size());
     }
+    return result;
+}
+
+std::string     trimAfter(std::string const &str, char const &c)
+{
+    size_t delim = str.find(c);
+
+    if (delim != str.npos)
+        return str.substr(delim + 1, str.npos); 
+    return str;
+}
+
+std::string     trimBefore(std::string const &str, char const &c)
+{
+    size_t delim = str.rfind(c);
+    
+    if (delim != str.npos)
+        return str.substr(0, str.rfind(c) + 1); 
+    return str;
 }
 
 std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string> const &m)
@@ -64,7 +59,51 @@ std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string>
     std::map<std::string, std::string>::const_iterator it = m.begin();
     while (it != m.end())
     {
-        std::cout << it->first << ": " << it->second << std::endl;
+        os << it->first << ": " << it->second << std::endl;
         ++it;
     }
+    return os;
+}
+
+std::string       headerPairToStr(std::pair<std::string, std::string> const &pair)
+{
+    return (pair.first + ": " + pair.second + "\r\n");
+}
+
+std::string       headerPairToStr(std::string const &first, std::string const &second)
+{
+    return (first + ": " + second + "\r\n");
+}
+
+int                 lseek_next_line(int fd, std::string &line)
+{
+    static std::string  reaminder;
+    size_t              endl = reaminder.find('\n');
+	ssize_t			    len;
+    char                *buf;
+    int                 rv;
+
+    buf = new char[BUFFER_SIZE + 1];;
+	while ((rv = read(fd, buf, BUFFER_SIZE)) >= 0)
+	{
+		buf[rv] = '\0';
+		reaminder += buf;
+        if (reaminder.find('\n') != reaminder.npos || rv == 0)
+		{
+			delete buf;
+            if (endl == line.npos)
+            {
+                if (line.size() == 0)
+                    return (0);
+                endl = line.size();
+            }
+            line = trimAfter(reaminder, '\n');
+            len = line.size() - reaminder.size() + 1;
+            reaminder.clear();
+            lseek(fd, len, SEEK_CUR);
+            return (1);
+		}
+	}
+    delete buf;
+	return (-1);
 }

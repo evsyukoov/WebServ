@@ -14,7 +14,8 @@ SRC = HTTP.cpp \
 	  server_main.cpp
 
 CXX := clang++
-CXXFLAGS := -std=c++98 #-Wall -Wextra -Werror
+CXXFLAGS := -std=c++98 -I./libft#-Wall -Wextra -Werror
+conf = $(PWD)/conf/webserv.conf
 
 ifdef DEBUG
 CXXFLAGS += -D WS_DEBUG
@@ -30,10 +31,10 @@ OBJS=$(SRC:.cpp=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS) | config
-	clang++ $(OBJS) -o $(NAME)
+	clang++ $(OBJS) ./libft/libft.a -o $(NAME)
 
 run: $(NAME)
-	./server ./CGI_Scrypts/cgi_tester ./conf/webserv.conf
+	./server ./CGI_Scrypts/cgi_tester $(conf) 
 
 test: re
 	./tester http://127.0.0.1:1234
@@ -45,11 +46,11 @@ clean:
 	rm -f $(OBJS)
 
 config:
-	cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > webserv.conf
+	cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > $(conf)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(conf) file_should_exist_after
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re run test debug config

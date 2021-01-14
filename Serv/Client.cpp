@@ -5,16 +5,6 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-static void inet_toip4(void * sAddr, std::string &buffer)
-{
-    unsigned char *sss = reinterpret_cast<unsigned char *>(sAddr);
-
-    buffer.clear();
-    for (int i = 0; i < 4; ++i)
-        buffer += std::to_string(int(sss[i])) + '.';
-    buffer.pop_back();
-}
-
 Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
 {
     inet_toip4(&sAddr.sin_addr, this->remoteAddr);

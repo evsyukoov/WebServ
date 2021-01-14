@@ -4,13 +4,17 @@
 
 #ifndef SERV_CGI_HPP
 #define SERV_CGI_HPP
-#include <zconf.h>
 #include <iostream>
 #include <fcntl.h>
+#include <algorithm>
 #include <map>
 #include "utils.hpp"
 #include "Parser/Config.hpp"
-#include "HTTP.hpp"
+#include "sys/time.h"
+
+extern "C" { 
+	#include "libft.h"
+}
 
 // 	CGI_scrypt(дочерний процесс)	----->	Server --- > Client(Browser)
 								//	<-----		 //<----
@@ -20,10 +24,10 @@ class CGI
 	std::string filename;
 	std::string extension;
 	std::string tmpFile;
-	char **env;
-	char *args[3];
-	char *buff;
-	input &in;
+	char		**env;
+	char		*args[3];
+	char		*buff;
+	input		&in;
 
 	//настройки конфига
 	const ServConf &servConf;
@@ -34,16 +38,18 @@ class CGI
 
 	std::string response;
 
-	std::map<std::string, std::string> environments;
+	std::map<std::string, std::string> envMap;
+	std::map<std::string, std::string> respMap;
 
     void	    readFromCGI();
     void        initEnvironments();
     void        setUriAttributes();
 	void		setHttpHeaders();
+	void		createResponseMap();
 
-    int        initARGS();
+    int         initARGS();
 
-    int     mapToEnv();
+    int     	mapToEnv();
 
 public:
     CGI(const ServConf &servConf, input &in);
@@ -52,6 +58,7 @@ public:
 	void 	run();
 
 	const std::string &getResponse() const;
+	std::map<std::string, std::string> getRespMap() const;
 
 };
 
