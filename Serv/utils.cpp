@@ -77,34 +77,33 @@ std::string       headerPairToStr(std::string const &first, std::string const &s
 
 int                 lseek_next_line(int fd, std::string &line)
 {
-    static std::string  reaminder;
-    size_t              endl = reaminder.find('\n');
-	ssize_t			    len;
-    char                *buf;
-    int                 rv;
-
-    buf = new char[BUFFER_SIZE + 1];;
+	static std::string  reaminder;
+	size_t              endl = reaminder.find('\n');
+	ssize_t             len;
+	char                *buf;
+	int                 rv;
+	buf = new char[BUFFER_SIZE + 1];
 	while ((rv = read(fd, buf, BUFFER_SIZE)) >= 0)
 	{
 		buf[rv] = '\0';
 		reaminder += buf;
-        if (reaminder.find('\n') != reaminder.npos || rv == 0)
+		if (endl != reaminder.npos || rv == 0)
 		{
 			delete buf;
-            if (endl == line.npos)
-            {
-                if (line.size() == 0)
-                    return (0);
-                endl = line.size();
-            }
-            line = trimAfter(reaminder, '\n');
-            len = line.size() - reaminder.size() + 1;
-            reaminder.clear();
-            lseek(fd, len, SEEK_CUR);
-            return (1);
+			if (endl == line.npos)
+			{
+				if (reaminder.size() == 0)
+					return (0);
+				endl = line.size();
+			}
+			line = reaminder.substr(0, reaminder.find('\n'));
+			len = line.size() - reaminder.size() + 1;
+			reaminder.clear();
+			lseek(fd, len, SEEK_CUR);
+			return (1);
 		}
 	}
-    delete buf;
+	delete buf;
 	return (-1);
 }
 

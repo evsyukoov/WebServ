@@ -48,13 +48,16 @@ private:
 
 	int 	get();
 
-	void 	post();
+	void 	post(bool post_get_flag = false);
 
 	void 	put();
 
-	bool checkForAllowedMethod();
+	bool	checkForAllowedMethod();
 
-	bool postPutvalidation(std::string &put_post_root, File &file, bool post_flag);
+	bool	postGetValidation(std::string &root);
+
+	bool	postPutvalidation(std::string &put_post_root, File &file, bool post_flag);
+
 
 	bool	postRootConfig(std::string &post_root, File &file);
 
@@ -126,7 +129,7 @@ private:
 
 	std::string		responceMapToString();
 
-	std::string		makeAllow(std::string exept);
+	std::string		makeAllow(std::string exept = "");
 
 	std::string getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, std::string), std::vector<File>::iterator iter);
 

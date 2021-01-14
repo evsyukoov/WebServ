@@ -607,14 +607,14 @@ int HTTP::get()
 
 	if (!checkForAllowedMethod())
 	{
-		respMap[ALLOW] = makeAllow("");
+		respMap[ALLOW] = makeAllow();
 		std::string error(errorPageResponece(405));
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
 		return (0);
 	}
 	else if (postGet())
 	{
-		post();
+		post(true);
 		return (0);
 	}
 	if (tryAutoindex(path))
@@ -853,13 +853,17 @@ std::string HTTP::postRoot()
 
 bool HTTP::validateExtencion(std::string &root) //необходимое расширение должно начинаться с точки, надо валидировать в конфиге
 {
-	size_t pos = 0;
+	size_t dot_pos = 0;
+	size_t slash_pos = 0;
 
-	if ((pos = root.rfind('.')) == std::string::npos)
+	if ((dot_pos = root.rfind('.')) == std::string::npos)
 		return (false);
 	if (it != servConf.getLocations().end())
 	{
-		if (root.substr(pos, root.size() - pos) == it->getCgiExtension())
+		if (root.substr(dot_pos, root.size() - dot_pos) == it->getCgiExtension())
+			return (true);
+		slash_pos = root.find('/', dot_pos);
+		if (slash_pos != std::string::npos && root.substr(dot_pos, slash_pos - dot_pos) == it->getCgiExtension())
 			return (true);
 	}
 	return (false);
@@ -884,7 +888,7 @@ bool HTTP::createNewRepresent(std::string &post_root, File &file)
 		location_saver = "/";
 	if (checkDirectory(post_root) == 1)
 	{
-		std::string new_representation(post_root + "save_form");
+		std::string new_representation(post_root + "blog");
 		respMap[LENGTH] = std::to_string(file.getContentLength());
 		putManager(new_representation, file, location_saver, 1, reqMap["body"]);
 		return (false);
@@ -894,8 +898,16 @@ bool HTTP::createNewRepresent(std::string &post_root, File &file)
 
 bool HTTP::postRootConfig(std::string &post_root, File &file)
 {
+	int dir_check;
+
 	former(post_root);
-	if (checkDirectory(post_root) != 1 && !(validateExtencion(post_root)))
+	if ((dir_check = checkDirectory(post_root)) == 2)
+	{
+		std::string error(errorPageResponece(404));
+		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", error);
+		return (false);
+	}
+	if (dir_check != 1 && !(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
 		respMap[ALLOW] = makeAllow("POST");
@@ -909,7 +921,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 {
 	put_post_root = postRoot();
 	std::string error;
-	bool validate;
+	bool validate = false;
 
 	if (put_post_root.back() != '/')
 		put_post_root.push_back('/');
@@ -920,7 +932,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 	}
 	if (!checkForAllowedMethod())
 	{
-		respMap[ALLOW] = makeAllow("");
+		respMap[ALLOW] = makeAllow();
 		error = errorPageResponece(405);
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
 		return (false);
@@ -958,6 +970,7 @@ void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 	this->respMap["Content-Length"] = std::to_string(length);
 
 	std::map<std::string, std::string>::iterator it = responseMap.begin();
+
 	while (it != responseMap.end())
 	{
 		//if (it->first[0] != '#')
@@ -967,16 +980,42 @@ void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 	close(localfd);
 }
 
-void HTTP::post()
+bool HTTP::postGetValidation(std::string &root)
+{
+	root = postRoot();
+	int dir_check;
+
+	if (root.back() != '/')
+		root.push_back('/');
+	former(root);
+	if ((dir_check = checkDirectory(root)) == 2)
+	{
+		std::string error(errorPageResponece(404));
+		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", error);
+		return (false);
+	}
+	if (!(validateExtencion(root)))
+	{
+		std::string error(errorPageResponece(405));
+		respMap[ALLOW] = makeAllow();
+		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
+		return (false);
+	}
+	return (true);
+}
+
+void HTTP::post(bool post_put_flag)
 {
 	File file(reqMap);
 	std::string post_root;
 	std::string save_lock(reqMap["location"]);
 
-	if (!postPutvalidation(post_root, file, true))
+	if (!post_put_flag && !postPutvalidation(post_root, file, true))
 		return;
 	else
 	{
+		if (post_put_flag && !postGetValidation(post_root))
+			return;
 		cgiFiller(file, post_root, save_lock);
 		in.requestMap = &reqMap;
 		in.root = post_root;

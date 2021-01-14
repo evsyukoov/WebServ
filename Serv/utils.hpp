@@ -14,7 +14,7 @@
 #include "File.hpp"
 #include "unistd.h"
 #define PRINT(x) { std::cerr << "\033[32m" << x << "\033[0m" << std::endl; }
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 100000000
 
 struct      input
 {
