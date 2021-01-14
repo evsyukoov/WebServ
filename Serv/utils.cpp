@@ -107,3 +107,26 @@ int                 lseek_next_line(int fd, std::string &line)
     delete buf;
 	return (-1);
 }
+
+size_t ft_strlen(char const *s)
+{
+	char const *e = s;
+
+	while (*e)
+		e++;
+	return (e - s);
+}
+
+char *ft_strdup(char const *s)
+{
+	char *res = (char *)malloc(ft_strlen(s) + 1);
+	int i = 0;
+
+	if (res)
+	{
+		for (i = 0; s[i]; ++i)
+			res[i] = s[i];
+		res[i] = 0;
+	}
+	return (res);
+}

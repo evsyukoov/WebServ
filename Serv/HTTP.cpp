@@ -777,6 +777,7 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 
 	std::string respLine = "HTTP/1.1 " + respMap["Status"] + "\r\n";
 	respLine += "Content-Length: " + std::to_string(length) + "\r\n";
+	PRINT(respLine);
 	lseek(localfd, std::stoul(respMap["#lseek"]), SEEK_SET); // start of body
 	std::map<std::string, std::string>::iterator it = this->respMap.begin();
 	while (it != respMap.end())
@@ -952,7 +953,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 {
 	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
-	ssize_t		length = findFileSize(localfd) - ft_atoi(responseMap["#lseek"].c_str());
+	ssize_t		length = findFileSize(localfd) - std::strtol(responseMap["#lseek"].c_str(), nullptr, 0);
 	//std::string respLine = "HTTP/1.1 " + responseMap["Status"] + "\r\n";
 	this->respMap["Content-Length"] = std::to_string(length);
 

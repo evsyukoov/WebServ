@@ -12,11 +12,9 @@
 #include <netinet/in.h>
 #include <iostream>
 #include "File.hpp"
+#include "unistd.h"
 #define PRINT(x) { std::cerr << "\033[32m" << x << "\033[0m" << std::endl; }
-
-extern "C" {
-    #include "libft.h"
-}
+#define BUFFER_SIZE 100
 
 struct      input
 {
@@ -37,5 +35,9 @@ std::string     stringExtract(std::string const &needle, std::string const &hays
 std::string     trimAfter(std::string const &str, char const &c);
 std::string     trimBefore(std::string const &str, char const &c);
 std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string> const &m);
+size_t 			ft_strlen(char const *s);
+char			*ft_strdup(char const *s);
+int				lseek_next_line(int fd, std::string &line);
+
 
 #endif //SERV_UTILS_HPP

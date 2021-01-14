@@ -12,9 +12,6 @@
 #include "Parser/Config.hpp"
 #include "sys/time.h"
 
-extern "C" { 
-	#include "libft.h"
-}
 
 // 	CGI_scrypt(дочерний процесс)	----->	Server --- > Client(Browser)
 								//	<-----		 //<----
@@ -39,7 +36,7 @@ class CGI
 	std::string response;
 
 	std::map<std::string, std::string> envMap;
-	std::map<std::string, std::string> respMap;
+	std::map<std::string, std::string> responseMap;
 
     void	    readFromCGI();
     void        initEnvironments();

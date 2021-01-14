@@ -179,21 +179,18 @@ void	CGI::createResponseMap()
 {
 	int		fd = open(tmpFile.c_str(), O_RDONLY);
 	size_t	headlen = 0;
-	char 	*line;
 	std::pair<std::string, std::string> pr;
 	std::string str;
 
-	while (lseek_next_line(fd, &line) > 0 && *line != '\r')
+	while (lseek_next_line(fd, str) > 0 && str[0] != '\r')
 	{
-		str = line;
-		free(line);
+		PRINT(str)
 		headlen += str.size() + 1;
 		str.pop_back();
-		respMap.insert(splitPair(str, ": "));
+		responseMap.insert(splitPair(str, ": "));
 	}
-	respMap.insert(std::pair<std::string, std::string>("#file", tmpFile));
-	respMap.insert(std::pair<std::string, std::string>("#lseek", std::to_string(headlen += 2)));
-	free(line);
+	responseMap.insert(std::pair<std::string, std::string>("#file", tmpFile));
+	responseMap.insert(std::pair<std::string, std::string>("#lseek", std::to_string(headlen += 2)));
 	lseek(fd, headlen, SEEK_SET);
 	close(fd);
 }
@@ -224,5 +221,5 @@ const std::string &CGI::getResponse() const
 
 std::map<std::string, std::string> CGI::getRespMap() const
 {
-	return respMap;
+	return responseMap;
 }

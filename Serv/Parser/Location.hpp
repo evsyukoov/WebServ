@@ -5,7 +5,7 @@
 #ifndef SERV_LOCATION_HPP
 #define SERV_LOCATION_HPP
 #include <string>
-#include <list>
+//#include <list>
 #include <vector>
 #include "parser_utils.hpp"
 //конфиг одного локейшна

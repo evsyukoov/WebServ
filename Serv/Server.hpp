@@ -5,7 +5,7 @@
 #ifndef SERV_SERVER_HPP
 #define SERV_SERVER_HPP
 #include <map>
-#include <list>
+//#include <list>
 #include <fcntl.h>
 #include "Parser/Config.hpp"
 #include "HTTP.hpp"
