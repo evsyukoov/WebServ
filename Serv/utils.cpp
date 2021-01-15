@@ -82,6 +82,7 @@ int                 lseek_next_line(int fd, std::string &line)
 	ssize_t             len;
 	char                *buf;
 	int                 rv;
+
 	buf = new char[BUFFER_SIZE + 1];
 	while ((rv = read(fd, buf, BUFFER_SIZE)) >= 0)
 	{
@@ -92,7 +93,7 @@ int                 lseek_next_line(int fd, std::string &line)
 			delete buf;
 			if (endl == line.npos)
 			{
-				if (reaminder.size() == 0)
+				if (reaminder.empty())
 					return (0);
 				endl = line.size();
 			}

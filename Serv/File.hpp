@@ -23,7 +23,7 @@ private:
 
 	long contentLength(std::map<std::string, std::string> &reqMap);
 
-	void contentWithComma(std::map<std::string, std::string> &reqMap, std::string base);
+	void contentWithComma(std::map<std::string, std::string> &reqMap, std::string const &base);
 
 	bool contentType(std::map<std::string, std::string> &reqMap);
 
@@ -37,7 +37,7 @@ public:
 
 	long getContentLength();
 
-	void setRoot(std::string root);
+	void setRoot(std::string const &root);
 
 	const std::string& getRoot();
 
@@ -49,24 +49,12 @@ public:
 
 	const std::string &getContentType();
 
-	static std::string getMime(std::string extencion);
+	static std::string getMime(std::string const &extencion);
 
 	void setContentLength(size_t content_length);
 
 //	std::string getMime();
 
 };
-
-
-typedef struct		s_cgi
-{
-	size_t 			content_length;
-	std::string 	content_type;
-	std::string 	query_string;
-	std::string 	reques_method;
-	std::string 	request_uri;
-	std::string 	path_info;
-	std::string 	path_translated;
-}					t_cgi;
 
 #endif //SERV_FILE_HPP

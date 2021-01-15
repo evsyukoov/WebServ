@@ -10,7 +10,7 @@
 #include <map>
 #include "utils.hpp"
 #include "Parser/Config.hpp"
-#include "sys/time.h"
+#include <sys/time.h>
 
 
 // 	CGI_scrypt(дочерний процесс)	----->	Server --- > Client(Browser)

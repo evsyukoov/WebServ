@@ -14,7 +14,7 @@ long File::contentLength(std::map<std::string, std::string> &reqMap)
 			if (!std::isdigit(reqMap[LENGTH][i]))
 				return (-1);
 		}
-		length = std::strtoll(reqMap[LENGTH].c_str(), NULL, 0);
+		length = std::strtoll(reqMap[LENGTH].c_str(), nullptr, 0);
 		if (errno == ERANGE)
 			return (-1);
 		return (length);
@@ -22,7 +22,7 @@ long File::contentLength(std::map<std::string, std::string> &reqMap)
 	return (-1);
 }
 
-void 	File::contentWithComma(std::map<std::string, std::string> &reqMap, std::string base)
+void 	File::contentWithComma(std::map<std::string, std::string> &reqMap, std::string const &base)
 {
 	std::vector<std::string>	valid_vector;
 
@@ -67,11 +67,11 @@ bool File::typeValidity(std::vector<std::string> &charset_vector, std::vector<st
 
 void File::placeContentType(std::map<std::string, std::string> &reqMap)
 {
-	size_t pos = 0;
+	size_t pos = reqMap["location"].rfind('.');
 
 	if (!contentType(reqMap))
 	{
-		if ((pos = reqMap["location"].rfind('.')) == std::string::npos)
+		if (pos == std::string::npos)
 			content_type = getMime("");
 		else
 			content_type = getMime(reqMap["location"].substr(pos, reqMap["location"].size() - pos));
@@ -125,7 +125,7 @@ bool File::contentType(std::map<std::string, std::string> &reqMap)
 	return (false);
 }
 
-std::string File::getMime(std::string extencion)
+std::string File::getMime(std::string const &extencion)
 {
 	std::map<std::string, std::string> mime_map;
 	std::map<std::string, std::string>::iterator iter;
@@ -212,7 +212,7 @@ std::string File::getMime(std::string extencion)
 			return (iter->first);
  		iter++;
 	}
- 	if (extencion == "")
+ 	if (extencion.empty())
 		return ("text/plain");
  	else
 		return ("application/octet-stream");
@@ -229,7 +229,7 @@ File::File(std::map<std::string, std::string> &reqMap)
 	placeContentType(reqMap);
 }
 
-void File::setRoot(std::string root)
+void File::setRoot(std::string const &root)
 {
 	file_name = root;
 	std::cout << "Your file name: " + file_name << std::endl;
@@ -247,4 +247,4 @@ const std::string &File::getCharset() { return (charset); }
 
 const std::string &File::getRoot() { return (file_name); }
 
-void File::setContentLength(size_t content_length) { this->content_length = content_length; }
+void File::setContentLength(size_t _content_length) { this->content_length = _content_length; }

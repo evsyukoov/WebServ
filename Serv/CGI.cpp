@@ -9,12 +9,12 @@ CGI::CGI(const ServConf &_servConf, input &_in) : in(_in), servConf(_servConf)
 {
 	timeval tv;
 
-	gettimeofday(&tv, NULL);
+	gettimeofday(&tv, nullptr);
 	tmpFile = "ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
 	filename = trimAfter(in.root, '/');
 	extension = '.' + trimAfter(filename, '.');
-	env = NULL;
-	buff = NULL;
+	env = nullptr;
+	buff = nullptr;
 	initEnvironments();
 	initARGS();
 	mapToEnv();
@@ -28,8 +28,7 @@ CGI::~CGI()
 			free(env[i]);
 		free(env);
 	}
-	if (buff)
-		delete buff;
+	delete buff;
 }
 
 int        CGI::initARGS()
@@ -37,13 +36,13 @@ int        CGI::initARGS()
 	if (in.interptretator.empty())
 	{
 		args[0] = const_cast<char*>(in.scrypt.c_str());
-		args[1] = NULL;
+		args[1] = nullptr;
 	}
 	else
 	{
 		args[0] = const_cast<char*>(in.interptretator.c_str());
 		args[1] = const_cast<char*>(in.scrypt.c_str());
-		args[2] = NULL;
+		args[2] = nullptr;
 	}
 	return (1);
 }
@@ -62,7 +61,7 @@ void		CGI::setUriAttributes()
 		envMap["PATH_TRANSLATED"] = "/";
 	}
 	else
-		envMap["PATH_INFO"] = "/"; // NULL
+		envMap["PATH_INFO"] = "/"; // null
 }
 
 void		CGI::setHttpHeaders()
@@ -95,7 +94,7 @@ void        CGI::initEnvironments()
 	setHttpHeaders();
 	if (in.requestMap->count("Authorization"))
 	{
-		std::string	&auth = (*in.requestMap)["Aurthorization"];
+		std::string	&auth = (*in.requestMap)["Authorization"];
 		size_t		delim = auth.find(' ');
 
 		envMap["AUTH_TYPE"] = auth.substr(0, delim - 1);
@@ -128,7 +127,7 @@ int     CGI::mapToEnv()
 			throw(std::runtime_error(strerror(errno)));
 		i++;
 	}
-	env[i] = NULL;
+	env[i] = nullptr;
 	return (1);
 }
 

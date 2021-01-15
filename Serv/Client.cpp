@@ -12,6 +12,8 @@ Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
     this->servConf = servConf;
     this->request = "";
     this->body = "";
+    body_size = 0;
+    chunk_size = 0;
     state = HEADER;
 }
 
@@ -32,7 +34,9 @@ std::string &Client::getRemoteAddr() {
     return remoteAddr;
 }
 
-int     Client::checkBodyHeaders(std::string splitted)
+
+
+int     Client::checkBodyHeaders(std::string const &splitted)
 {
     size_t pos_dot = splitted.find(':');
     if (pos_dot != std::string::npos) {
@@ -43,7 +47,7 @@ int     Client::checkBodyHeaders(std::string splitted)
         }
         else if (key == "Transfer-Encoding")
         {
-            std::string val = splitted.substr(pos_dot + 2).c_str();
+            std::string val = splitted.substr(pos_dot + 2);
             if (val.find("chunked") != std::string::npos)
                 return (2);
         }
@@ -53,7 +57,7 @@ int     Client::checkBodyHeaders(std::string splitted)
 
 int    Client::findBodySize(std::string header)
 {
-    int begin = 0;
+    size_t begin;
     size_t pos;
     std::string splitted;
 
@@ -82,7 +86,7 @@ void    Client::analizeBodySize()
     }
 }
 
-bool    Client::isDigit(const std::string &digit)
+static bool isHexDigit(const std::string &digit)
 {
     std::string available = "0123456789aAbBcCdDeEfF";
     for(size_t i = 0; i < digit.size(); i++)
@@ -93,12 +97,10 @@ bool    Client::isDigit(const std::string &digit)
     return true;
 }
 
-
-
 int    Client::decodeChunks()
 {
     //input = 10 \r\n abcdefgrty \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
-    size_t pos = 0;
+    size_t pos;
     if ((raw_body.find("0\r\n\r\n") != std::string::npos) || chunk_end == "0\r\n\r\n") {
         state = FINISH;
     }
@@ -109,9 +111,9 @@ int    Client::decodeChunks()
             std::string digit = raw_body.substr(0, pos);
 			if (digit.size() == 1 && digit[0] == '0')
 				chunk_end = raw_body.substr(pos - 1);
-            if (!isDigit(digit))
+            if (!isHexDigit(digit))
                 return (0);
-            chunk_size = std::strtol(digit.c_str(), NULL, 16);
+            chunk_size = std::strtol(digit.c_str(), nullptr, 16);
         }
         else
         {
@@ -140,16 +142,16 @@ void    Client::analizeChunked()
     }
 }
 
-void Client::findState(std::string &piece) {
-    size_t delimetr = 0;
+void Client::findState(std::string &_piece) {
+    size_t delimetr;
 
-//    if (piece.substr(0, 3) != "GET")
-//    	std::cout << "ADDED PIECE: " << piece.size() << std::endl;
+//    if (_piece.substr(0, 3) != "GET")
+//    	std::cout << "ADDED PIECE: " << _piece.size() << std::endl;
 #ifdef D_STATE
     std::cout << "State begin: " << state << std::endl;
 #endif
     if (state == HEADER) {
-        request += piece;
+        request += _piece;
         if ((delimetr = request.find("\r\n\r\n")) != std::string::npos) {
             std::string header = request.substr(0, delimetr + 2);
             int ret = findBodySize(header);
@@ -168,16 +170,16 @@ void Client::findState(std::string &piece) {
 
         }
     } else if (state == BODY) {
-        body += piece;
+        body += _piece;
         analizeBodySize();
     }
     else if (state == BODY_CHUNKED)
     {
-        //std::cout << "chunke: " << piece << std::endl;
-        raw_body += piece;
+        //std::cout << "chunke: " << _piece << std::endl;
+        raw_body += _piece;
         if (!chunk_end.empty()) {
-			std::cout << "END: " << piece.size() << std::endl;
-			chunk_end += piece;
+			std::cout << "END: " << _piece.size() << std::endl;
+			chunk_end += _piece;
 		}
         decodeChunks();
     }

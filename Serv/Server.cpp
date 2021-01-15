@@ -149,7 +149,6 @@ int Server::servLoop(HTTP &http) {
 			{
 				sockaddr_in sAddr;
 				socklen_t	sLen = sizeof(sAddr);
-				::bzero(&sAddr, sLen);
 				int client_sock = accept((*it).first, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
 				set_nonblock(client_sock);
                 Client *client = new Client(client_sock, it->second, sAddr);
@@ -182,11 +181,9 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 		if (FD_ISSET((*it)->getClientSock(), &read_set))
 		{
 		    int ret = receiveData((*it)->getClientSock(), data);
-		    //произошла ошибка, попробуем позднее
-            if (ret < 0)
-               it++;
+
 			//кто-то отключился
-			else if (ret == 0)
+			if (ret == 0)
 			{
 				close((*it)->getClientSock());
 				delete (*it);
@@ -201,11 +198,10 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
                     FD_SET((*it)->getClientSock(), &write_set);
                 it++;
 #ifdef D_STATE
-				if (it != ite)
+                if (it != ite)
                  std::cout << "State: " << (*it)->getState() << std::endl;
 #endif
-			}
-			//иначе просто идем дальше
+            }//произошла ошибка, попробуем позднее
 			else
 			    it++;
 		}

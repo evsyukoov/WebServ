@@ -4,10 +4,30 @@
 #include "HTTP.hpp"
 #include "Debug.hpp"
 
+static void printLMAP(std::map<std::string, float> &map)
+{
+    /*
+    std::map<std::string, float>::iterator iter;
+    for (iter = map.begin(); iter != map.end() ; ++iter)
+        std::cout << RED << "MAP: " << iter->first << ": " << iter->second << std::endl;
+    std::cout << RESET;
+     */
+    (void)map;
+}
+
+static void printVec(std::vector<std::string> &vector)
+{
+    std::vector<std::string>::iterator iter;
+    for (iter = vector.begin(); iter != vector.end() ; ++iter)
+        std::cout << GREEN << "Sorted vector: " << *iter << std::endl;
+    std::cout << RESET;
+}
+
+
 HTTP::HTTP(int client, char *buf, const ServConf &_servConf) {
 	buff_req = buf;
 	this->servConf = _servConf;
-	client = client_fd;
+	client_fd = client;
 }
 
 HTTP::HTTP() {
@@ -44,10 +64,10 @@ int 		HTTP::initListingHTML(std::string path, const std::string &root)
 	while (root[j] == path[j] && root[j] && path[j])
 	    j++;
 	path = path.substr(j);
-	while ((dir_info = readdir(dir)) != NULL) {
+	while ((dir_info = readdir(dir)) != nullptr) {
         if (i)
         {
-            ref += "<p><a href=" + path + "/" + std::string(dir_info->d_name) + ">" + std::string(dir_info->d_name) +
+            ref += "<p><a href=" + path + '/' + std::string(dir_info->d_name) + '>' + std::string(dir_info->d_name) +
                    "</a></p>\n";
         }
         i++;
@@ -106,7 +126,7 @@ bool HTTP::parceRequestLine(size_t &second_pos, size_t &rev_pos)
 	if ((second_pos = buff_req.find(' ', rev_pos + 1)) == std::string::npos)
 		return (false);
 	reqMap["location"] = buff_req.substr(rev_pos + 1, second_pos - rev_pos - 1);
-	if ((rev_pos = buff_req.find("\r", second_pos + 1)) == std::string::npos)
+	if ((rev_pos = buff_req.find('\r', second_pos + 1)) == std::string::npos)
 		return (false);
 	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
 	return (true);
@@ -132,23 +152,24 @@ bool HTTP::validateHeaderMap()
 int HTTP::initMap() {
 
 	size_t second_pos = 0;
-	size_t blanc_pos = 0;
+	size_t blanc_pos;
 	size_t rev_pos = 0;
 	std::string str;
 
 	reqMap.clear();
 	respMap.clear();
 	respMap[SERVER] = "webserv/1.0";
-	respMap[LENGTH] = "0";
+	respMap[LENGTH] = '0';
 	timer();
 	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
 		return (1);
 	second_pos = rev_pos + 2;
-	while ((str = buff_req.substr(second_pos, buff_req.find("\n", second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
+	//@TODO нужно посмотреть это условие вместе.
+	while ((str = buff_req.substr(second_pos, buff_req.find('\n', second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
 	&& second_pos != 0)
 	{
-		blanc_pos = str.find(":");
-		rev_pos = str.find("\r", blanc_pos + 1);
+		blanc_pos = str.find(':');
+		rev_pos = str.find('\r', blanc_pos + 1);
 		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
 		second_pos = buff_req.find('\n', second_pos) + 1;
 	}
@@ -180,7 +201,7 @@ void 	HTTP::printMap()
 	}
 }
 
-std::string HTTP::makeAllow(std::string exept)
+std::string HTTP::makeAllow(std::string const &except)
 {
 	std::string allow("GET, HEAD, POST, PUT");
 
@@ -191,9 +212,10 @@ std::string HTTP::makeAllow(std::string exept)
 		else
 		{
 			allow.clear();
-			for (std::vector<std::string>::const_iterator iter = it->getMethods().begin(); iter != it->getMethods().end(); ++iter)
+            std::vector<std::string>::const_iterator iter;
+			for (iter = it->getMethods().begin(); iter != it->getMethods().end(); ++iter)
 			{
-				if (*iter == exept)
+				if (*iter == except)
 					continue;
 				allow.append(*iter + ", ");
 			}
@@ -209,7 +231,7 @@ void HTTP::timer()
 {
 	struct timeval tv;
 
-	gettimeofday(&tv, NULL);
+	gettimeofday(&tv, nullptr);
 	formTime(tv.tv_sec, DATE);
 }
 
@@ -256,7 +278,7 @@ void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
 	reqMap["location"].erase(0, it->getLocation().size());
 }
 
-int HTTP::checkDirectory(const std::string& root)
+static int checkDirectory(const std::string& root)
 {
 	struct stat structstat;
 
@@ -342,7 +364,7 @@ std::string HTTP::pathFormerer() {
 	}
 }
 
-bool HTTP::findMethod(std::string find)
+bool HTTP::findMethod(std::string const &find)
 {
 	if (!it->getMethods().empty())
 	{
@@ -378,9 +400,9 @@ bool HTTP::checkForAllowedMethod()
 
 bool HTTP::postGet()
 {
-	size_t pos = 0;
+	size_t pos = reqMap["location"].find('?');
 
-	if ((pos = reqMap["location"].find('?')) != std::string::npos)
+	if (pos != std::string::npos)
 	{
 		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
 	//	//std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
@@ -407,7 +429,7 @@ bool HTTP::priorityValidation(std::string prior)
 	return (true);
 }
 
-bool HTTP::putInPriorMap(std::map<std::string, float>& prior_map, std::string lang)
+bool HTTP::putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang)
 {
 	std::vector<std::string> priority;
 	std::vector<std::string> q_value;
@@ -433,7 +455,7 @@ bool HTTP::putInPriorMap(std::map<std::string, float>& prior_map, std::string la
 	return (true);
 }
 
-bool HTTP::accepts(std::map<std::string, float>& prior_map, std::string base)
+bool HTTP::accepts(std::map<std::string, float>& prior_map, std::string const &base)
 {
 	std::vector<std::string> languages;
 
@@ -454,20 +476,6 @@ bool HTTP::accepts(std::map<std::string, float>& prior_map, std::string base)
 	return (true);
 }
 
-void printLMAP(std::map<std::string, float> map)
-{
-	for (std::map<std::string, float>::iterator iter = map.begin(); iter != map.end() ; ++iter)
-		std::cout << RED << "MAP: " << iter->first << ": " << iter->second << std::endl;
-	std::cout << RESET;
-}
-
-void HTTP::printVec(std::vector<std::string> vector)
-{
-	for (std::vector<std::string>::iterator iter = vector.begin(); iter != vector.end() ; ++iter)
-		std::cout << GREEN << "Sorted vector: " << *iter << std::endl;
-	std::cout << RESET;
-}
-
 std::vector<std::string> HTTP::passMap(std::map<std::string, float> accept)
 {
 	std::vector<std::string> sorted_map;
@@ -481,12 +489,12 @@ std::vector<std::string> HTTP::passMap(std::map<std::string, float> accept)
 	return (sorted_map);
 }
 
-bool HTTP::compareCharset(std::vector<File>::iterator matching_file, std::string charset)
+bool HTTP::compareCharset(std::vector<File>::iterator matching_file, std::string const &charset)
 {
 	return (matching_file->getCharset() == charset);
 }
 
-bool HTTP::compareContentLanguage(std::vector<File>::iterator matching_file, std::string language)
+bool HTTP::compareContentLanguage(std::vector<File>::iterator matching_file, std::string const &language)
 {
 	std::vector<std::string>::const_iterator file_lang_it = matching_file->getContentLanguage().begin();
 	std::vector<std::string>::const_iterator file_lang_it_end = matching_file->getContentLanguage().end();
@@ -501,13 +509,14 @@ bool HTTP::compareContentLanguage(std::vector<File>::iterator matching_file, std
 	return (false);
 }
 
-std::string HTTP::getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, std::string), std::vector<File>::iterator iter)
+std::string HTTP::getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, const std::string &), std::vector<File>::iterator iter)
 {
 	std::vector<std::string> sorted;
 
 	sorted = passMap(accepts);
 	printVec(sorted);
-	for (std::vector<std::string>::iterator vec_it = sorted.begin(); vec_it != sorted.end(); ++vec_it)
+    std::vector<std::string>::iterator vec_it;
+	for (vec_it = sorted.begin(); vec_it != sorted.end(); ++vec_it)
 	{
 		if (*vec_it == "*")
 			continue;
@@ -519,8 +528,8 @@ std::string HTTP::getMatchingAccept(std::map<std::string, float> accepts, bool (
 	return ("not acceptable");
 }
 
-std::string HTTP::searchForMatchingAccept(std::map<std::string, float> accepts, std::string path, bool (*func)(std::vector<File>::iterator, std::string),
-										  std::string base)
+std::string HTTP::searchForMatchingAccept(std::map<std::string, float> &accepts, std::string const &path,
+            bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base)
 {
 	std::vector<File>::iterator iter = files.begin();
 	std::vector<std::string> sorted;
@@ -534,7 +543,7 @@ std::string HTTP::searchForMatchingAccept(std::map<std::string, float> accepts, 
 	}
 	if (iter == files.end())
 		return ("no file");
-	if (base == AC_LANG && !iter->getContentLanguage().empty() && !accepts.empty())
+	if (base == AC_LANG  && !iter->getContentLanguage().empty() && !accepts.empty())
 		return (getMatchingAccept(accepts, func, iter));
 	else if (base == AC_CHARSET && !iter->getCharset().empty() && !accepts.empty())
 		return (getMatchingAccept(accepts, func, iter));
@@ -545,12 +554,13 @@ std::string HTTP::responceMapToString()
 {
 	std::string headers;
 
-	for (std::map<std::string, std::string>::iterator iter = respMap.begin();  iter != respMap.end() ; ++iter)
+    std::map<std::string, std::string>::iterator iter;
+	for (iter = respMap.begin();  iter != respMap.end() ; ++iter)
 		headers.append(iter->first + ": " + iter->second + "\r\n");
 	return (headers);
 }
 
-bool HTTP::checkMatchingAccept(std::string matching, std::string base)
+bool HTTP::checkMatchingAccept(std::string const &matching, std::string const &base)
 {
 	if (matching == "not acceptable")
 		return (false);
@@ -627,10 +637,9 @@ int HTTP::get()
 //	if (!acceptedLanguages(lang_prior_map))
 //		lang_prior_map.clear();
 
- #ifdef D_GET
 	printLMAP(lang_prior_map);
-	printLMAP(accept_charset_map);
-#endif
+	//printLMAP(accept_charset_map);
+
 	if (path.empty())
 	{
 		std::string error(errorPageResponece(404));
@@ -661,9 +670,9 @@ int HTTP::get()
 
 void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
 {
-	size_t pos = 0;
-
-	for (std::vector<File>::iterator iter = files.begin(); iter != files.end(); ++iter)
+	size_t pos;
+    std::vector<File>::iterator iter;
+	for (iter = files.begin(); iter != files.end(); ++iter)
 	{
 		if (iter->getRoot() == path)
 		{
@@ -687,7 +696,7 @@ void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
 	    respMap[LENGTH] = std::to_string(file_size);
 }
 
-void HTTP::formTime(long long time_sec, std::string base)
+void HTTP::formTime(long long time_sec, std::string const &base)
 {
 //	struct timeval tv;
 	struct tm time;
@@ -763,7 +772,7 @@ int HTTP::ext_write()
 }
 
 
-int HTTP::x_write(int fd, std::string buf, size_t len)
+int HTTP::x_write(int fd, std::string const &buf, size_t len)
 {
 	int ret = write(fd, (char *)buf.c_str(), len);
 
@@ -784,22 +793,22 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 	respLine += "Content-Length: " + std::to_string(length) + "\r\n";
 	PRINT(respLine);
 	lseek(localfd, std::stoul(respMap["#lseek"]), SEEK_SET); // start of body
-	std::map<std::string, std::string>::iterator it = this->respMap.begin();
-	while (it != respMap.end())
+	std::map<std::string, std::string>::iterator iter = this->respMap.begin();
+	while (iter != respMap.end())
 	{
-		if (it->first[0] != '#')
+		if (iter->first[0] != '#')
 		{
-			std::string field = headerPairToStr(*it);
+			std::string field = headerPairToStr(*iter);
 			respLine += field;
 		}
-		++it;
+		++iter;
 	}
 	respLine += "\r\n";
 	write(client_fd, respLine.c_str(), respLine.size());
 	while ((nbyte = read(localfd, buffer, BUFFER_SIZE)) > 0)
 	{
-		length = std::min(length, (ssize_t)BUFFER_SIZE);
-		length -= write(client_fd, buffer, length);
+		nbyte = std::min(length, nbyte);
+		length -= write(client_fd, buffer, nbyte);
 		if (length == 0)
 			break ;
 	}
@@ -809,9 +818,8 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 	return (0);
 }
 
-int HTTP::sendReq(std::string header, std::string responce)
+int HTTP::sendReq(std::string const &header, std::string responce)
 {
-
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
@@ -860,8 +868,8 @@ std::string HTTP::postRoot()
 
 bool HTTP::validateExtencion(std::string &root) //необходимое расширение должно начинаться с точки, надо валидировать в конфиге
 {
-	size_t dot_pos = 0;
-	size_t slash_pos = 0;
+	size_t dot_pos;
+	size_t slash_pos;
 
 	if ((dot_pos = root.rfind('.')) == std::string::npos)
 		return (false);
@@ -932,7 +940,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 {
 	put_post_root = postRoot();
 	std::string error;
-	bool validate = false;
+	bool validate;
 
 	if (put_post_root.back() != '/')
 		put_post_root.push_back('/');
@@ -980,13 +988,13 @@ void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 	//std::string respLine = "HTTP/1.1 " + responseMap["Status"] + "\r\n";
 	this->respMap["Content-Length"] = std::to_string(length);
 
-	std::map<std::string, std::string>::iterator it = responseMap.begin();
+	std::map<std::string, std::string>::iterator iter = responseMap.begin();
 
-	while (it != responseMap.end())
+	while (iter != responseMap.end())
 	{
 		//if (it->first[0] != '#')
-			this->respMap[it->first] = it->second;
-		++it;
+			this->respMap[iter->first] = iter->second;
+		++iter;
 	}
 	close(localfd);
 }
@@ -994,12 +1002,12 @@ void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 bool HTTP::postGetValidation(std::string &root)
 {
 	root = postRoot();
-	int dir_check;
+	int dir_check = checkDirectory(root);
 
 	if (root.back() != '/')
 		root.push_back('/');
 	former(root);
-	if ((dir_check = checkDirectory(root)) == 2)
+	if (dir_check == 2)
 	{
 		std::string error(errorPageResponece(404));
 		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", error);
@@ -1064,7 +1072,7 @@ void HTTP::former(std::string &root)
 	root = removeAllUnnecessarySlash(root);
 }
 
-bool HTTP::putManager(std::string &put_root, File &file, std::string uri, int flag,  const std::string &responce)
+bool HTTP::putManager(std::string &put_root, File &file, std::string const &uri, int flag,  const std::string &responce)
 {
 	int fd;
 

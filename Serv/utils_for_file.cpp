@@ -30,8 +30,8 @@ bool comparePriors(const std::pair<std::string, float>& a, const std::pair<std::
 
 void trimmer(std::string &str)
 {
-	str.erase(0, str.find_first_not_of(" "));
-	str.erase(str.find_last_not_of(" ") + 1, str.size() - 1);
+	str.erase(0, str.find_first_not_of(' '));
+	str.erase(str.find_last_not_of(' ') + 1, str.size() - 1);
 }
 
 std::vector<std::string>	ft_split(std::string str, std::string delimetr)

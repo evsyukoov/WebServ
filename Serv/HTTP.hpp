@@ -67,11 +67,11 @@ private:
 
 	std::string pathFormerer();
 
-	int checkDirectory(const std::string& root);
+	//int checkDirectory(const std::string& root);
 
 	std::string rootSwitcher(const std::string& root, const std::string& serv_index, const std::string& loc_index);
 
-	int sendReq(std::string header, std::string request);
+	int sendReq(std::string const &header, std::string request);
 
 	void readFile(struct stat &st, int fd, std::string &path);
 
@@ -106,40 +106,38 @@ private:
 
 	int		initListingHTML(std::string path, const std::string &root);
 
-	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string lang);
+	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
 	bool	priorityValidation(std::string prior);
 
-	bool	accepts(std::map<std::string, float>& prior_map, std::string base);
-
-	void	printVec(std::vector<std::string> vector);
+	bool	accepts(std::map<std::string, float>& prior_map, const std::string &base);
 
 	std::vector<std::string>	passMap(std::map<std::string, float> accept);
 
-	std::string searchForMatchingAccept(std::map<std::string, float> accepts, std::string path,
-									 bool (*func)(std::vector<File>::iterator, std::string), std::string base);
+	std::string searchForMatchingAccept(std::map<std::string, float> &accepts, std::string const &path,
+                bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base);
 
-	static bool	compareContentLanguage(std::vector<File>::iterator matching_file, std::string language);
+	static bool	compareContentLanguage(std::vector<File>::iterator matching_file, std::string const &language);
 
 	void	rewriteFileToVector(File &file);
 
-	bool	checkMatchingAccept(std::string matching, std::string base);
+	bool	checkMatchingAccept(std::string const &matching, std::string const &base);
 
-	static bool compareCharset(std::vector<File>::iterator matching_file, std::string charset);
+	static bool compareCharset(std::vector<File>::iterator matching_file, std::string const &charset);
 
 	std::string		responceMapToString();
 
-	std::string		makeAllow(std::string exept = "");
+	std::string		makeAllow(std::string const &except = "");
 
-	std::string getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, std::string), std::vector<File>::iterator iter);
+	std::string getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, const std::string &), std::vector<File>::iterator iter);
 
 	static std::string removeAllUnnecessarySlash(std::string path);
 
-	bool		findMethod(std::string find);
+	bool		findMethod(std::string const &find);
 
 	void 		formContentTypeLength(const std::string &path, size_t file_size);
 
-	void		formTime(long long time_sec, std::string base);
+	void		formTime(long long time_sec, std::string const &base);
 
 	void		formRespHeaderOK(std::string &path, struct stat st);
 
@@ -153,10 +151,10 @@ private:
 
 	void		former(std::string &root);
 
-	static int			x_write(int fd, std::string buf, size_t len);
-	int			x_write(std::map<std::string, std::string> respMap);
+	static int			x_write(int fd, std::string const &buf, size_t len);
+	int			        x_write(std::map<std::string, std::string> respMap);
 
-	bool				putManager(std::string &put_root, File &file, std::string uri, int put_flag = 0, const std::string &responce = std::string(""));
+	bool				putManager(std::string &put_root, File &file, std::string const &uri, int put_flag = 0, const std::string &responce = std::string(""));
 
 	void				hardcodeMap(std::map<std::string, std::string> responseMap);
 

@@ -30,20 +30,18 @@ class Client {
 
     std::map<std::string, std::string>  head;
 
-    int     checkBodyHeaders(std::string splitted);
+    int     checkBodyHeaders(std::string const &splitted);
 
     void    analizeBodySize();
 
-    int    decodeChunks();
+    int     decodeChunks();
 
     void    analizeChunked();
-
-    bool    isDigit(const std::string &digit);
 
 public:
     Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr);
 
-    int getClientSock() const;
+    int     getClientSock() const;
 
     void    clear();
 
@@ -54,13 +52,13 @@ public:
     std::string getRequest();
     std::string &getRemoteAddr();
 
-    void                findState(std::string &piece);
+    void    findState(std::string &_piece);
 
-    int getState() const;
+    int     getState() const;
 
-    int    findBodySize(std::string header);
+    int     findBodySize(std::string header);
 
-    int getBodySize() const;
+    int     getBodySize() const;
 
 
 };
