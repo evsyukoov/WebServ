@@ -58,7 +58,7 @@ int     Location::isAllowedMethod(const std::string &method)
 int     Location::findEndOfKeyword(const std::string &word)
 {
     int i = 0;
-    while (!std::isspace(word[i]) && word[i] != std::string::npos)
+    while (!std::isspace(word[i]) && word[i] != '\0')
         i++;
     return (i);
 }
@@ -162,8 +162,8 @@ int     Location::parse()
     for(std::list<std::string>::iterator it = raw_directives.begin(); it != raw_directives.end(); it++)
     {
         std::list<std::string> directives = split(*it);
-
     }
+    return (0);
 }
 
 int Location::parseLocation(const std::string &loc) {

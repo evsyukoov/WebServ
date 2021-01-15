@@ -70,7 +70,6 @@ void		CGI::setHttpHeaders()
 	std::map<std::string, std::string>::iterator it = (*in.requestMap).begin();
 	static std::array<std::string, 4> extras = { "body", "method", "location", "protocol" };
 	std::string	httpKey;
-	int			i;
 
 	while (it != (*in.requestMap).end())
 	{
@@ -205,7 +204,6 @@ void    CGI::readFromCGI()
 	oss << ifs.rdbuf();
 	response = oss.str();
 	*/
-	int		n;
 	int		fd = open(tmpFile.c_str(), O_RDONLY);
 	long	size = findFileSize(fd);
 

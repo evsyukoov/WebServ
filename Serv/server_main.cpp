@@ -19,7 +19,7 @@ void    printCongig(const Config &config)
     std::list<ServConf> servConf = config.getConfig();
     std::list<ServConf>::iterator it = servConf.begin();
     std::list<ServConf>::iterator ite = servConf.end();
-    int i = 0;
+    size_t i = 0;
     while (it != ite)
     {
         i++;
@@ -29,26 +29,26 @@ void    printCongig(const Config &config)
 		std::cout << "   Root: " << it->getRoot() << std::endl;
 		std::cout << "   Index: " << it->getIndex() << std::endl;
         std::map<int, std::string> error_pages = it->getErrorPages();
-        for(std::map<int, std::string>::iterator it = error_pages.begin(); it != error_pages.end(); it++)
-            std::cout << RED << "   error page N " << it->first << " path " << it->second << std::endl;
+        for(std::map<int, std::string>::iterator iter = error_pages.begin(); iter != error_pages.end(); iter++)
+            std::cout << RED << "   error page N " << iter->first << " path " << iter->second << std::endl;
         std::cout << RESET;
         std::list<Location> locations = it->getLocations();
-        int i = 0;
-        for (std::list<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+        i = 0;
+        for (std::list<Location>::iterator iter = locations.begin(); iter != locations.end(); iter++)
         {
-            std::cout << BLUE << "   Location N" << i + 1 << " path: " << (*it).getLocation() << RESET << std::endl;
-            std::cout << "      index: " << (*it).getIndex() << std::endl;
-            std::cout << "      root: " << (*it).getRoot() << std::endl;
-            std::cout << "      cgi extension: " << (*it).getCgiExtension() << std::endl;
-            std::cout << "      cgi scrypt: " << (*it).getCgiScrypt() << std::endl;
-            std::cout << "      max body: " << (*it).getMaxBody() << std::endl;
-            std::cout << "      autoindex: " << (*it).isAutoindex() << std::endl;
-            std::cout << "      upload: " << (*it).isEnableUpload() << std::endl;
-            if (!(*it).getUploadPath().empty())
-                std::cout << "      upload path: " << (*it).isEnableUpload() << std::endl;
+            std::cout << BLUE << "   Location N" << i + 1 << " path: " << (*iter).getLocation() << RESET << std::endl;
+            std::cout << "      index: " << (*iter).getIndex() << std::endl;
+            std::cout << "      root: " << (*iter).getRoot() << std::endl;
+            std::cout << "      cgi extension: " << (*iter).getCgiExtension() << std::endl;
+            std::cout << "      cgi scrypt: " << (*iter).getCgiScrypt() << std::endl;
+            std::cout << "      max body: " << (*iter).getMaxBody() << std::endl;
+            std::cout << "      autoindex: " << (*iter).isAutoindex() << std::endl;
+            std::cout << "      upload: " << (*iter).isEnableUpload() << std::endl;
+            if (!(*iter).getUploadPath().empty())
+                std::cout << "      upload path: " << (*iter).isEnableUpload() << std::endl;
             std::cout << "      Allowed methods: ";
-            std::vector<std::string> methods = (*it).getMethods();
-            for (int i = 0; i < methods.size(); i++)
+            std::vector<std::string> methods = (*iter).getMethods();
+            for (i = 0; i < methods.size(); i++)
             {
                 std::cout << methods[i] << " ";
             }
@@ -84,11 +84,11 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
     return (1);
 }
 
-int main(int argc, char **argv, char **env)
+int main(int argc, char **argv)
 {
 
 	HTTP http;
-
+	
     struct input in;
     if (parseCommandLineArgs(argc, argv, in) == -1)
         return (0);

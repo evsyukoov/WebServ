@@ -116,7 +116,7 @@ void        print(const std::list<Client*> &clients)
     std::cout << RESET << std::endl;
 }
 
-_Noreturn int Server::servLoop(HTTP &http) {
+int Server::servLoop(HTTP &http) {
     //ключ-сокет клиента  - value - конфиг сервера на котором коннект
 	std::list<Client*> clients;
 	while (true) {
@@ -126,7 +126,6 @@ _Noreturn int Server::servLoop(HTTP &http) {
 		for (std::list<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
 			FD_SET((*it)->getClientSock(), &read_set);
 
-		int max;
 		if (!clients.empty())
 		    max = std::max((--servers.end())->first, (*std::max_element(clients.begin(), clients.end(), Comparator))->getClientSock());
 		else
@@ -148,8 +147,9 @@ _Noreturn int Server::servLoop(HTTP &http) {
 			// произошел коннект на n-ом сервере
 			if (FD_ISSET((*it).first, &read_set))
 			{
-				sockaddr_in sAddr = {0};
+				sockaddr_in sAddr;
 				socklen_t	sLen = sizeof(sAddr);
+				::bzero(&sAddr, sLen);
 				int client_sock = accept((*it).first, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
 				set_nonblock(client_sock);
                 Client *client = new Client(client_sock, it->second, sAddr);
@@ -217,7 +217,6 @@ std::vector<char*>      Server::readRequests(std::list<Client*> &clients)
 
 void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> &clients, HTTP &http)
 {
-	int i = 0;
     std::list<Client*>::iterator it = clients.begin();
     std::list<Client*>::iterator ite = clients.end();
 	while (it != ite)
@@ -230,7 +229,8 @@ void	Server::sendToAllClients(std::vector<char*> requests, std::list<Client*> &c
         }
 		it++;
 	}
-
+    //@TODO unused parameter requests
+    (void)requests;
 }
 
 Server::~Server() {

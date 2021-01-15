@@ -41,7 +41,7 @@ public:
 
     int    openServers();
 
-	_Noreturn int     servLoop(HTTP &http);
+	int     servLoop(HTTP &http);
 
 
     int     run(HTTP &http);

@@ -110,7 +110,7 @@ int Config::checkBracketsDirectives() {
 	    //проверим баланс открывающих и закрывающих скобок
 	    else
         {
-            for (int i = posOpenBracket + 1; i < (*it). size(); i++)
+            for (size_t i = posOpenBracket + 1; i < (*it).size(); i++)
             {
                 if ((*it)[i] == '{')
                     bracketsBalance++;

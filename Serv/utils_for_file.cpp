@@ -37,14 +37,14 @@ void trimmer(std::string &str)
 std::vector<std::string>	ft_split(std::string str, std::string delimetr)
 {
 	std::vector<std::string> vect;
-	ssize_t pos = -1;
+	size_t pos = str.find(delimetr);
 	size_t s_pos = 0;
 
-	while ((pos = str.find(delimetr, pos + 1)) != std::string::npos)
+	while (pos != std::string::npos)
 	{
-
 		vect.push_back(str.substr(s_pos, pos - s_pos));
 		s_pos = pos + 1;
+        pos = str.find(delimetr, pos + 1);
 	}
 	vect.push_back(str.substr(s_pos, str.size() - s_pos));
 	return (vect);

@@ -9,7 +9,7 @@ long File::contentLength(std::map<std::string, std::string> &reqMap)
 
 	if (reqMap.find(LENGTH) != reqMap.end())
 	{
-		for (int i = 0; i < reqMap[LENGTH].size(); ++i)
+		for (size_t i = 0; i < reqMap[LENGTH].size(); ++i)
 		{
 			if (!std::isdigit(reqMap[LENGTH][i]))
 				return (-1);
@@ -87,7 +87,6 @@ bool File::contentType(std::map<std::string, std::string> &reqMap)
 	std::vector<std::string>    start_vector;
 	std::vector<std::string>	type_vector;
 	std::vector<std::string>	charset_vector;
-	size_t pos = 0;
 
 	if (reqMap.find(TYPE) != reqMap.end())
 	{

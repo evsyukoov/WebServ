@@ -21,7 +21,7 @@ class Client {
     std::string     request;
     ServConf        servConf;
     int             state;
-    int             body_size;
+    size_t          body_size;
     std::string     body;
     std::string     raw_body;
     std::string     piece;

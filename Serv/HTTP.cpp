@@ -4,8 +4,10 @@
 #include "HTTP.hpp"
 #include "Debug.hpp"
 
-HTTP::HTTP(int client, char *buf, const ServConf &servConf): client_fd(client), buff_req(buf), servConf(servConf) {
-
+HTTP::HTTP(int client, char *buf, const ServConf &_servConf) {
+	buff_req = buf;
+	this->servConf = _servConf;
+	client = client_fd;
 }
 
 HTTP::HTTP() {
@@ -249,6 +251,7 @@ bool HTTP::locationMatch(const std::string& location)
 
 void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
 {
+	(void)root_with_slash;
 	//reqMap["location"].replace(0, it->getLocation().size(), root_with_slash);
 	reqMap["location"].erase(0, it->getLocation().size());
 }
@@ -563,7 +566,7 @@ bool HTTP::checkMatchingAccept(std::string matching, std::string base)
 
 std::string HTTP::removeAllUnnecessarySlash(std::string path)
 {
-	ssize_t pos = 0;
+	size_t pos = 0;
 
 	while ((pos = path.find('/', pos)) != std::string::npos)
 	{
@@ -658,15 +661,16 @@ int HTTP::get()
 
 void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
 {
-	int16_t pos = 0;
+	size_t pos = 0;
 
 	for (std::vector<File>::iterator iter = files.begin(); iter != files.end(); ++iter)
 	{
 		if (iter->getRoot() == path)
 		{
 			respMap[TYPE] = iter->getContentType();
-			if (file_size != -1)
-				respMap[LENGTH] = std::to_string(iter->getContentLength());
+			//@TODO почему в сайз_т приходит -1?
+			if (file_size != SIZE_T_MAX)
+			    respMap[LENGTH] = std::to_string(iter->getContentLength());
 			if (!iter->getCharset().empty())
 			{
 				respMap[TYPE].append("; charset=" + iter->getCharset());
@@ -678,8 +682,9 @@ void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
 		respMap[TYPE] = File::getMime("");
 	else
 		respMap[TYPE] = File::getMime(path.substr(pos, path.size() - pos));
-	if (file_size != -1)
-		respMap[LENGTH] = std::to_string(file_size);
+    //@TODO почему в сайз_т приходит -1?
+	if (file_size != SIZE_T_MAX)
+	    respMap[LENGTH] = std::to_string(file_size);
 }
 
 void HTTP::formTime(long long time_sec, std::string base)
@@ -810,7 +815,7 @@ int HTTP::sendReq(std::string header, std::string responce)
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
-	//std::cout << "Result responce: " << header << std::endl;
+	//std::cout << "Result response: " << header << std::endl;
 	if (x_write(client_fd, result, result.size()) < 0)
 		return (0);
 	return (1);
@@ -824,6 +829,8 @@ void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
 		reqMap[LENGTH] = std::to_string(reqMap["body"].size());
 	reqMap[TYPE] = file.getContentType();
 	reqMap[LOCATION] = location;
+    //@TODO unused variable
+    (void)root;
 }
 
 std::string HTTP::postRoot()
@@ -893,6 +900,8 @@ bool HTTP::createNewRepresent(std::string &post_root, File &file)
 		putManager(new_representation, file, location_saver, 1, reqMap["body"]);
 		return (false);
 	}
+	//@TODO unused variable
+    (void)file;
 	return (true);
 }
 
@@ -914,6 +923,8 @@ bool HTTP::postRootConfig(std::string &post_root, File &file)
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
 		return (false);
 	}
+	//@todo unused variable 'file'
+    (void)file;
 	return (true);
 }
 
@@ -1089,11 +1100,11 @@ bool HTTP::putManager(std::string &put_root, File &file, std::string uri, int fl
 		respMap[CONT_LOC] = uri;
 	sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", responce);
 	close(fd);
+	return (true);
 }
 
 void HTTP::put()
 {
-	int fd;
 	std::string put_root;
 	std::string location_saver(reqMap["location"]);
 	if (location_saver.empty())

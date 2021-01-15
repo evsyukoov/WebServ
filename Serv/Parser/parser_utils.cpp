@@ -24,7 +24,7 @@ int     skipSpaces(const std::string &str)
 
 int                     isDigit(const std::string &value)
 {
-    for (int i = 0; i < value.size();i++)
+    for (size_t i = 0; i < value.size();i++)
     {
         if (!std::isdigit(value[i]))
             return (0);
@@ -39,7 +39,7 @@ int error(std::string msg) {
 
 int                 isUnexpectedSymbol(const std::string &value, char sym)
 {
-    for(int i = 0; i < value.size(); i++)
+    for(size_t i = 0; i < value.size(); i++)
     {
         if (value[i] == sym)
             return (1);

@@ -34,7 +34,7 @@ std::string &Client::getRemoteAddr() {
 
 int     Client::checkBodyHeaders(std::string splitted)
 {
-    int pos_dot = splitted.find(':');
+    size_t pos_dot = splitted.find(':');
     if (pos_dot != std::string::npos) {
         std::string key = splitted.substr(0, pos_dot);
         if (key == "Content-Length") {
@@ -54,7 +54,7 @@ int     Client::checkBodyHeaders(std::string splitted)
 int    Client::findBodySize(std::string header)
 {
     int begin = 0;
-    int pos;
+    size_t pos;
     std::string splitted;
 
     while ((pos = header.find("\r\n")) != std::string::npos)
@@ -85,7 +85,7 @@ void    Client::analizeBodySize()
 bool    Client::isDigit(const std::string &digit)
 {
     std::string available = "0123456789aAbBcCdDeEfF";
-    for(int i = 0; i < digit.size(); i++)
+    for(size_t i = 0; i < digit.size(); i++)
     {
         if (available.find(digit[i]) == std::string::npos)
             return false;
@@ -98,8 +98,7 @@ bool    Client::isDigit(const std::string &digit)
 int    Client::decodeChunks()
 {
     //input = 10 \r\n abcdefgrty \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
-    int pos = 0;
-    int end_flag;
+    size_t pos = 0;
     if ((raw_body.find("0\r\n\r\n") != std::string::npos) || chunk_end == "0\r\n\r\n") {
         state = FINISH;
     }
@@ -142,7 +141,7 @@ void    Client::analizeChunked()
 }
 
 void Client::findState(std::string &piece) {
-    int delimetr = 0;
+    size_t delimetr = 0;
 
 //    if (piece.substr(0, 3) != "GET")
 //    	std::cout << "ADDED PIECE: " << piece.size() << std::endl;
