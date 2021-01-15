@@ -164,7 +164,7 @@ public:
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(int client, char *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
+	void setFields(int client, char const *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 

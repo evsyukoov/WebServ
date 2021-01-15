@@ -13,7 +13,7 @@ add_executable(Serv server_main.cpp HTTP.cpp CGI.cpp Server.cpp
         utils.cpp utils_for_file.cpp
         File.cpp utils.hpp Client.cpp)
 
-include_directories(Parser .)
+include_directories(Parser)
 set(CMAKE_CXX_FLAGS "-std=C++98 -Wall -Wextra -Werror")
 #add_executable(Serv test_for_file.cpp HTTP.cpp Server.cpp File.cpp
 #        Parser/ServConf.cpp
