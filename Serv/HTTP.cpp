@@ -823,6 +823,7 @@ int HTTP::sendReq(std::string const &header, std::string responce)
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
+
 	//std::cout << "Result response: " << header << std::endl;
 	if (x_write(client_fd, result, result.size()) < 0)
 		return (0);

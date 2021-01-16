@@ -204,6 +204,7 @@ void	Server::sendToAllClients(std::vector<char*> requests, HTTP &http)
             http.setFields((*it)->getClientSock(), (*it)->getRequest().c_str(), (*it)->getServConf(), in);
             http.manager();
             (*it)->clear();
+ //           Response *r = new Response((*it)->getClientSock(), http.getResponce(), http.getFd(), http.getBodyLen());
         }
 		it++;
 	}
