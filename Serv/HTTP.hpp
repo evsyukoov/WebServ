@@ -97,11 +97,11 @@ private:
 
 	std::string postRoot();
 
-	bool validateRequestLine();
+	static bool validateRequestLine(std::map<std::string, std::string> &map);
 
-	bool parceRequestLine();
+	static bool parceRequestLine(std::map<std::string, std::string> &map, std::string request);
 
-	bool validateHeaderMap();
+	static bool validateHeaderMap(std::map<std::string, std::string> &map);
 
 	bool postGet();
 
@@ -173,6 +173,8 @@ public:
 	void setFields(int client, char const *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
+
+	std::map<std::string, std::string> parceMap(std::string &request);
 
 	const std::map<std::string, std::string> &getRequestMap() const; // для отладки
 

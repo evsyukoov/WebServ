@@ -111,44 +111,44 @@ bool HTTP::validateProtocol()
 	return (false);
 }
 
-bool HTTP::validateRequestLine()
+bool HTTP::validateRequestLine(std::map<std::string, std::string> &map)
 {
-	if (reqMap["method"].empty() || reqMap["location"].empty() || reqMap["protocol"].empty() ||
-	reqMap["protocol"].find(' ') != std::string::npos)
+	if (map["method"].empty() || map["location"].empty() || map["protocol"].empty() ||
+	map["protocol"].find(' ') != std::string::npos)
 		return (false);
 	return (true);
 }
 
-bool HTTP::parceRequestLine()
+bool HTTP::parceRequestLine(std::map<std::string, std::string> &map, std::string request)
 {
 	size_t rev_pos = 0;
 	size_t second_pos = 0;
 
-	if ((rev_pos = buff_req.find(' ')) == std::string::npos)
+	if ((rev_pos = request.find(' ')) == std::string::npos)
 		return (false);
-	reqMap["method"] = buff_req.substr(0, rev_pos);
-	if ((second_pos = buff_req.find(' ', rev_pos + 1)) == std::string::npos)
+	map["method"] = request.substr(0, rev_pos);
+	if ((second_pos = request.find(' ', rev_pos + 1)) == std::string::npos)
 		return (false);
-	reqMap["location"] = buff_req.substr(rev_pos + 1, second_pos - rev_pos - 1);
-	if ((rev_pos = buff_req.find('\r', second_pos + 1)) == std::string::npos)
+	map["location"] = request.substr(rev_pos + 1, second_pos - rev_pos - 1);
+	if ((rev_pos = request.find('\r', second_pos + 1)) == std::string::npos)
 		return (false);
-	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
+	map["protocol"] = request.substr(second_pos + 1, rev_pos - second_pos - 1);
 	return (true);
 }
 
-bool HTTP::validateHeaderMap()
+bool HTTP::validateHeaderMap(std::map<std::string, std::string> &map)
 {
-	std::map<std::string, std::string>::iterator iter = reqMap.begin();
+	std::map<std::string, std::string>::iterator iter = map.begin();
 
-	while (iter != reqMap.end())
+	while (iter != map.end())
 	{
 		if (iter->first.find(' ') != std::string::npos)
 			return (false);
 		trimmer(iter->second);
 		iter++;
 	}
-	if (reqMap.find(LENGTH) != reqMap.end() &&
-	reqMap.find(TRANSFER) != reqMap.end())
+	if (map.find(LENGTH) != map.end() &&
+	map.find(TRANSFER) != map.end())
 		return (false);
 	return (true);
 }
@@ -166,6 +166,37 @@ bool HTTP::doubleHostLength(bool &host, bool &name, std::string &header)
 	return (true);
 }
 
+std::map<std::string, std::string> HTTP::parceMap(std::string &request)
+{
+	std::pair<std::string, std::string> header_pair;
+	std::pair<std::string, std::string> cut_pair;
+	std::map<std::string, std::string> map;
+	bool flag_host = false;
+	bool flag_legth = false;
+	std::string str;
+
+	if (!parceRequestLine(map, request) || !validateRequestLine(map))
+		throw 1;
+	cut_pair = splitPair(request, '\n');
+	request = cut_pair.second;
+	while ((cut_pair = splitPair(request, '\n')).first != "\r")
+	{
+		str = cut_pair.first;
+		request = cut_pair.second;
+		header_pair = splitPair(str, ':');
+		if (header_pair.first == str)
+			throw 1;
+		header_pair.second.pop_back();
+		map[header_pair.first] = header_pair.second;
+		if (!doubleHostLength(flag_host, flag_legth, header_pair.first))
+			throw 1;
+	}
+	if (!validateHeaderMap(map))
+		throw 1;
+	request = cut_pair.second;
+	return (map);
+}
+
 int HTTP::initMap() {
 
 	std::pair<std::string, std::string> header_pair;
@@ -179,7 +210,7 @@ int HTTP::initMap() {
 	respMap[SERVER] = "webserv/1.0";
 	respMap[LENGTH] = '0';
 	timer();
-	if (!parceRequestLine() || !validateRequestLine())
+	if (!parceRequestLine(reqMap, buff_req) || !validateRequestLine(reqMap))
 		return (1);
 	cut_pair = splitPair(buff_req, '\n');
 	buff_req = cut_pair.second;
@@ -195,7 +226,7 @@ int HTTP::initMap() {
 		if (!doubleHostLength(flag_host, flag_legth, header_pair.first))
 			return (1);
 	}
-	if (!validateHeaderMap())
+	if (!validateHeaderMap(reqMap))
 		return (1);
 	buff_req = cut_pair.second;
 	if (!buff_req.empty())
