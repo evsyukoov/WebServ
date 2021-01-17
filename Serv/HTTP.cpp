@@ -119,8 +119,11 @@ bool HTTP::validateRequestLine()
 	return (true);
 }
 
-bool HTTP::parceRequestLine(size_t &second_pos, size_t &rev_pos)
+bool HTTP::parceRequestLine()
 {
+	size_t rev_pos = 0;
+	size_t second_pos = 0;
+
 	if ((rev_pos = buff_req.find(' ')) == std::string::npos)
 		return (false);
 	reqMap["method"] = buff_req.substr(0, rev_pos);
@@ -150,12 +153,25 @@ bool HTTP::validateHeaderMap()
 	return (true);
 }
 
+bool HTTP::doubleHostLength(bool &host, bool &name, std::string &header)
+{
+	if (header == LENGTH && !name)
+		name = true;
+	else if (header == LENGTH && name)
+		return (false);
+	else if (header == HOST && !host)
+		host = true;
+	else if (header == HOST && host)
+		return (false);
+	return (true);
+}
+
 int HTTP::initMap() {
 
 	std::pair<std::string, std::string> header_pair;
 	std::pair<std::string, std::string> cut_pair;
-	size_t rev_pos = 0;
-	size_t second_pos = 0;
+	bool flag_host = false;
+	bool flag_legth = false;
 	std::string str;
 
 	reqMap.clear();
@@ -163,7 +179,7 @@ int HTTP::initMap() {
 	respMap[SERVER] = "webserv/1.0";
 	respMap[LENGTH] = '0';
 	timer();
-	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
+	if (!parceRequestLine() || !validateRequestLine())
 		return (1);
 	cut_pair = splitPair(buff_req, '\n');
 	buff_req = cut_pair.second;
@@ -172,8 +188,12 @@ int HTTP::initMap() {
 		str = cut_pair.first;
 		buff_req = cut_pair.second;
 		header_pair = splitPair(str, ':');
+		if (header_pair.first == str)
+			return (1);
 		header_pair.second.pop_back();
 		reqMap[header_pair.first] = header_pair.second;
+		if (!doubleHostLength(flag_host, flag_legth, header_pair.first))
+			return (1);
 	}
 	if (!validateHeaderMap())
 		return (1);

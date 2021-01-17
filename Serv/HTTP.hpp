@@ -99,7 +99,7 @@ private:
 
 	bool validateRequestLine();
 
-	bool parceRequestLine(size_t &second_pos, size_t &rev_pos);
+	bool parceRequestLine();
 
 	bool validateHeaderMap();
 
@@ -109,6 +109,8 @@ private:
 	void    initErrorMap();
 
 	int		initListingHTML(std::string &path);
+
+	bool	doubleHostLength(bool &host, bool &name, std::string &header);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
