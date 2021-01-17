@@ -32,6 +32,7 @@
 
 class HTTP
 {
+
 private:
 
 	ServConf		servConf;
@@ -108,7 +109,7 @@ private:
 
 	void    initErrorMap();
 
-	int		initListingHTML(std::string path, const std::string &root);
+	int		initListingHTML(std::string &path);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
@@ -129,7 +130,7 @@ private:
 
 	static bool compareCharset(std::vector<File>::iterator matching_file, std::string const &charset);
 
-	std::string		responceMapToString();
+	std::string		responceMapToString(int statuscode);
 
 	std::string		makeAllow(std::string const &except = "");
 
