@@ -22,9 +22,10 @@ class CGI
 	std::string extension;
 	std::string tmpFile;
 	char		**env;
-	char		*args[3];
+	char		*args[4];
 	char		*buff;
 	input		&in;
+	Location    location;
 
 	//настройки конфига
 	const ServConf &servConf;
@@ -49,7 +50,8 @@ class CGI
     int     	mapToEnv();
 
 public:
-    CGI(const ServConf &servConf, input &in);
+    CGI(const ServConf &_servConf, const Location &location, input &in);
+
     ~CGI();
 
 	void 	run();

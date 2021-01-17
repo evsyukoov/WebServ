@@ -342,8 +342,9 @@ std::list<Location>::const_iterator HTTP::getMatchingLocation()
 
 	while (it != servConf.getLocations().end())
 	{
-		if ((locationMatch((*it).getLocation())))
-			return (it);
+		if ((locationMatch((*it).getLocation()))) {
+            return (it);
+        }
 		it++;
 	}
 	return (it);
@@ -1018,6 +1019,7 @@ bool HTTP::postGetValidation(std::string &root)
 
 void HTTP::post(bool post_put_flag)
 {
+
 	File file(reqMap);
 	std::string post_root;
 	std::string save_lock(reqMap["location"]);
@@ -1031,8 +1033,7 @@ void HTTP::post(bool post_put_flag)
 		cgiFiller(file, save_lock);
 		in.requestMap = &reqMap;
 		in.root = post_root;
-		CGI worker_cgi(servConf, in);
-
+		CGI worker_cgi(servConf, *it ,in);
 		worker_cgi.run();
 
 		hardcodeMap(worker_cgi.getRespMap());

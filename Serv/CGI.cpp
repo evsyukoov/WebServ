@@ -7,12 +7,13 @@
 
 static int logfd;
 
-CGI::CGI(const ServConf &_servConf, input &_in) : in(_in), servConf(_servConf) 
+CGI::CGI(const ServConf &_servConf, const Location &location, input &in) : in(in), servConf(_servConf)
 {
+    this->location = location;
 	timeval tv;
 
 	gettimeofday(&tv, nullptr);
-	tmpFile = "/tmp/ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
+	tmpFile = "ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
 	filename = trimAfter(in.root, '/');
 	extension = '.' + trimAfter(filename, '.');
 	env = nullptr;
@@ -37,17 +38,19 @@ CGI::~CGI()
 
 int        CGI::initARGS()
 {
-	if (in.interptretator.empty())
-	{
-		args[0] = const_cast<char*>(in.scrypt.c_str());
-		args[1] = nullptr;
-	}
-	else
-	{
-		args[0] = const_cast<char*>(in.interptretator.c_str());
-		args[1] = const_cast<char*>(in.scrypt.c_str());
-		args[2] = nullptr;
-	}
+    if (location.getInterpretator().empty())
+    {
+        args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
+        args[1] = const_cast<char *>(in.root.c_str());
+        args[2] = nullptr;
+    }
+    else
+    {
+        args[0] = const_cast<char *>(location.getInterpretator().c_str());
+        args[1] = const_cast<char *>(location.getCgiScrypt().c_str());
+        args[2] = const_cast<char *>(in.root.c_str());
+        args[3] = nullptr;
+    }
 	return (1);
 }
 
@@ -231,3 +234,4 @@ std::map<std::string, std::string> CGI::getRespMap() const
 {
 	return responseMap;
 }
+

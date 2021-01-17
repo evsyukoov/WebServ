@@ -8,21 +8,29 @@
 //#include <list>
 #include <vector>
 #include "parser_utils.hpp"
+#include "../utils.hpp"
 //конфиг одного локейшна
 
 
 class Location {
 	//after parse
 	std::string 		   location;
+
 	std::vector<std::string> methods;
+
 	int                     max_body;
+
 	std::string			   root;
+
 	std::string			   index;
+
 	std::string			   cgi_extension;
+
 	std::string			   cgi_scrypt;
+
+	std::string            interpretator;
+
 	bool 				   autoindex;
-	bool 				   enable_upload;
-	std::string			   upload_path;
 
 	//input
 	std::string            raw_location;
@@ -42,6 +50,8 @@ class Location {
     int     isAllowedMethod(const std::string &method);
 
     int     findEndOfKeyword(const std::string &word);
+
+    int     ifFileExists(const std::string &fileName);
 
 public:
     Location(const std::string &rawLocation);
@@ -68,10 +78,6 @@ public:
 
     bool isAutoindex() const;
 
-    bool isEnableUpload() const;
-
-    const std::string &getUploadPath() const;
-
     Location	&operator=(const Location &other);
 
     Location(const Location &other);
@@ -79,6 +85,8 @@ public:
 	Location();
 
 	virtual ~Location();
+
+    const std::string &getInterpretator() const;
 
 
 };

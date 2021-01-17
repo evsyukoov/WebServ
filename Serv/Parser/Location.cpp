@@ -3,12 +3,12 @@
 //
 
 #include "Location.hpp"
+#include "../CGI.hpp"
 
 
 Location::Location(const std::string &rawLocation) {
     this->raw_location = rawLocation;
     autoindex = false;
-    enable_upload = false;
     max_body = -1;
 }
 
@@ -100,12 +100,8 @@ int Location::analizeDirective(std::list<std::string> &directive)
             root = *(++it);
         else if (*it == "cgi")
             cgi_extension = *(++it);
-        else if (*it == cgi_scrypt)
-            cgi_scrypt = *(++it);
         else if (*it == "index")
             index = *(++it);
-        else if (*it == "upload_dir")
-            upload_path = *(++it);
         else if (*it == "autoindex")
         {
             if (*(++it) == "on")
@@ -115,15 +111,6 @@ int Location::analizeDirective(std::list<std::string> &directive)
             else
                 return (error("Error in autoindex description"));
         }
-        else if (*it == "upload")
-        {
-            if (*(++it) == "on")
-                enable_upload = true;
-            else if (*it == "off")
-                enable_upload = false;
-            else
-                return (error("Error in upload description"));
-        }
         else if (*it == "max_body")
         {
             if (isDigit(*(++it)))
@@ -131,9 +118,29 @@ int Location::analizeDirective(std::list<std::string> &directive)
             else
                 return (error("Error in max_body description"));
         }
+        else if (*it == "scrypt") {
+            if (!(ifFileExists(*(++it))))
+                return (error("No such scrypt!"));
+            cgi_scrypt = *it;
+        }
+        else if (*it == "interpretator")
+        {
+            if (!(ifFileExists(*(++it))))
+                return (error("No such interpretator!"));
+            interpretator = *it;
+        }
         else
             return (error("Unknown directive in location block!"));
     }
+    return (1);
+}
+
+int     Location::ifFileExists(const std::string &fileName)
+{
+    int fd;
+    if ((fd = open(fileName.c_str(), O_RDONLY)) < 0)
+        return (0);
+    close(fd);
     return (1);
 }
 
@@ -216,13 +223,6 @@ bool Location::isAutoindex() const {
     return autoindex;
 }
 
-bool Location::isEnableUpload() const {
-    return enable_upload;
-}
-
-const std::string &Location::getUploadPath() const {
-    return upload_path;
-}
 
 Location::Location() {}
 
@@ -237,13 +237,16 @@ Location &Location::operator=(const Location &other) {
 	root = other.root;
 	index = other.index;
 	cgi_extension = other.cgi_extension;
+	interpretator = other.interpretator;
 	cgi_scrypt = other.cgi_scrypt;
 	autoindex = other.autoindex;
-	enable_upload = other.enable_upload;
-	upload_path = other.upload_path;
 	return (*this);
 }
 
 Location::Location(const Location &other) {
 	this->operator=(other);
+}
+
+const std::string &Location::getInterpretator() const {
+    return interpretator;
 }
