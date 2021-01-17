@@ -109,7 +109,7 @@ private:
 
 	void    initErrorMap();
 
-	int		initListingHTML(std::string path, const std::string &root);
+	int		initListingHTML(std::string &path);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
