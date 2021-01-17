@@ -110,7 +110,7 @@ private:
 
 	int		initListingHTML(std::string &path);
 
-	bool	doubleHostLength(bool &host, bool &name, std::string &header);
+	static bool	doubleHostLength(bool &host, bool &name, std::string &header);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
@@ -164,6 +164,9 @@ private:
 
 	void				hardcodeMap(std::map<std::string, std::string> responseMap);
 
+	static std::map<std::string, std::string>	clear(std::map<std::string, std::string> &map);
+
+
 public:
 
 	HTTP(int client, char *buf, const ServConf&);
@@ -174,7 +177,7 @@ public:
 
 	std::string &getResponce();
 
-	std::map<std::string, std::string> parceMap(std::string &request);
+	static std::map<std::string, std::string> parceMap(std::string &request);
 
 	const std::map<std::string, std::string> &getRequestMap() const; // для отладки
 

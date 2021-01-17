@@ -166,6 +166,12 @@ bool HTTP::doubleHostLength(bool &host, bool &name, std::string &header)
 	return (true);
 }
 
+std::map<std::string, std::string> HTTP::clear(std::map<std::string, std::string> &map)
+{
+	map.clear();
+	return (map);
+}
+
 std::map<std::string, std::string> HTTP::parceMap(std::string &request)
 {
 	std::pair<std::string, std::string> header_pair;
@@ -176,7 +182,7 @@ std::map<std::string, std::string> HTTP::parceMap(std::string &request)
 	std::string str;
 
 	if (!parceRequestLine(map, request) || !validateRequestLine(map))
-		throw 1;
+		return (clear(map));
 	cut_pair = splitPair(request, '\n');
 	request = cut_pair.second;
 	while ((cut_pair = splitPair(request, '\n')).first != "\r")
@@ -185,14 +191,14 @@ std::map<std::string, std::string> HTTP::parceMap(std::string &request)
 		request = cut_pair.second;
 		header_pair = splitPair(str, ':');
 		if (header_pair.first == str)
-			throw 1;
+			return (clear(map));
 		header_pair.second.pop_back();
 		map[header_pair.first] = header_pair.second;
 		if (!doubleHostLength(flag_host, flag_legth, header_pair.first))
-			throw 1;
+			return (clear(map));
 	}
 	if (!validateHeaderMap(map))
-		throw 1;
+		return (clear(map));
 	request = cut_pair.second;
 	return (map);
 }
