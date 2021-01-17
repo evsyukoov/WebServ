@@ -39,7 +39,7 @@ test:
 
 $(BIN)%.o: %.cpp | $(BIN)
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
-	@printf "Compiling $(notdir $@)\r"
+	@printf "%40s\r" "Compiling $(notdir $@)"
 
 $(BIN):
 	mkdir -p $@ && cd $(BIN) && mkdir $(DIR)
@@ -49,10 +49,10 @@ clean:
 
 config:
 	@cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > $(conf)
-	@printf "Config created\n"
+	@printf "%40s\n" "Config created"
 
 fclean: clean
-	rm -f $(NAME) $(conf) file_should_exist_after ws_*
+	rm -f $(NAME) $(conf) file_should_exist_after ws_* multiple_same
 
 re: fclean all
 

@@ -32,6 +32,7 @@
 
 class HTTP
 {
+
 private:
 
 	ServConf		servConf;
@@ -129,7 +130,7 @@ private:
 
 	static bool compareCharset(std::vector<File>::iterator matching_file, std::string const &charset);
 
-	std::string		responceMapToString();
+	std::string		responceMapToString(int statuscode);
 
 	std::string		makeAllow(std::string const &except = "");
 
