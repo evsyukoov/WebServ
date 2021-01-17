@@ -75,6 +75,20 @@ std::string       headerPairToStr(std::string const &first, std::string const &s
     return (first + ": " + second + "\r\n");
 }
 
+std::pair<std::string, std::string> splitPair(std::string const &str, char const &c)
+{
+	size_t delim = str.find(c);
+	std::pair<std::string, std::string> pair;
+
+	if (delim != std::string::npos)
+	{
+		pair.first = str.substr(0, delim);
+		pair.second = str.substr(delim + 1, str.size() - delim - 1);
+	} else
+		pair.first = str;
+	return (pair);
+}
+
 int                 lseek_next_line(int fd, std::string &line)
 {
 	static std::string  reaminder;

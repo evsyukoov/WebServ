@@ -38,6 +38,7 @@ std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string>
 size_t 			ft_strlen(char const *s);
 char			*ft_strdup(char const *s);
 int				lseek_next_line(int fd, std::string &line);
+std::pair<std::string, std::string> splitPair(std::string const &str, char const &c);
 
 
 #endif //SERV_UTILS_HPP

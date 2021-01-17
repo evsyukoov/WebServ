@@ -151,9 +151,10 @@ bool HTTP::validateHeaderMap()
 
 int HTTP::initMap() {
 
-	size_t second_pos = 0;
-	size_t blanc_pos;
+	std::pair<std::string, std::string> header_pair;
+	std::pair<std::string, std::string> cut_pair;
 	size_t rev_pos = 0;
+	size_t second_pos = 0;
 	std::string str;
 
 	reqMap.clear();
@@ -163,29 +164,21 @@ int HTTP::initMap() {
 	timer();
 	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
 		return (1);
-	second_pos = rev_pos + 2;
-	//@TODO нужно посмотреть это условие вместе.
-	while ((str = buff_req.substr(second_pos, buff_req.find('\n', second_pos) - second_pos)) != "\r" && second_pos < buff_req.size()
-	&& second_pos != 0)
+	cut_pair = splitPair(buff_req, '\n');
+	buff_req = cut_pair.second;
+	while ((cut_pair = splitPair(buff_req, '\n')).first != "\r")
 	{
-		blanc_pos = str.find(':');
-		rev_pos = str.find('\r', blanc_pos + 1);
-		reqMap[str.substr(0, blanc_pos)] = str.substr(blanc_pos + 1, rev_pos - blanc_pos - 1);
-		second_pos = buff_req.find('\n', second_pos) + 1;
+		str = cut_pair.first;
+		buff_req = cut_pair.second;
+		header_pair = splitPair(str, ':');
+		header_pair.second.pop_back();
+		reqMap[header_pair.first] = header_pair.second;
 	}
 	if (!validateHeaderMap())
 		return (1);
-	if (!second_pos)
-		return (1);
-	if (second_pos >= buff_req.size())
-		return (0);
-	if (buff_req[second_pos] != '\r' || (second_pos + 1 < buff_req.size() && buff_req[second_pos + 1] != '\n'))
-		return (1);
-	second_pos += 2;
-	if (buff_req.size() > second_pos)
-		reqMap["body"] = buff_req.substr(second_pos, buff_req.size() - second_pos);
-	//printMap();
-	//std::cout << YELLOW << "Your request is finish !\n" << buff_req.substr(0, 250) << RESET << std::endl;
+	buff_req = cut_pair.second;
+	if (!buff_req.empty())
+		reqMap["body"] = buff_req;
 	return (0);
 }
 
@@ -235,9 +228,24 @@ void HTTP::timer()
 	formTime(tv.tv_sec, DATE);
 }
 
+bool HTTP::validateHost()
+{
+	std::pair<std::string, std::string> pair;
+
+	if (reqMap.find(HOST) != reqMap.end())
+	{
+		pair = splitPair(reqMap[HOST], ':');
+		if ((pair.first != servConf.getServerName() && pair.first != "localhost") || (!pair.second.empty() && pair.second != std::to_string(servConf.getPort())) ||
+		(pair.second.empty() && servConf.getPort() != 80))
+			return (false);
+		return (true);
+	}
+	return (false);
+}
+
 void HTTP::manager() {
 
-	if (initMap() || !validateMethod())
+	if (initMap() || !validateMethod() || !validateHost())
 	{
 		std::string error(errorPageResponece(400));
 		sendReq("HTTP/1.1 400 Bad Request\r\n" + responceMapToString() + "\r\n", error);
@@ -669,7 +677,7 @@ int HTTP::get()
 	return (0);
 }
 
-void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
+void HTTP::formContentTypeLength(const std::string &path, ssize_t file_size)
 {
 	size_t pos;
     std::vector<File>::iterator iter;
@@ -678,8 +686,7 @@ void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
 		if (iter->getRoot() == path)
 		{
 			respMap[TYPE] = iter->getContentType();
-			//@TODO почему в сайз_т приходит -1?
-			if (file_size != SIZE_T_MAX)
+			if (file_size != -1)
 			    respMap[LENGTH] = std::to_string(iter->getContentLength());
 			if (!iter->getCharset().empty())
 			{
@@ -692,8 +699,7 @@ void HTTP::formContentTypeLength(const std::string &path, size_t file_size)
 		respMap[TYPE] = File::getMime("");
 	else
 		respMap[TYPE] = File::getMime(path.substr(pos, path.size() - pos));
-    //@TODO почему в сайз_т приходит -1?
-	if (file_size != SIZE_T_MAX)
+	if (file_size != -1)
 	    respMap[LENGTH] = std::to_string(file_size);
 }
 
@@ -831,7 +837,7 @@ int HTTP::sendReq(std::string const &header, std::string responce)
 	return (1);
 }
 
-void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
+void HTTP::cgiFiller(File &file, std::string &location)
 {
 	if (file.getContentLength() != -1)
 		reqMap[LENGTH] = std::to_string(file.getContentLength());
@@ -839,8 +845,6 @@ void HTTP::cgiFiller(File &file, std::string &root, std::string &location)
 		reqMap[LENGTH] = std::to_string(reqMap["body"].size());
 	reqMap[TYPE] = file.getContentType();
 	reqMap[LOCATION] = location;
-    //@TODO unused variable
-    (void)root;
 }
 
 std::string HTTP::postRoot()
@@ -910,22 +914,12 @@ bool HTTP::createNewRepresent(std::string &post_root, File &file)
 		putManager(new_representation, file, location_saver, 1, reqMap["body"]);
 		return (false);
 	}
-	//@TODO unused variable
-    (void)file;
 	return (true);
 }
 
-bool HTTP::postRootConfig(std::string &post_root, File &file)
+bool HTTP::postRootConfig(std::string &post_root)
 {
-//	int dir_check;
-
 	former(post_root);
-//	if ((dir_check = checkDirectory(post_root)) == 2)
-//	{
-//		std::string error(errorPageResponece(404));
-//		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", error);
-//		return (false);
-//	}
 	if (checkDirectory(post_root) != 1 && !(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
@@ -933,8 +927,6 @@ bool HTTP::postRootConfig(std::string &post_root, File &file)
 		sendReq("HTTP/1.1 405 Method Not Allowed\r\n" + responceMapToString() + "\r\n", error);
 		return (false);
 	}
-	//@todo unused variable 'file'
-    (void)file;
 	return (true);
 }
 
@@ -948,7 +940,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 		put_post_root.push_back('/');
 	if (post_flag)
 	{
-		if (!postRootConfig(put_post_root, file))
+		if (!postRootConfig(put_post_root))
 			return (false);
 	}
 	if (!checkForAllowedMethod())
@@ -1036,7 +1028,7 @@ void HTTP::post(bool post_put_flag)
 	{
 		if (post_put_flag && !postGetValidation(post_root))
 			return;
-		cgiFiller(file, post_root, save_lock);
+		cgiFiller(file, save_lock);
 		in.requestMap = &reqMap;
 		in.root = post_root;
 		CGI worker_cgi(servConf, in);

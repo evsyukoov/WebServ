@@ -15,6 +15,7 @@
 #define TRANSFER "Transfer-Encoding"
 #define LOCATION "Location"
 #define CONT_LOC "Content-Location"
+#define HOST "Host"
 #define BYTES_TO_WRITE 10000
 
 #include <sys/stat.h>
@@ -60,8 +61,9 @@ private:
 
 	bool	postPutvalidation(std::string &put_post_root, File &file, bool post_flag);
 
+	bool	validateHost();
 
-	bool	postRootConfig(std::string &post_root, File &file);
+	bool	postRootConfig(std::string &post_root);
 
 	bool	locationMatch(const std::string& location);
 
@@ -91,7 +93,7 @@ private:
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
-	void	cgiFiller(File &file, std::string &root, std::string &location);
+	void	cgiFiller(File &file, std::string &location);
 
 	std::string postRoot();
 
@@ -137,7 +139,7 @@ private:
 
 	bool		findMethod(std::string const &find);
 
-	void 		formContentTypeLength(const std::string &path, size_t file_size);
+	void		formContentTypeLength(const std::string &path, ssize_t file_size);
 
 	void		formTime(long long time_sec, std::string const &base);
 
