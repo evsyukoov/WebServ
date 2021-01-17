@@ -38,8 +38,9 @@ const std::map<std::string, std::string> &HTTP::getRequestMap() const {
 	return (reqMap);
 }
 
-int 		HTTP::initListingHTML(std::string path, const std::string &root)
+int 		HTTP::initListingHTML(std::string &path)
 {
+	std::string location;
 	//сюда запишем ссылки на директории по указанному path чтобы потом отправить клиенту
 	listing = "<!DOCTYPE html>\n"
 			  "<html lang=\"en\">\n"
@@ -56,21 +57,21 @@ int 		HTTP::initListingHTML(std::string path, const std::string &root)
 	struct dirent *dir_info;
 	std::string ref;
 
-	int i = 0;
-	int j = 0;
-	//обрежем путь
-	if (path.rfind('/') == path.size() - 1)
-	    path = path.substr(0, path.size() - 1);
-	while (root[j] == path[j] && root[j] && path[j])
-	    j++;
-	path = path.substr(j);
+	int flag = 0;
+	if (reqMap["location"].size() > 0 && reqMap["location"][0] != '/')
+		location = std::string("/") + reqMap["location"];
+	else
+		location = reqMap["location"];
+	if (location.back() != '/')
+		location.push_back('/');
+
 	while ((dir_info = readdir(dir)) != nullptr) {
-        if (i)
-        {
-            ref += "<p><a href=" + path + '/' + std::string(dir_info->d_name) + '>' + std::string(dir_info->d_name) +
-                   "</a></p>\n";
-        }
-        i++;
+		if (flag)
+		{
+			ref += "<p><a href=" + location + std::string(dir_info->d_name) + '>' + std::string(dir_info->d_name) +
+				   "</a></p>\n";
+		}
+		flag = 1;
     }
 	listing += ref;
 	listing += "</head>\n"
@@ -609,7 +610,7 @@ bool HTTP::tryAutoindex(std::string &path)
 			path.push_back('/');
 		std::string root(path);
 		path = removeAllUnnecessarySlash(root + reqMap["location"]);
-		initListingHTML(path, root);
+		initListingHTML(path);
 		respMap[LENGTH] = std::to_string(listing.size());
 		respMap[TYPE] = "text/html";
 		sendReq("HTTP/1.1 200 OK\r\n" + responceMapToString() + "\r\n", listing);
