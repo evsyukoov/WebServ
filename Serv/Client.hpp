@@ -7,11 +7,14 @@
 #include <string>
 #include "Parser/ServConf.hpp"
 #include <netinet/in.h>
+#include "Response.hpp"
 #include <map>
 
 #define HEADER 0
 #define BODY 1
 #define BODY_CHUNKED 2
+#define WRITING 4
+#define WRITING_BODY 5
 #define FINISH 3
 
 class Client {
@@ -29,6 +32,7 @@ class Client {
     std::string 	chunk_end;
 
     std::map<std::string, std::string>  head;
+    Response *resp;
 
     int     checkBodyHeaders(std::string const &splitted);
 
@@ -60,6 +64,8 @@ public:
 
     int     getBodySize() const;
 
+    Response    *getResponse();
+	void        setResponse(Response *r);
 
 };
 

@@ -379,6 +379,7 @@ bool HTTP::findMethod(std::string const &find)
 bool HTTP::checkForAllowedMethod()
 {
 //	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
+//	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
 	std::string post("POST");
 	std::string put("PUT");
 	std::string get("GET");
@@ -784,14 +785,12 @@ int HTTP::x_write(int fd, std::string const &buf, size_t len)
 
 int HTTP::x_write(std::map<std::string, std::string> responseMap)
 {
+	static int i;
 	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
-	ssize_t		nbyte;
-	char		*buffer = new char[BUFFER_SIZE + 1];
 	ssize_t		length = findFileSize(localfd) - std::stoul(respMap["#lseek"]);
 
 	std::string respLine = "HTTP/1.1 " + respMap["Status"] + "\r\n";
-	respLine += "Content-Length: " + std::to_string(length) + "\r\n";
-	PRINT(respLine);
+	respMap.erase(respMap.find("Status"));
 	lseek(localfd, std::stoul(respMap["#lseek"]), SEEK_SET); // start of body
 	std::map<std::string, std::string>::iterator iter = this->respMap.begin();
 	while (iter != respMap.end())
@@ -804,29 +803,31 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 		++iter;
 	}
 	respLine += "\r\n";
-	write(client_fd, respLine.c_str(), respLine.size());
-	while ((nbyte = read(localfd, buffer, BUFFER_SIZE)) > 0)
-	{
-		nbyte = std::min(length, nbyte);
-		length -= write(client_fd, buffer, nbyte);
-		if (length == 0)
-			break ;
-	}
-	close(localfd);
-	delete[] buffer;
-	unlink(respMap["#file"].c_str());
+	PRINT(i++)
+	PRINT(respLine)
+	to_send = new FileResponse(this->client_fd, respLine, localfd, length);
+	to_send->setTmpFile(respMap["#file"]);
+	//@todo unlink(respMap["#file"].c_str());
 	return (0);
 }
 
+Response *HTTP::getResponse()
+{
+	return to_send;
+}
+
+
 int HTTP::sendReq(std::string const &header, std::string responce)
 {
+
 	if (reqMap["method"] == "HEAD")
 		responce.clear();
 	result = header + responce;
 
+	to_send = new StringResponse(client_fd, header, responce);
 	//std::cout << "Result response: " << header << std::endl;
-	if (x_write(client_fd, result, result.size()) < 0)
-		return (0);
+	//if (x_write(client_fd, result, result.size()) < 0)
+		//return (0);
 	return (1);
 }
 
@@ -916,16 +917,16 @@ bool HTTP::createNewRepresent(std::string &post_root, File &file)
 
 bool HTTP::postRootConfig(std::string &post_root, File &file)
 {
-	int dir_check;
+//	int dir_check;
 
 	former(post_root);
-	if ((dir_check = checkDirectory(post_root)) == 2)
-	{
-		std::string error(errorPageResponece(404));
-		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", error);
-		return (false);
-	}
-	if (dir_check != 1 && !(validateExtencion(post_root)))
+//	if ((dir_check = checkDirectory(post_root)) == 2)
+//	{
+//		std::string error(errorPageResponece(404));
+//		sendReq("HTTP/1.1 404 Not Found\r\n" + responceMapToString() + "\r\n", error);
+//		return (false);
+//	}
+	if (checkDirectory(post_root) != 1 && !(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
 		respMap[ALLOW] = makeAllow("POST");
@@ -986,7 +987,6 @@ void	HTTP::hardcodeMap(std::map<std::string, std::string> responseMap)
 {
 	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
 	ssize_t		length = findFileSize(localfd) - std::strtol(responseMap["#lseek"].c_str(), nullptr, 0);
-	//std::string respLine = "HTTP/1.1 " + responseMap["Status"] + "\r\n";
 	this->respMap["Content-Length"] = std::to_string(length);
 
 	std::map<std::string, std::string>::iterator iter = responseMap.begin();

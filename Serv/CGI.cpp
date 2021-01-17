@@ -5,16 +5,20 @@
 #include "CGI.hpp"
 #include <array>
 
+static int logfd;
+
 CGI::CGI(const ServConf &_servConf, input &_in) : in(_in), servConf(_servConf) 
 {
 	timeval tv;
 
 	gettimeofday(&tv, nullptr);
-	tmpFile = "ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
+	tmpFile = "/tmp/ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
 	filename = trimAfter(in.root, '/');
 	extension = '.' + trimAfter(filename, '.');
 	env = nullptr;
 	buff = nullptr;
+	if (logfd == 0)
+		logfd = open("log.log", O_WRONLY | O_CREAT | O_APPEND, 0666);
 	initEnvironments();
 	initARGS();
 	mapToEnv();
@@ -138,12 +142,17 @@ void	CGI::run()
 	status = pipe(fd);
 	tmp_fd = open(tmpFile.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 	if (status < 0 || tmp_fd < 0 || (child = fork ()) < 0)
+	{
+		std::cerr << "here" << std::endl;
 		throw (std::runtime_error(strerror(errno)));
+	}
 	if (child == 0)
 	{
 		close(fd[1]); //ничего не пишем
 		//заменяем stdout дочернего процесса на дескриптор временного файла
 		dup2(tmp_fd, 1);
+		// zapisyvaem log v stderr
+		dup2(logfd, 2);
 		//читать запрос будем от родителя
 		dup2(fd[0], 0);
 		close(tmp_fd);
@@ -182,7 +191,6 @@ void	CGI::createResponseMap()
 
 	while (lseek_next_line(fd, str) > 0 && str[0] != '\r')
 	{
-		PRINT(str)
 		headlen += str.size() + 1;
 		str.pop_back();
 		responseMap.insert(splitPair(str, ": "));
@@ -207,7 +215,10 @@ void    CGI::readFromCGI()
 	long	size = findFileSize(fd);
 
 	if (size < 0 || fd < 0)
+	{
+		std::cerr << "there" << std::endl;
 		throw (std::runtime_error(strerror(errno)));
+	}
 	createResponseMap();
 }
 

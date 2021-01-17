@@ -9,6 +9,8 @@
 #define LENGTH "Content-Length"
 #define TYPE "Content-Type"
 #define ENCODE "Content-Encoding"
+#include <unistd.h>
+#include <fcntl.h>
 #include <map>
 
 class File
@@ -20,6 +22,8 @@ private:
 	std::vector<std::string> 	content_language;
 	std::vector<std::string>	content_encoding;
 	size_t 						content_length;
+
+	int                         fd;
 
 	long contentLength(std::map<std::string, std::string> &reqMap);
 
@@ -34,6 +38,8 @@ private:
 
 public:
 	File(std::map<std::string, std::string>&);
+
+	File(std::string const & filename);
 
 	long getContentLength();
 
@@ -53,8 +59,9 @@ public:
 
 	void setContentLength(size_t content_length);
 
-//	std::string getMime();
+	int open();
 
+	void closeAndUnlink();
 };
 
 #endif //SERV_FILE_HPP

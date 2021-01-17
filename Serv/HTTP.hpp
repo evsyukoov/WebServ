@@ -24,6 +24,7 @@
 #include <limits>
 #include <sys/socket.h>
 #include "File.hpp"
+#include "Response.hpp"
 #include "utils.hpp"
 #include "CGI.hpp"
 #include <sys/time.h>
@@ -45,6 +46,7 @@ private:
     std::map<int, std::string> errors; //карта ошибок
 	//сформированная страничка со списком директорий для автоиндекса
 	std::string listing; // автоиндекс
+	Response    *to_send;
 
 	int 	get();
 
@@ -179,6 +181,8 @@ public:
     const std::string &getListing() const;
 
 	int		ext_write();
+
+	Response    *getResponse();
 
 };
 

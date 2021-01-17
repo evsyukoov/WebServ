@@ -116,9 +116,10 @@ void Server::resetFdSets()
 	std::list<Client*>::iterator iter;
     for (iter = clients.begin(); iter != clients.end(); ++iter)
     {
-	    FD_SET((*iter)->getClientSock(), &read_set);
-	    if ((*iter)->getState() == FINISH)
+	    if ((*iter)->getState() == WRITING || (*iter)->getState() == WRITING_BODY)
 		    FD_SET((*iter)->getClientSock(), &write_set);
+	    else
+		    FD_SET((*iter)->getClientSock(), &read_set);
 	    max = std::max(max, (*iter)->getClientSock());
     }
 }
@@ -192,23 +193,42 @@ std::vector<char*>      Server::readRequests()
 	return (requests);
 }
 
+int    sendBodySegment(Response *rs)
+{
+	StringResponse *sr = dynamic_cast<StringResponse *>(rs);
+
+	if (sr != nullptr)
+		return (sr->sendPiece());
+	return (dynamic_cast<FileResponse *>(rs)->sendPiece());
+}
+
 void	Server::sendToAllClients(std::vector<char*> requests, HTTP &http)
 {
     std::list<Client*>::iterator it = clients.begin();
     std::list<Client*>::iterator ite = clients.end();
+    Response *r;
 	while (it != ite)
     {
 		if (FD_ISSET((*it)->getClientSock(), &write_set))
 		{
-			in.remote_addr = (*it)->getRemoteAddr();
-            http.setFields((*it)->getClientSock(), (*it)->getRequest().c_str(), (*it)->getServConf(), in);
-            http.manager();
-            (*it)->clear();
- //           Response *r = new Response((*it)->getClientSock(), http.getResponce(), http.getFd(), http.getBodyLen());
-        }
+			if ((*it)->getState() == WRITING)
+			{
+				in.remote_addr = (*it)->getRemoteAddr();
+				http.setFields((*it)->getClientSock(), (*it)->getRequest().c_str(), (*it)->getServConf(), in);
+				http.manager();
+				r = http.getResponse();
+				(*it)->setResponse(r);
+				(*it)->getResponse()->sendHeader();
+			}
+			else if ((*it)->getState() == WRITING_BODY)
+			{
+				if (!sendBodySegment((*it)->getResponse()))
+					(*it)->clear();
+			}
+		}
 		it++;
 	}
-    //@TODO unused parameter requests
+	//@TODO unused parameter requests
     (void)requests;
 }
 

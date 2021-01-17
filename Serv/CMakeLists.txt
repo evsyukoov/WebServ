@@ -11,6 +11,7 @@ add_executable(Serv server_main.cpp HTTP.cpp CGI.cpp Server.cpp
         Parser/parser_utils.cpp
         Parser/parser_utils.hpp
         utils.cpp utils_for_file.cpp
+        Response.cpp
         File.cpp utils.hpp Client.cpp)
 
 include_directories(Parser)

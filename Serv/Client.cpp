@@ -15,6 +15,7 @@ Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
     body_size = 0;
     chunk_size = 0;
     state = HEADER;
+    resp = NULL;
 }
 
 int Client::getClientSock() const {
@@ -79,10 +80,10 @@ void    Client::analizeBodySize()
     if (body.size() < body_size)
         state = BODY;
     else if (body.size() == body_size)
-        state = FINISH;
+        state = WRITING;
     else {
         body = body.substr(0, body_size);
-        state = FINISH;
+        state = WRITING;
     }
 }
 
@@ -102,7 +103,7 @@ int    Client::decodeChunks()
     //input = 10 \r\n abcdefgrty \r\n 3\r\n qwe\r\n 0 \r\n\r\n -пробелы для читаемости
     size_t pos;
     if ((raw_body.find("0\r\n\r\n") != std::string::npos) || chunk_end == "0\r\n\r\n") {
-        state = FINISH;
+        state = WRITING;
     }
     while ((pos = raw_body.find("\r\n")) != std::string::npos)
     {
@@ -117,7 +118,7 @@ int    Client::decodeChunks()
         }
         else
         {
-        	if (state == FINISH && chunk_size == 0)
+        	if (state == WRITING && chunk_size == 0)
         		return (1);
             std::string content = raw_body.substr(0, pos);
             piece = content.substr(0, chunk_size);
@@ -135,7 +136,7 @@ void    Client::analizeChunked()
 {
     if (raw_body.find("0\r\n\r\n") != std::string::npos)
     {
-        state = FINISH;
+        state = WRITING;
         raw_body = raw_body.substr(0, raw_body.size() - 5);
         if (!decodeChunks())
             request = "UNKNOWN METHOD HTTP/1.1";
@@ -156,7 +157,7 @@ void Client::findState(std::string &_piece) {
             std::string header = request.substr(0, delimetr + 2);
             int ret = findBodySize(header);
             if (!ret)
-                state = FINISH;
+                state = WRITING;
             else if (ret == 1) {
                 body = request.substr(delimetr + 4);
                 request = request.substr(0, delimetr + 4);
@@ -185,6 +186,17 @@ void Client::findState(std::string &_piece) {
     }
 }
 
+void Client::setResponse(Response * r)
+{
+	resp = r;
+	state = WRITING_BODY;
+};
+
+Response    *Client::getResponse()
+{
+	return resp;
+}
+
 int Client::getState() const {
     return state;
 }
@@ -196,6 +208,8 @@ void Client::clear() {
     raw_body.clear();
     chunk_size = 0;
     chunk_end.clear();
+    delete this->resp;
+    resp = NULL;
 }
 
 int Client::getBodySize() const {

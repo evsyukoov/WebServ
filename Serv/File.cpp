@@ -229,6 +229,11 @@ File::File(std::map<std::string, std::string> &reqMap)
 	placeContentType(reqMap);
 }
 
+File::File(std::string const & filename)
+{
+	file_name = filename;
+}
+
 void File::setRoot(std::string const &root)
 {
 	file_name = root;
@@ -248,3 +253,15 @@ const std::string &File::getCharset() { return (charset); }
 const std::string &File::getRoot() { return (file_name); }
 
 void File::setContentLength(size_t _content_length) { this->content_length = _content_length; }
+
+int File::open()
+{
+	fd = ::open(file_name.c_str(), O_RDONLY);
+	return fd;
+}
+
+void File::closeAndUnlink()
+{
+	close(fd);
+	unlink(file_name.c_str());
+}

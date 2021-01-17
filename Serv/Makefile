@@ -8,6 +8,7 @@ ROOT := HTTP.cpp \
 	  utils_for_file.cpp \
 	  Client.cpp \
 	  Server.cpp \
+	  Response.cpp \
 	  server_main.cpp
 
 SRC = $(PRS) $(ROOT)
