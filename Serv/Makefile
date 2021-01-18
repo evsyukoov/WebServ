@@ -28,7 +28,7 @@ vpath %.cpp Parser
 
 all: $(NAME)
 
-$(NAME): $(OBJS) | config
+$(NAME): $(OBJS)
 	@clang++ $(OBJS) -o $(NAME)
 
 run: $(NAME)
