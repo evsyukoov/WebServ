@@ -205,36 +205,13 @@ std::map<std::string, std::string> HTTP::parceMap(std::string &request)
 
 int HTTP::initMap() {
 
-	std::pair<std::string, std::string> header_pair;
-	std::pair<std::string, std::string> cut_pair;
-	bool flag_host = false;
-	bool flag_legth = false;
-	std::string str;
-
 	reqMap.clear();
 	respMap.clear();
 	respMap[SERVER] = "webserv/1.0";
 	respMap[LENGTH] = '0';
 	timer();
-	if (!parceRequestLine(reqMap, buff_req) || !validateRequestLine(reqMap))
+	if ((reqMap = parceMap(buff_req)).empty())
 		return (1);
-	cut_pair = splitPair(buff_req, '\n');
-	buff_req = cut_pair.second;
-	while ((cut_pair = splitPair(buff_req, '\n')).first != "\r")
-	{
-		str = cut_pair.first;
-		buff_req = cut_pair.second;
-		header_pair = splitPair(str, ':');
-		if (header_pair.first == str)
-			return (1);
-		header_pair.second.pop_back();
-		reqMap[header_pair.first] = header_pair.second;
-		if (!doubleHostLength(flag_host, flag_legth, header_pair.first))
-			return (1);
-	}
-	if (!validateHeaderMap(reqMap))
-		return (1);
-	buff_req = cut_pair.second;
 	if (!buff_req.empty())
 		reqMap["body"] = buff_req;
 	return (0);
