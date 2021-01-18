@@ -48,44 +48,36 @@ int     Location::isRightDirective(const std::string &direct, const std::string 
     return (i);
 }
 
-int     Location::isAllowedMethod(const std::string &method)
+int     Location::isAllowedMethod(std::string &method)
 {
+	size_t i = method.size() - 1;
+	while (method[i] == ' ' && method[i])
+		i--;
+	method = method.substr(0, ++i);
     if (method == "GET" || method == "POST" || method == "PUT" || method == "DELETE" || method == "HEAD")
         return (1);
     return (0);
 }
 
-int     Location::findEndOfKeyword(const std::string &word)
-{
-    int i = 0;
-    while (!std::isspace(word[i]) && word[i] != '\0')
-        i++;
-    return (i);
-}
-
 int     Location::parseMethods(std::string &directive, int ind)
 {
-    bool exit_cycle = false;
     directive = directive.substr(ind);
     int i = skipSpaces(directive);
     std::string _methods = directive.substr(i);
-    while (true)
+    size_t pos;
+    while ((pos = _methods.find(',')) != std::string::npos)
     {
-        size_t pos;
-        if ((pos = _methods.find(',')) == std::string::npos) {
-            pos = findEndOfKeyword(_methods);
-            exit_cycle = true;
-        }
-        std::string method = _methods.substr(0, pos);
+    	std::string method = _methods.substr(0, pos);
         if (!isAllowedMethod(method))
-            return (error("Not allowed method in location block"));
+            return (error("Not allowed method in location block"));;
         methods.push_back(method);
-        if (exit_cycle)
-            break ;
         _methods = _methods.substr(pos + 1);
         i = skipSpaces(_methods);
         _methods = _methods.substr(i);
     }
+	if (!isAllowedMethod(_methods))
+		return (error("Not allowed method in location block"));;
+	methods.push_back(_methods);
     return (1);
 }
 
@@ -122,12 +114,6 @@ int Location::analizeDirective(std::list<std::string> &directive)
             if (!(ifFileExists(*(++it))))
                 return (error("No such scrypt!"));
             cgi_scrypt = *it;
-        }
-        else if (*it == "interpretator")
-        {
-            if (!(ifFileExists(*(++it))))
-                return (error("No such interpretator!"));
-            interpretator = *it;
         }
         else
             return (error("Unknown directive in location block!"));

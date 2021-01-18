@@ -47,9 +47,7 @@ class Location {
 
     int    parseMethods(std::string &directive, int ind);
 
-    int     isAllowedMethod(const std::string &method);
-
-    int     findEndOfKeyword(const std::string &word);
+    int     isAllowedMethod(std::string &method);
 
     int     ifFileExists(const std::string &fileName);
 

@@ -122,6 +122,8 @@ int    ServConf::parse()
         if (analizeDirective(splitted) == -1)
             return (-1);
     }
+    if (this->port == -1)
+    	return error("No port directive in server");
     return (1);
 }
 

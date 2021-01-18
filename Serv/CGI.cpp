@@ -9,6 +9,7 @@ static int logfd;
 
 CGI::CGI(const ServConf &_servConf, const Location &location, input &in) : in(in), servConf(_servConf)
 {
+	interpretator.clear();
     this->location = location;
 	timeval tv;
 
@@ -36,9 +37,12 @@ CGI::~CGI()
 	delete buff;
 }
 
+
+
 int        CGI::initARGS()
 {
-    if (location.getInterpretator().empty())
+	findInterpretator();
+    if (interpretator.empty())
     {
         args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
         args[1] = const_cast<char *>(in.root.c_str());
@@ -46,7 +50,7 @@ int        CGI::initARGS()
     }
     else
     {
-        args[0] = const_cast<char *>(location.getInterpretator().c_str());
+        args[0] = const_cast<char *>(interpretator.c_str());
         args[1] = const_cast<char *>(location.getCgiScrypt().c_str());
         args[2] = const_cast<char *>(in.root.c_str());
         args[3] = nullptr;
@@ -138,7 +142,7 @@ int     CGI::mapToEnv()
 	return (1);
 }
 
-void	CGI::run()
+int	CGI::run()
 {
 	int fd[2], status, tmp_fd, child;
 
@@ -165,6 +169,7 @@ void	CGI::run()
 			std::cerr << "Problems with execve: " << strerror(errno) << std::endl;
 			exit(EXIT_FAILURE);
 		}
+		exit(EXIT_SUCCESS);
 	}
 	else
 	{
@@ -172,8 +177,15 @@ void	CGI::run()
 		write(fd[1], (*in.requestMap)["body"].c_str(), (*in.requestMap)["body"].size());
 		close(fd[1]);
 		waitpid(child, &status, 0);
+		if (WIFEXITED(status))
+		{
+			int exit_code = WEXITSTATUS(status);
+			if (exit_code == EXIT_FAILURE)
+				return (0);
+		}
 		readFromCGI();
 	}
+	return (1);
 }
 
 std::pair<std::string, std::string> splitPair(std::string const &str, std::string const &c)
@@ -206,14 +218,6 @@ void	CGI::createResponseMap()
 
 void    CGI::readFromCGI()
 {
-	/*
-	std::ifstream ifs;
-	std::ostringstream oss;
-	ifs.open("./tmp");
-
-	oss << ifs.rdbuf();
-	response = oss.str();
-	*/
 	int		fd = open(tmpFile.c_str(), O_RDONLY);
 	long	size = findFileSize(fd);
 
@@ -235,3 +239,50 @@ std::map<std::string, std::string> CGI::getRespMap() const
 	return responseMap;
 }
 
+void CGI::findInterpretator() {
+	char *argv[3];
+
+	std::string scrypt_extension = location.getCgiScrypt();
+	size_t dot_pos = scrypt_extension.rfind('.');
+	if (dot_pos == std::string::npos)
+		return ;
+	scrypt_extension = scrypt_extension.substr(dot_pos);
+	argv[0] = const_cast<char *>("/usr/bin/whereis");
+	argv[1] = 0;
+	if (scrypt_extension == ".php")
+		argv[1] = const_cast<char *>("php");
+	else if (scrypt_extension == ".py")
+		argv[1] = const_cast<char *>("python");
+	else if (scrypt_extension == ".pl")
+		argv[1] = const_cast<char *>("perl");
+	else if (scrypt_extension == ".rb" || scrypt_extension == ".rbw")
+		argv[1] = const_cast<char *>("ruby");
+	else
+		return ;
+
+	argv[2] = 0;
+	int status;
+	pid_t child;
+	int fd[2];
+
+	pipe(fd);
+	child = fork();
+	if (child == 0) {
+		close(fd[0]);
+		dup2(fd[1], 1);
+		if (execve(argv[0], argv, nullptr) == -1)
+			exit(EXIT_FAILURE);
+		close(fd[1]);
+		exit(EXIT_SUCCESS);
+	} else if (child > 0) {
+		close(fd[1]);
+		char read_buff[255] = "";
+		waitpid(child, &status, 0);
+		int n = read(fd[0], read_buff, 254);
+		if (n == 0)
+			return ;
+		close(fd[0]);
+		read_buff[n - 1] = '\0';
+		interpretator = read_buff;
+	}
+}

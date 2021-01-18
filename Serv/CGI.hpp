@@ -27,6 +27,7 @@ class CGI
 	input		&in;
 	Location    location;
 
+	std::string interpretator;
 	//настройки конфига
 	const ServConf &servConf;
 
@@ -45,6 +46,9 @@ class CGI
 	void		setHttpHeaders();
 	void		createResponseMap();
 
+	void		findInterpretator();
+
+
     int         initARGS();
 
     int     	mapToEnv();
@@ -54,7 +58,7 @@ public:
 
     ~CGI();
 
-	void 	run();
+	int 	run();
 
 	const std::string &getResponse() const;
 	std::map<std::string, std::string> getRespMap() const;
