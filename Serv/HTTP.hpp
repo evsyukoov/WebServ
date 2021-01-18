@@ -29,6 +29,7 @@
 #include "utils.hpp"
 #include "CGI.hpp"
 #include <sys/time.h>
+#include <ServConf.hpp>
 
 class HTTP
 {

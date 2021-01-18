@@ -12,10 +12,11 @@
 #include <iostream>
 #include "parser_utils.hpp"
 #include <vector>
+
 //конфиг одного сервера
 
 class  ServConf {
-    //output data
+	//output data
 	std::string					server_name;
 
 	int 						port;
@@ -45,7 +46,9 @@ public:
 
     int    parseRaw();
 
-    int    parse();
+	void setServerName(const std::string &serverName);
+
+	int    parse();
 
     const std::string &getServerName() const;
 

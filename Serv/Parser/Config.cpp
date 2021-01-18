@@ -5,6 +5,7 @@
 
 #include "Config.hpp"
 
+
 const std::list<ServConf> &Config::getConfig() const {
 	return config;
 }
@@ -47,6 +48,30 @@ int Config::readConf()
 	in.close();
 	if (checkBracketsDirectives() == -1)
 	    return (-1);
+	//проверим директиву server_name
+	if (!checkSeverNames())
+		return (error("No server name directive"));
+	return (1);
+}
+
+int 	Config::checkSeverNames()
+{
+	std::string first_serv_name;
+	for(std::list<ServConf>::iterator it = config.begin(); it != config.end(); it++)
+	{
+		if (!(it->getServerName().empty())) {
+			first_serv_name = it->getServerName();
+			break;
+		}
+	}
+	if (first_serv_name.empty())
+		return (0);
+	for(std::list<ServConf>::iterator it = config.begin(); it != config.end(); it++)
+	{
+		if ((it->getServerName().empty())) {
+			it->setServerName(first_serv_name);
+		}
+	}
 	return (1);
 }
 

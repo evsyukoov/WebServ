@@ -46,6 +46,8 @@ class Server
 
 	void sendToAllClients(std::vector<char *> requests, HTTP &http);
 
+	int 	error(std::string msg);
+
 
 public:
 	Server(input &in, const Config &config);

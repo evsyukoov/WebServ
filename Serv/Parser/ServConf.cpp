@@ -10,7 +10,7 @@ int 	Comparator(const Location &l1, const Location &l2)
 	return l1.getLocation().size() > l2.getLocation().size();
 }
 
-ServConf::ServConf(const std::string &rawServconf, int pos) : raw_servconf(rawServconf), pos(pos) {
+ServConf::ServConf( const std::string &rawServconf, int pos) : raw_servconf(rawServconf), pos(pos) {
     port = -1;
 }
 
@@ -170,4 +170,10 @@ ServConf::~ServConf() {
 ServConf::ServConf(const ServConf &other) {
 	this->operator=(other);
 }
+
+void ServConf::setServerName(const std::string &serverName) {
+	server_name = serverName;
+}
+
+
 

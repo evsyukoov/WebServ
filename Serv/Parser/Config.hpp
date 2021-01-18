@@ -4,9 +4,12 @@
 
 #ifndef SERV_CONFIG_HPP
 #define SERV_CONFIG_HPP
-#include "ServConf.hpp"
+
 #include <iostream>
 #include <fstream>
+#include <list>
+
+#include "ServConf.hpp"
 
 //весь конфиг
 class Config {
@@ -25,6 +28,7 @@ class Config {
 
 	int     startWith(const std::string &str, const std::string &in);
 
+	int 	checkSeverNames();
 
 
 public:

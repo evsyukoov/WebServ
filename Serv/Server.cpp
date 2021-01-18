@@ -18,17 +18,23 @@ int Server::listen(const ServConf &servConf) {
 		return (error("sock error"));
 	int optval = 1;
 	//если сокет уже был открыт
-	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
-		return error("setsockopt error");
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0) {
+		close(listener);
+		return (0);
+	}
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(servConf.getPort());
 	addr.sin_addr.s_addr = inet_addr(servConf.getServerName().c_str());
 
-	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0)
-		return (error("bind failed"));
-	if (::listen(listener, SOMAXCONN) != 0)
-		return (error("listen error"));
+	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0) {
+		close(listener);
+		return (0);
+	}
+	if (::listen(listener, SOMAXCONN) != 0) {
+		close(listener);
+		return (0);
+	}
 	return (listener);
 }
 
@@ -68,26 +74,25 @@ int Server::openServers()
     for(it = config.getConfig().begin(); it != config.getConfig().end(); it++)
     {
     	int listener;
-        if ((listener = listen(*it)) < 0)
-            return (0);
+        if (!(listener = listen(*it))) {
+			std::cerr << "Port number " << it->getPort() << " is unavailable!" << std::endl;
+			continue;
+		}
         set_nonblock(listener);
         std::pair<int , ServConf> pair = std::make_pair(listener, *it);
         servers.insert(pair);
     }
+    if (servers.empty())
+    	return (0);
     return (1);
 }
 
 int     Server::run(HTTP &http)
 {
-    if (openServers() == -1)
-        return (-1);
+    if (!openServers())
+        return (error("No available ports. Stop server"));
     servLoop(http);
     return (1);
-}
-
-bool    Comparator(const Client *c1, const Client *c2)
-{
-    return (c1->getClientSock() < c2->getClientSock());
 }
 
 //отладочная печать клиентов
@@ -132,6 +137,8 @@ void    Server::acceptConnection(int sockFd, ServConf &serv)
 	int client_sock;
 
 	client_sock = accept(sockFd, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
+	if (client_sock < 0)
+		return ;
 	set_nonblock(client_sock);
 	Client *client = new Client(client_sock, serv, sAddr);
 	clients.push_back(client);
@@ -236,6 +243,11 @@ Server::~Server() {
     for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++)
         close(it->first);
     servers.clear();
+}
+
+int Server::error(std::string msg) {
+	std::cerr << "Server error: " << msg << std::endl;
+	return (0);
 }
 
 
