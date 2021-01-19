@@ -5,11 +5,10 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
+Client::Client(int clientSock, sockaddr_in &sAddr)
 {
     inet_toip4(&sAddr.sin_addr, this->remoteAddr);
     this->client_sock = clientSock;
-    this->servConf = servConf;
     this->request = "";
     this->body = "";
     body_size = 0;
@@ -216,4 +215,12 @@ const std::map<std::string, std::string> &Client::getReqMap() const {
 
 const std::string &Client::getBody() const {
     return body;
+}
+
+void Client::setServConf(const ServConf &servConf) {
+    this->servConf = servConf;
+}
+
+void Client::clearRequest() {
+    reqMap.clear();
 }

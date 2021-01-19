@@ -72,13 +72,7 @@ int    ServConf::analizeDirective(std::list<std::string> line)
                 return (error("Dublicate directive in Server Block"));
             }
             else if (*str == "server_name" && server_name.empty())
-            {
-                if (*(++str) == "localhost")
-                    server_name = "127.0.0.1";
-                else
-                    server_name = *str;
-            }
-
+                    server_name = *(++str);
             if (*str == "listen" && port != -1)
                 return (error("Dublicate directive in Server Block"));
             else if (*str == "listen" && isDigit(*(++str)) && port == -1)

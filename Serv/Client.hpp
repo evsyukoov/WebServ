@@ -36,6 +36,8 @@ class Client {
 public:
     const std::string &getBody() const;
 
+    void setServConf(const ServConf &servConf);
+
 public:
     const std::map<std::string, std::string> &getReqMap() const;
 
@@ -54,7 +56,7 @@ private:
     void    analizeChunked();
 
 public:
-    Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr);
+    Client(int clientSock, sockaddr_in &sAddr);
 
     int     getClientSock() const;
 
@@ -77,6 +79,8 @@ public:
 
     Response    *getResponse();
 	void        setResponse(Response *r);
+
+	void        clearRequest();
 
 };
 
