@@ -99,11 +99,11 @@ private:
 
 	std::string postRoot();
 
-	bool validateRequestLine();
+	static bool validateRequestLine(std::map<std::string, std::string> &map);
 
-	bool parceRequestLine(size_t &second_pos, size_t &rev_pos);
+	static bool parceRequestLine(std::map<std::string, std::string> &map, std::string request);
 
-	bool validateHeaderMap();
+	static bool validateHeaderMap(std::map<std::string, std::string> &map);
 
 	bool postGet();
 
@@ -111,6 +111,8 @@ private:
 	void    initErrorMap();
 
 	int		initListingHTML(std::string &path);
+
+	static bool	doubleHostLength(bool &host, bool &name, std::string &header);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
@@ -164,6 +166,9 @@ private:
 
 	void				hardcodeMap(std::map<std::string, std::string> responseMap);
 
+	static std::map<std::string, std::string>	clear(std::map<std::string, std::string> &map);
+
+
 public:
 
 	HTTP(int client, char *buf, const ServConf&);
@@ -173,6 +178,8 @@ public:
 	void setFields(int client, char const *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
+
+	static std::map<std::string, std::string> parceMap(std::string &request);
 
 	const std::map<std::string, std::string> &getRequestMap() const; // для отладки
 

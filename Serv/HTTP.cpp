@@ -111,73 +111,107 @@ bool HTTP::validateProtocol()
 	return (false);
 }
 
-bool HTTP::validateRequestLine()
+bool HTTP::validateRequestLine(std::map<std::string, std::string> &map)
 {
-	if (reqMap["method"].empty() || reqMap["location"].empty() || reqMap["protocol"].empty() ||
-	reqMap["protocol"].find(' ') != std::string::npos)
+	if (map["method"].empty() || map["location"].empty() || map["protocol"].empty() ||
+	map["protocol"].find(' ') != std::string::npos)
 		return (false);
 	return (true);
 }
 
-bool HTTP::parceRequestLine(size_t &second_pos, size_t &rev_pos)
+bool HTTP::parceRequestLine(std::map<std::string, std::string> &map, std::string request)
 {
-	if ((rev_pos = buff_req.find(' ')) == std::string::npos)
+	size_t rev_pos = 0;
+	size_t second_pos = 0;
+
+	if ((rev_pos = request.find(' ')) == std::string::npos)
 		return (false);
-	reqMap["method"] = buff_req.substr(0, rev_pos);
-	if ((second_pos = buff_req.find(' ', rev_pos + 1)) == std::string::npos)
+	map["method"] = request.substr(0, rev_pos);
+	if ((second_pos = request.find(' ', rev_pos + 1)) == std::string::npos)
 		return (false);
-	reqMap["location"] = buff_req.substr(rev_pos + 1, second_pos - rev_pos - 1);
-	if ((rev_pos = buff_req.find('\r', second_pos + 1)) == std::string::npos)
+	map["location"] = request.substr(rev_pos + 1, second_pos - rev_pos - 1);
+	if ((rev_pos = request.find('\r', second_pos + 1)) == std::string::npos)
 		return (false);
-	reqMap["protocol"] = buff_req.substr(second_pos + 1, rev_pos - second_pos - 1);
+	map["protocol"] = request.substr(second_pos + 1, rev_pos - second_pos - 1);
 	return (true);
 }
 
-bool HTTP::validateHeaderMap()
+bool HTTP::validateHeaderMap(std::map<std::string, std::string> &map)
 {
-	std::map<std::string, std::string>::iterator iter = reqMap.begin();
+	std::map<std::string, std::string>::iterator iter = map.begin();
 
-	while (iter != reqMap.end())
+	while (iter != map.end())
 	{
 		if (iter->first.find(' ') != std::string::npos)
 			return (false);
 		trimmer(iter->second);
 		iter++;
 	}
-	if (reqMap.find(LENGTH) != reqMap.end() &&
-	reqMap.find(TRANSFER) != reqMap.end())
+	if (map.find(LENGTH) != map.end() &&
+	map.find(TRANSFER) != map.end())
 		return (false);
 	return (true);
 }
 
-int HTTP::initMap() {
+bool HTTP::doubleHostLength(bool &host, bool &name, std::string &header)
+{
+	if (header == LENGTH && !name)
+		name = true;
+	else if (header == LENGTH && name)
+		return (false);
+	else if (header == HOST && !host)
+		host = true;
+	else if (header == HOST && host)
+		return (false);
+	return (true);
+}
 
+std::map<std::string, std::string> HTTP::clear(std::map<std::string, std::string> &map)
+{
+	map.clear();
+	return (map);
+}
+
+std::map<std::string, std::string> HTTP::parceMap(std::string &request)
+{
 	std::pair<std::string, std::string> header_pair;
 	std::pair<std::string, std::string> cut_pair;
-	size_t rev_pos = 0;
-	size_t second_pos = 0;
+	std::map<std::string, std::string> map;
+	bool flag_host = false;
+	bool flag_legth = false;
 	std::string str;
+
+	if (!parceRequestLine(map, request) || !validateRequestLine(map))
+		return (clear(map));
+	cut_pair = splitPair(request, '\n');
+	request = cut_pair.second;
+	while ((cut_pair = splitPair(request, '\n')).first != "\r")
+	{
+		str = cut_pair.first;
+		request = cut_pair.second;
+		header_pair = splitPair(str, ':');
+		if (header_pair.first == str)
+			return (clear(map));
+		header_pair.second.pop_back();
+		map[header_pair.first] = header_pair.second;
+		if (!doubleHostLength(flag_host, flag_legth, header_pair.first))
+			return (clear(map));
+	}
+	if (!validateHeaderMap(map))
+		return (clear(map));
+	request = cut_pair.second;
+	return (map);
+}
+
+int HTTP::initMap() {
 
 	reqMap.clear();
 	respMap.clear();
 	respMap[SERVER] = "webserv/1.0";
 	respMap[LENGTH] = '0';
 	timer();
-	if (!parceRequestLine(second_pos, rev_pos) || !validateRequestLine())
+	if ((reqMap = parceMap(buff_req)).empty())
 		return (1);
-	cut_pair = splitPair(buff_req, '\n');
-	buff_req = cut_pair.second;
-	while ((cut_pair = splitPair(buff_req, '\n')).first != "\r")
-	{
-		str = cut_pair.first;
-		buff_req = cut_pair.second;
-		header_pair = splitPair(str, ':');
-		header_pair.second.pop_back();
-		reqMap[header_pair.first] = header_pair.second;
-	}
-	if (!validateHeaderMap())
-		return (1);
-	buff_req = cut_pair.second;
 	if (!buff_req.empty())
 		reqMap["body"] = buff_req;
 	return (0);
