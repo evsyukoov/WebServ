@@ -30,7 +30,10 @@
 *.exe
 *.out
 *.app
+
+# Miscellaneous
 cmake-build-debug
 .idea
 file_should_exist_after
 */*.conf
+.DS_Store
