@@ -1066,8 +1066,11 @@ void HTTP::post(bool post_put_flag)
 		in.requestMap = &reqMap;
 		in.root = post_root;
 		CGI worker_cgi(servConf, *it ,in);
-		worker_cgi.run();
-
+		if (!(worker_cgi.run()))
+        {
+		    std::cerr << "Error at CGI on client " << client_fd << std::endl;
+		    return ;
+        }
 		hardcodeMap(worker_cgi.getRespMap());
 		x_write(respMap);
 	}

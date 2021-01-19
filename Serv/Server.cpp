@@ -265,6 +265,7 @@ void	Server::sendToAllClients(HTTP &http)
 				//отдаем пустую мапу, если не нашли host, после обработки получим 400
                 if (map.count("Host") == 0 || !(findServerName(map["Host"], *it)))
                     (*it)->clearRequest();
+                //printReqMap(map);
 				http.setFields((*it)->getClientSock(), (*it)->getBody(), (*it)->getServConf(), in, (*it)->getReqMap());
 				http.manager();
 				r = http.getResponse();
