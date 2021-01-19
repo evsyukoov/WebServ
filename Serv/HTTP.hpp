@@ -37,7 +37,7 @@ class HTTP
 private:
 
 	ServConf		servConf;
-	std::string 	buff_req;
+	std::string 	body;
 	std::map<std::string, std::string>	reqMap;  //map запроса включает в себя все заголовки
 	std::list<Location>::const_iterator it; // нахождение нужного location
 	std::string 	result;
@@ -175,7 +175,7 @@ public:
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(int client, char const *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
+    void    setFields(int client, std::string buf, const ServConf &serv, struct input &income, std::map<std::string, std::string> map); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 

@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include "Response.hpp"
 #include <map>
+#include "HTTP.hpp"
 
 #define HEADER 0
 #define BODY 1
@@ -30,6 +31,16 @@ class Client {
     std::string     piece;
     long            chunk_size;
     std::string 	chunk_end;
+
+    std::map<std::string, std::string> reqMap;
+public:
+    const std::string &getBody() const;
+
+public:
+    const std::map<std::string, std::string> &getReqMap() const;
+
+
+private:
 
     std::map<std::string, std::string>  head;
     Response *resp;

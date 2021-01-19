@@ -70,3 +70,4 @@ Problems with execve: No such file or directory
 Problems with execve: No such file or directory
 Problems with execve: Permission denied
 Problems with execve: Permission denied
+CGI attempted to write header twice on request for http://localhost:1234/

@@ -77,17 +77,23 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
 
 int main(int argc, char **argv)
 {
-	HTTP http;
+    try {
+        HTTP http;
 
-    struct input in;
-    if (parseCommandLineArgs(argc, argv, in) == -1)
-        return (0);
-    Config conf(in.conf);
+        struct input in;
+        if (parseCommandLineArgs(argc, argv, in) == -1)
+            return (0);
+        Config conf(in.conf);
 
-    if (conf.readConf() == -1)
-        return (0);
-    Server server = Server(in, conf);
-    server.run(http);
+        if (conf.readConf() == -1)
+            return (0);
+        Server server = Server(in, conf);
+        server.run(http);
+    }
+    catch (std::exception &obj)
+    {
+        std::cerr<< obj.what() << std::endl;
+    }
     return (1);
 }
 

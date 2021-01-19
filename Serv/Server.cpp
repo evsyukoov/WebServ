@@ -221,7 +221,7 @@ void	Server::sendToAllClients(std::vector<char*> requests, HTTP &http)
 			if ((*it)->getState() == WRITING)
 			{
 				in.remote_addr = (*it)->getRemoteAddr();
-				http.setFields((*it)->getClientSock(), (*it)->getRequest().c_str(), (*it)->getServConf(), in);
+				http.setFields((*it)->getClientSock(), (*it)->getBody(), (*it)->getServConf(), in, (*it)->getReqMap());
 				http.manager();
 				r = http.getResponse();
 				(*it)->setResponse(r);

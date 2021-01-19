@@ -14,7 +14,7 @@ CGI::CGI(const ServConf &_servConf, const Location &location, input &in) : in(in
 	timeval tv;
 
 	gettimeofday(&tv, nullptr);
-	tmpFile = "ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
+	tmpFile = "/Users/ccarl/goinfre/ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
 	filename = trimAfter(in.root, '/');
 	extension = '.' + trimAfter(filename, '.');
 	env = nullptr;
@@ -207,7 +207,8 @@ void	CGI::createResponseMap()
 	while (lseek_next_line(fd, str) > 0 && str[0] != '\r')
 	{
 		headlen += str.size() + 1;
-		str.pop_back();
+		if (!str.empty())
+		    str.pop_back();
 		responseMap.insert(splitPair(str, ": "));
 	}
 	responseMap.insert(std::pair<std::string, std::string>("#file", tmpFile));

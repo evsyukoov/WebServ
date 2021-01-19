@@ -25,7 +25,7 @@ static void printVec(std::vector<std::string> &vector)
 
 
 HTTP::HTTP(int client, char *buf, const ServConf &_servConf) {
-	buff_req = buf;
+	body = buf;
 	this->servConf = _servConf;
 	client_fd = client;
 }
@@ -82,11 +82,12 @@ int 		HTTP::initListingHTML(std::string &path)
 	return (1);
 }
 
-void HTTP::setFields(int client, char const  *buf, const ServConf &serv, struct input &income) {
-	buff_req = buf;
+void HTTP::setFields(int client, std::string buf, const ServConf &serv, struct input &income, std::map<std::string, std::string> map) {
+	body = buf;
 	servConf = serv;
 	client_fd = client;
     this->in = income;
+    reqMap = map;
 }
 
 
@@ -205,15 +206,14 @@ std::map<std::string, std::string> HTTP::parceMap(std::string &request)
 
 int HTTP::initMap() {
 
-	reqMap.clear();
 	respMap.clear();
 	respMap[SERVER] = "webserv/1.0";
 	respMap[LENGTH] = '0';
 	timer();
-	if ((reqMap = parceMap(buff_req)).empty())
+	if (reqMap .empty())
 		return (1);
-	if (!buff_req.empty())
-		reqMap["body"] = buff_req;
+	if (!body.empty())
+		reqMap["body"] = body;
 	return (0);
 }
 
@@ -1157,6 +1157,7 @@ std::string &HTTP::getResponce()
 void HTTP::initErrorMap()
 {
 	errors[200] = "OK";
+	errors[201] = "Created";
     errors[400] = "Bad Request";
     errors[401] = "Unauthorized";
     errors[402] = "Payment Required";
