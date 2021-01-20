@@ -1,6 +1,9 @@
 NAME := server
 
-PRS := $(addprefix Parser/, Config.cpp Location.cpp ServConf.cpp parser_utils.cpp)
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+mkfile_dir := $(dir $(mkfile_path))
+
+PRS := Config.cpp Location.cpp ServConf.cpp parser_utils.cpp
 ROOT := HTTP.cpp \
 	  CGI.cpp   \
 	  File.cpp \
@@ -14,17 +17,19 @@ ROOT := HTTP.cpp \
 SRC := $(PRS) $(ROOT)
 	  
 DIR := Parser
-BIN := ./bin/
-
-conf := $(PWD)/conf/webserv.conf
+BIN := $(mkfile_dir)/bin/
 
 OBJS := $(addprefix $(BIN), $(SRC:.cpp=.o))
-INC := $(addprefix -I , $(dir $(SRC)))
+INC := $(foreach d, $(DIR), -I$d )
 
 CXX := clang++
 CXXFLAGS := -std=c++98 $(INC) -Wall -Wextra -Werror
 
-vpath %.cpp Parser  
+testr := $(mkfile_dir)/tester
+
+conf := $(mkfile_dir)/conf/webserv.conf
+
+vpath %.cpp $(DIR)
 
 all: $(NAME)
 
@@ -35,8 +40,12 @@ $(NAME): $(OBJS)
 run: $(NAME) config
 	@./$< $(conf) 
 
-test:
-	./tester http://127.0.0.1:1234
+test: $(testr)
+	@if ! [[ -f $< ]]; \
+		then curl https://projects.intra.42.fr/uploads/document/document/2464/tester --output $<; \
+	fi
+	chmod u+x $<
+	$< http://127.0.0.1:1234
 
 $(BIN)%.o: %.cpp | $(BIN)
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -51,7 +60,7 @@ clean:
 	rm -rf $(BIN) 
 
 config:
-	@cd conf && cat template.conf | sed "s#_PWD_#$(PWD)#" > $(conf)
+	@cd conf && cat template.conf | sed "s#_PWD_#$(mkfile_dir)#" > $(conf)
 	@printf "%40s\n" "Config created"
 
 fclean: clean
@@ -59,7 +68,7 @@ fclean: clean
 
 re: fclean $(BIN) all
 
-.PHONY: all clean fclean re run test debug config
+.PHONY: all clean fclean re run test debug config $(testr)
 
 #debug: fclean
 	#$(MAKE) DEBUG=1
