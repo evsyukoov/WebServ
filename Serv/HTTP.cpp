@@ -270,7 +270,7 @@ bool HTTP::validateHost()
 	if (reqMap.find(HOST) != reqMap.end())
 	{
 		pair = splitPair(reqMap[HOST], ':');
-		if ((pair.first != servConf.getServerName() && pair.first != "localhost") || (!pair.second.empty() && pair.second != std::to_string(servConf.getPort())) ||
+		if ((pair.first != servConf.getServerName() && pair.first != "localhost" && pair.first != "127.0.0.1") || (!pair.second.empty() && pair.second != std::to_string(servConf.getPort())) ||
 		(pair.second.empty() && servConf.getPort() != 80))
 			return (false);
 		return (true);

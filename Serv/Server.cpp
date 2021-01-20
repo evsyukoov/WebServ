@@ -215,7 +215,7 @@ int    Server::findServerName(const std::string &server_name, Client *client)
     size_t pos = server_name.find(':');
     std::string host_header = server_name.substr(0, pos);
     std::string port_header = server_name.substr(pos + 1);
-    //std::cout << "HOST: " << host_header << " port: " << port_header << std::endl;
+    std::cout << "HOST: " << host_header << " port: " << port_header << std::endl;
     int port = std::stoi(port_header);
     std::list<ServConf> serv = config.getConfig();
     //ищем совпадение на server_name
