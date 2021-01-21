@@ -37,7 +37,6 @@ CGI::~CGI()
 int        CGI::initARGS()
 {
 	findInterpretator();
-	std::cout << "inter: " << interpretator << std::endl;
     if (interpretator.empty())
     { 
 		args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
@@ -48,8 +47,7 @@ int        CGI::initARGS()
     {
         args[0] = const_cast<char *>(interpretator.c_str());
         args[1] = const_cast<char *>(location.getCgiScrypt().c_str());
-        //args[2] = const_cast<char *>(in.root.c_str());
-        args[2] = nullptr;
+        args[2] = const_cast<char *>(in.root.c_str());
         args[3] = nullptr;
     }
     std::cout << "scrypt: " << args[1] << std::endl;
@@ -150,10 +148,7 @@ int	CGI::run()
 	status = pipe(fd);
 	tmp_fd = open(tmpFile.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 	if (status < 0 || tmp_fd < 0 || (child = fork ()) < 0)
-	{
-		std::cerr << "here" << std::endl;
 		throw (std::runtime_error(strerror(errno)));
-	}
 	if (child == 0)
 	{
 		close(fd[1]); //ничего не пишем
@@ -163,11 +158,10 @@ int	CGI::run()
 		dup2(fd[0], 0);
 		close(tmp_fd);
 		close(fd[0]);
-		if (execve(args[0], args, env) == -1)
-		{
-			std::cerr << "Problems with execve: " << strerror(errno) << std::endl;
-			exit(0);
-		}
+		if (execve(args[0], args, env) == -1) {
+            std::cerr << "ERROR EXeCVE" << std::endl;
+            exit(2);
+        }
 		exit(1);
 	}
 	else
@@ -179,7 +173,7 @@ int	CGI::run()
 		waitpid(child, &status, 0);
 		if (WIFEXITED(status)) {
             int exit_code = WEXITSTATUS(status);
-            if (exit_code == 3)
+            if (exit_code == 2)
                 return (0);
 		}
 		readFromCGI();
@@ -265,7 +259,6 @@ void CGI::findInterpretator()
 	args[0] = const_cast<char *>("/usr/bin/whereis");
 	for (int i = 0; !hashTable[0][i].empty(); ++i)
 	{
-	    std::cout << "hash: " << hashTable[1][i] << std::endl;
 		if (scrypt_extension == hashTable[0][i])
 		{
 			args[1] = const_cast<char *>(hashTable[1][i].c_str());
