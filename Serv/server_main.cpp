@@ -41,6 +41,7 @@ void    printCongig(const Config &config)
             std::cout << "      root: " << (*iter).getRoot() << std::endl;
             std::cout << "      cgi extension: " << (*iter).getCgiExtension() << std::endl;
             std::cout << "      cgi scrypt: " << (*iter).getCgiScrypt() << std::endl;
+            std::cout << "      cgi index:  " << (*iter).getCgiIndex() << std::endl;
             std::cout << "      max body: " << (*iter).getMaxBody() << std::endl;
             std::cout << "      autoindex: " << (*iter).isAutoindex() << std::endl;
             std::cout << "      Allowed methods: ";

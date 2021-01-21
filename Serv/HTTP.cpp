@@ -224,15 +224,23 @@ void 	HTTP::printMap()
 
 std::string HTTP::makeAllow(std::string const &except)
 {
-	std::string allow("GET, HEAD, POST, PUT");
+	//std::string allow("GET, HEAD, POST, PUT");
+	std::string allowed_methods[4] = {"GET", "HEAD", "POST", "PUT"};
+	std::string allow;
 
 	if (it != servConf.getLocations().end())
 	{
 		if (it->getMethods().empty())
-			return (allow);
+		{
+			for (int i = 0; i < 4 ; ++i)
+			{
+				if (allowed_methods[i] == except)
+					continue;
+				allow += allowed_methods[i] + ", ";
+			}
+		}
 		else
 		{
-			allow.clear();
             std::vector<std::string>::const_iterator iter;
 			for (iter = it->getMethods().begin(); iter != it->getMethods().end(); ++iter)
 			{
@@ -240,10 +248,12 @@ std::string HTTP::makeAllow(std::string const &except)
 					continue;
 				allow.append(*iter + ", ");
 			}
-			allow.pop_back();
-			allow.pop_back();
-			return (allow);
 		}
+	}
+	if (allow.size() > 2)
+	{
+		allow.pop_back();
+		allow.pop_back();
 	}
 	return (allow);
 }
@@ -756,10 +766,9 @@ std::string HTTP::errorPageResponece(int error_num)
 
 	if (error_num >= 400 && error_num < 600)
 	{
-		if ((iter = servConf.getErrorPages().find(error_num)) != servConf.getErrorPages().end())
+		if ((iter = servConf.getErrorPages().find(error_num)) != servConf.getErrorPages().end()
+		&& (fd = open(iter->second.c_str(), O_RDWR, 0644)) >= 0 && !fstat(fd, &st))
 		{
-			if ((fd = open(iter->second.c_str(), O_RDWR, 0644)) < 0 || fstat(fd, &st) < 0)
-				return ("");
 			char buf[st.st_size];
 			buf[st.st_size] = '\0';
 			if (read(fd, buf, st.st_size) < 0)
@@ -797,7 +806,6 @@ int HTTP::x_write(int fd, std::string const &buf, size_t len)
 
 int HTTP::x_write(std::map<std::string, std::string> responseMap)
 {
-	static int i;
 	int			localfd = open(responseMap["#file"].c_str(), O_RDONLY);
 	ssize_t		length = findFileSize(localfd) - std::stoul(respMap["#lseek"]);
 
@@ -815,8 +823,8 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 		++iter;
 	}
 	respLine += "\r\n";
-	PRINT(i++)
-	//PRINT(respLine)
+//	PRINT(i++)
+	PRINT(respLine)
 	to_send = new FileResponse(this->client_fd, respLine, localfd, length);
 	to_send->setTmpFile(respMap["#file"]);
 	//@todo unlink(respMap["#file"].c_str());
@@ -924,7 +932,17 @@ bool HTTP::createNewRepresent(std::string &post_root, File &file)
 bool HTTP::postRootConfig(std::string &post_root)
 {
 	former(post_root);
-	if (checkDirectory(post_root) != 1 && !(validateExtencion(post_root)))
+	if (checkDirectory(post_root) == 1)
+	{
+		if (post_root.back() != '/')
+			post_root.push_back('/');
+		post_root += it->getCgiIndex();
+		reqMap["location"].push_back('/');
+		reqMap["location"] += it->getCgiIndex();
+		reqMap["location"] = removeAllUnnecessarySlash(reqMap["location"]);
+		post_root = removeAllUnnecessarySlash(post_root);
+	}
+	if (!(validateExtencion(post_root)))
 	{
 		std::string error(errorPageResponece(405));
 		respMap[ALLOW] = makeAllow("POST");
@@ -946,6 +964,7 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 	{
 		if (!postRootConfig(put_post_root))
 			return (false);
+		file.setAll(reqMap);
 	}
 	if (!checkForAllowedMethod())
 	{
@@ -970,11 +989,6 @@ bool HTTP::postPutvalidation(std::string &put_post_root, File &file, bool post_f
 			sendReq( responceMapToString(413), error);
 			return (false);
 		}
-	}
-	if (post_flag)
-	{
-		if (!createNewRepresent(put_post_root, file))
-			return (false);
 	}
 	return (true);
 }
@@ -1024,7 +1038,7 @@ bool HTTP::postGetValidation(std::string &root)
 void HTTP::post(bool post_put_flag)
 {
 
-	File file(reqMap);
+	File file;
 	std::string post_root;
 	std::string save_lock(reqMap["location"]);
 
@@ -1045,6 +1059,8 @@ void HTTP::post(bool post_put_flag)
 		    return ;
         }
 		hardcodeMap(worker_cgi.getRespMap());
+		//if (respMap.count(TYPE) == 0)
+		//	respMap[TYPE] = "application/octet-stream";
 		x_write(respMap);
 	}
 }
