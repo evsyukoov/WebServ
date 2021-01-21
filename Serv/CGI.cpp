@@ -37,6 +37,7 @@ CGI::~CGI()
 int        CGI::initARGS()
 {
 	findInterpretator();
+	std::cout << "inter: " << interpretator << std::endl;
     if (interpretator.empty())
     { 
 		args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
@@ -47,9 +48,11 @@ int        CGI::initARGS()
     {
         args[0] = const_cast<char *>(interpretator.c_str());
         args[1] = const_cast<char *>(location.getCgiScrypt().c_str());
-        args[2] = const_cast<char *>(in.root.c_str());
+        //args[2] = const_cast<char *>(in.root.c_str());
+        args[2] = nullptr;
         args[3] = nullptr;
     }
+    std::cout << "scrypt: " << args[1] << std::endl;
 	return (1);
 }
 
@@ -163,21 +166,21 @@ int	CGI::run()
 		if (execve(args[0], args, env) == -1)
 		{
 			std::cerr << "Problems with execve: " << strerror(errno) << std::endl;
-			exit(EXIT_FAILURE);
+			exit(0);
 		}
-		exit(EXIT_SUCCESS);
+		exit(1);
 	}
 	else
 	{
 		close(fd[0]);
+		std::cout << "reqMap: " << (*in.requestMap)["body"] << std::endl;
 		write(fd[1], (*in.requestMap)["body"].c_str(), (*in.requestMap)["body"].size());
 		close(fd[1]);
 		waitpid(child, &status, 0);
-		if (WIFEXITED(status))
-		{
-			int exit_code = WEXITSTATUS(status);
-			if (exit_code == EXIT_FAILURE)
-				return (0);
+		if (WIFEXITED(status)) {
+            int exit_code = WEXITSTATUS(status);
+            if (exit_code == 3)
+                return (0);
 		}
 		readFromCGI();
 	}
@@ -260,11 +263,12 @@ void CGI::findInterpretator()
 	scrypt_extension = scrypt_extension.substr(dot_pos);
 
 	args[0] = const_cast<char *>("/usr/bin/whereis");
-	for (int i = 0; !hashTable[1][i].empty(); ++i)
+	for (int i = 0; !hashTable[0][i].empty(); ++i)
 	{
-		if (scrypt_extension == hashTable[1][i])
+	    std::cout << "hash: " << hashTable[1][i] << std::endl;
+		if (scrypt_extension == hashTable[0][i])
 		{
-			args[1] = const_cast<char *>(hashTable[2][i].c_str());
+			args[1] = const_cast<char *>(hashTable[1][i].c_str());
 			break ;
 		}
 	}
@@ -296,7 +300,7 @@ void CGI::findInterpretator()
 		close(fd[0]);
 		if (n < 0)
 			return ;
-		read_buff[n] = '\0';
+		read_buff[n - 1] = '\0';
 		interpretator = read_buff;
 	}
 }
