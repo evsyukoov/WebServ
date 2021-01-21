@@ -165,7 +165,6 @@ int	CGI::run()
 	else
 	{
 		close(fd[0]);
-		std::cout << "reqMap: " << (*in.requestMap)["body"] << std::endl;
 		write(fd[1], (*in.requestMap)["body"].c_str(), (*in.requestMap)["body"].size());
 		close(fd[1]);
 		waitpid(child, &status, 0);

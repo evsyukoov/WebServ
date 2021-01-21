@@ -409,6 +409,8 @@ bool HTTP::checkForAllowedMethod()
 	std::vector<std::string>::const_iterator found;
 	std::vector<std::string> const &AllowedMethods(it->getMethods());
 
+	if (AllowedMethods.empty())
+	    return (true);
 	found = std::find(AllowedMethods.begin(), AllowedMethods.end(), reqMap["method"]);
 	/* if found == AllowedMethods.end - no method was found */
 	return (found != AllowedMethods.end());
@@ -814,7 +816,7 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 	}
 	respLine += "\r\n";
 	PRINT(i++)
-	PRINT(respLine)
+	//PRINT(respLine)
 	to_send = new FileResponse(this->client_fd, respLine, localfd, length);
 	to_send->setTmpFile(respMap["#file"]);
 	//@todo unlink(respMap["#file"].c_str());
