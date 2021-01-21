@@ -111,7 +111,10 @@ int Location::analizeDirective(std::list<std::string> &directive)
                 return (error("Error in max_body description"));
         }
         else if (*it == "scrypt") {
-            cgi_scrypt = *(++it);
+            if (!ifFileExists(*(++it)))
+                return error("No such scrypt on server");
+            else
+                cgi_scrypt = *it;
         }
         else
             return (error("Unknown directive in location block!"));

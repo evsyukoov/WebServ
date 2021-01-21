@@ -1038,7 +1038,8 @@ void HTTP::post(bool post_put_flag)
 		CGI worker_cgi(servConf, *it ,in);
 		if (!(worker_cgi.run()))
         {
-		    std::cerr << "Error at CGI on client " << client_fd << std::endl;
+		    std::string error(errorPageResponece(500));
+            sendReq(responceMapToString(500), error);
 		    return ;
         }
 		hardcodeMap(worker_cgi.getRespMap());
@@ -1163,6 +1164,7 @@ void HTTP::initErrorMap()
     errors[449] = "Retry With";
     errors[451] = "Unavailable For Legal Reasons";
     errors[499] = "Client Closed Request";
+    errors[500] = "Internal Server Error";
     errors[501] = "Not Implemented";
     errors[505] = "HTTP Version Not Supported";
 }
