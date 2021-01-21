@@ -24,7 +24,7 @@ class Server
 	//сервера ключ-listener, значение -  ServConf
     std::string host;
 
-	std::list<int>      servers;
+	std::map<int, Client*>      servers;
 	std::list<Client *> clients;
 
 

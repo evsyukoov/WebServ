@@ -13,7 +13,7 @@
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
 
-	std::cout << "Socket: " << listener << std::endl;
+	//std::cout << "Socket: " << listener << std::endl;
 	if (listener < 0)
 		return (error("sock error"));
 	int optval = 1;
@@ -80,7 +80,7 @@ int Server::openServers()
 			continue;
 		}
         set_nonblock(listener);
-        servers.push_back(listener);
+        servers[listener] = 0;
     }
     if (servers.empty())
     	return (0);
@@ -112,11 +112,11 @@ void Server::resetFdSets()
     FD_ZERO(&write_set);
 
     max = 0;
-	std::list<int>::iterator it;
+	std::map<int, Client*>::iterator it;
 	for(it = servers.begin(); it != servers.end(); it++)
 	{
-		FD_SET((*it), &read_set);
-		max = std::max(max, *it);
+		FD_SET(it->first, &read_set);
+		max = std::max(max, it->first);
 	}
 	std::list<Client*>::iterator iter;
     for (iter = clients.begin(); iter != clients.end(); ++iter)
@@ -149,7 +149,7 @@ void Server::servLoop(HTTP &http)
 {
 	//ключ-сокет клиента  - value - конфиг сервера на котором коннект
 	int ret;
-	std::list<int>::iterator it;
+	std::map<int, Client*>::iterator it;
 
 	while (true)
 	{
@@ -161,8 +161,9 @@ void Server::servLoop(HTTP &http)
 		//  бежим по всем серверам, смотрим на каком событие
 		for (it = servers.begin(); it != servers.end(); it++)
 		{
-			if (FD_ISSET(*it, &read_set)) {
-                acceptConnection(*it);
+			if (FD_ISSET(it->first, &read_set)) {
+                acceptConnection(it->first);
+                servers[it->first] = clients.back();
             }
 		}
 		readRequests();
@@ -215,7 +216,6 @@ int    Server::findServerName(const std::string &server_name, Client *client)
     size_t pos = server_name.find(':');
     std::string host_header = server_name.substr(0, pos);
     std::string port_header = server_name.substr(pos + 1);
-    std::cout << "HOST: " << host_header << " port: " << port_header << std::endl;
     int port = std::stoi(port_header);
     std::list<ServConf> serv = config.getConfig();
     //ищем совпадение на server_name
@@ -283,8 +283,8 @@ void	Server::sendToAllClients(HTTP &http)
 }
 
 Server::~Server() {
-    for (std::list<int>::iterator it = servers.begin(); it != servers.end(); it++)
-        close(*it);
+    for (std::map<int, Client*>::iterator it = servers.begin(); it != servers.end(); it++)
+        close(it->first);
     servers.clear();
 }
 

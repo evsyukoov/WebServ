@@ -865,7 +865,8 @@ int HTTP::sendReq(std::string const &header, std::string responce)
 		responce.clear();
 	result = header + responce;
 
-	PRINT( "PUT result:\n" << result);
+	PRINT( "PUT "
+        "result:\n" << result);
 	to_send = new StringResponse(client_fd, header, responce);
 	return (1);
 }
