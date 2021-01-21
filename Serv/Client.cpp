@@ -5,11 +5,10 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-Client::Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr)
+Client::Client(int clientSock, sockaddr_in &sAddr)
 {
     inet_toip4(&sAddr.sin_addr, this->remoteAddr);
     this->client_sock = clientSock;
-    this->servConf = servConf;
     this->request = "";
     this->body = "";
     body_size = 0;
@@ -132,16 +131,6 @@ int    Client::decodeChunks()
     return (1);
 }
 
-void    Client::analizeChunked()
-{
-    if (raw_body.find("0\r\n\r\n") != std::string::npos)
-    {
-        state = WRITING;
-        raw_body = raw_body.substr(0, raw_body.size() - 5);
-        if (!decodeChunks())
-            request = "UNKNOWN METHOD HTTP/1.1";
-    }
-}
 
 void Client::findState(std::string &_piece) {
     size_t delimetr;
@@ -154,15 +143,19 @@ void Client::findState(std::string &_piece) {
     if (state == HEADER) {
         request += _piece;
         if ((delimetr = request.find("\r\n\r\n")) != std::string::npos) {
-            std::string header = request.substr(0, delimetr + 2);
-            int ret = findBodySize(header);
-            if (!ret)
+            std::string header = request.substr(0, delimetr + 4);
+            reqMap = HTTP::parceMap(header);
+            if (reqMap.empty())
                 state = WRITING;
-            else if (ret == 1) {
+            if ((reqMap.count("Content-Length") == 0 && reqMap.count("Transfer-Encoding") == 1 && reqMap["Transfer-Encoding"] != "chunked")
+            || (reqMap.count("Transfer-Encoding") == 0 && reqMap.count("Content-Length") == 0))
+                state = WRITING;
+            else if (reqMap.count("Content-Length") != 0) {
+                body_size = (size_t)std::stoi(reqMap["Content-Length"]);
                 body = request.substr(delimetr + 4);
                 request = request.substr(0, delimetr + 4);
                 analizeBodySize();
-            } else if (ret == 2) {
+            } else if (reqMap["Transfer-Encoding"] == "chunked") {
                 state = BODY_CHUNKED;
                 raw_body = request.substr(delimetr + 4);
                 request = request.substr(0, delimetr + 4);
@@ -179,7 +172,7 @@ void Client::findState(std::string &_piece) {
         //std::cout << "chunke: " << _piece << std::endl;
         raw_body += _piece;
         if (!chunk_end.empty()) {
-			std::cout << "END: " << _piece.size() << std::endl;
+			//std::cout << "END: " << _piece.size() << std::endl;
 			chunk_end += _piece;
 		}
         decodeChunks();
@@ -214,4 +207,20 @@ void Client::clear() {
 
 int Client::getBodySize() const {
     return body_size;
+}
+
+const std::map<std::string, std::string> &Client::getReqMap() const {
+    return reqMap;
+}
+
+const std::string &Client::getBody() const {
+    return body;
+}
+
+void Client::setServConf(const ServConf &servConf) {
+    this->servConf = servConf;
+}
+
+void Client::clearRequest() {
+    reqMap.clear();
 }

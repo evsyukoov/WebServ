@@ -5,20 +5,19 @@
 #include "CGI.hpp"
 #include <array>
 
-static int logfd;
-
-CGI::CGI(const ServConf &_servConf, input &_in) : in(_in), servConf(_servConf) 
+CGI::CGI(const ServConf &_servConf, const Location &location, input &in) : in(in), servConf(_servConf)
 {
+	interpretator.clear();
+    this->location = location;
 	timeval tv;
 
 	gettimeofday(&tv, nullptr);
 	tmpFile = "/tmp/ws_" + std::to_string(tv.tv_sec * 1000000 + tv.tv_usec);
 	filename = trimAfter(in.root, '/');
 	extension = '.' + trimAfter(filename, '.');
+	args[1] = nullptr;
 	env = nullptr;
 	buff = nullptr;
-	if (logfd == 0)
-		logfd = open("log.log", O_WRONLY | O_CREAT | O_APPEND, 0666);
 	initEnvironments();
 	initARGS();
 	mapToEnv();
@@ -37,32 +36,38 @@ CGI::~CGI()
 
 int        CGI::initARGS()
 {
-	if (in.interptretator.empty())
-	{
-		args[0] = const_cast<char*>(in.scrypt.c_str());
-		args[1] = nullptr;
-	}
-	else
-	{
-		args[0] = const_cast<char*>(in.interptretator.c_str());
-		args[1] = const_cast<char*>(in.scrypt.c_str());
-		args[2] = nullptr;
-	}
+	findInterpretator();
+    if (interpretator.empty())
+    { 
+		args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
+        args[1] = const_cast<char *>(in.root.c_str());
+        args[2] = nullptr;
+    }
+    else
+    {
+        args[0] = const_cast<char *>(interpretator.c_str());
+        args[1] = const_cast<char *>(location.getCgiScrypt().c_str());
+        args[2] = const_cast<char *>(in.root.c_str());
+        args[3] = nullptr;
+    }
+    std::cout << "scrypt: " << args[1] << std::endl;
 	return (1);
 }
 
 void		CGI::setUriAttributes()
 {
 	std::string	&uri = (*in.requestMap)["Location"];
-	size_t		delim = uri.find('?');
+	size_t		q_pos = uri.find('?');
+	size_t		slash_pos = uri.rfind('/');
 
-	if (delim != uri.npos)
-		envMap["QUERY_STRING"] = uri.substr(uri.find('?'), uri.size());
-	if ((*in.requestMap).count("lol"))
+	//@TOOD double check uri variables
+	if (q_pos != std::string::npos)
+		envMap["QUERY_STRING"] = uri.substr(q_pos + 1, uri.size());
+	if (slash_pos != std::string::npos && q_pos < slash_pos)
 	{
-		envMap["PATH_INFO"] = "this%2eis%2epath%3binfo"; // non-null
-		envMap["REQUEST_URI"] = "/";
-		envMap["PATH_TRANSLATED"] = "/";
+		envMap["PATH_INFO"] = uri.substr(slash_pos + 1, uri.size());
+		envMap["REQUEST_URI"] = uri;
+		envMap["PATH_TRANSLATED"] = location.getRoot() + envMap["PATH_INFO"];
 	}
 	else
 		envMap["PATH_INFO"] = "/"; // null
@@ -96,13 +101,14 @@ void        CGI::initEnvironments()
 
 	setUriAttributes();
 	setHttpHeaders();
+	//@TODO double check auth
 	if (in.requestMap->count("Authorization"))
 	{
 		std::string	&auth = (*in.requestMap)["Authorization"];
-		size_t		delim = auth.find(' ');
+		std::pair<std::string, std::string> credentials = splitPair(auth, ' ');
 
-		envMap["AUTH_TYPE"] = auth.substr(0, delim - 1);
-		envMap["REMOTE_USER"] = auth.substr(delim + 1, auth.size());
+		envMap["AUTH_TYPE"] = credentials.first;
+		envMap["REMOTE_USER"] = credentials.second;
 		envMap["REMOTE_IDENT"] = envMap["REMOTE_USER"];
 	}
 	envMap["CONTENT_LENGTH"] = (*in.requestMap)["Content-Length"];
@@ -135,33 +141,26 @@ int     CGI::mapToEnv()
 	return (1);
 }
 
-void	CGI::run()
+int	CGI::run()
 {
 	int fd[2], status, tmp_fd, child;
 
 	status = pipe(fd);
 	tmp_fd = open(tmpFile.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 	if (status < 0 || tmp_fd < 0 || (child = fork ()) < 0)
-	{
-		std::cerr << "here" << std::endl;
 		throw (std::runtime_error(strerror(errno)));
-	}
 	if (child == 0)
 	{
 		close(fd[1]); //ничего не пишем
 		//заменяем stdout дочернего процесса на дескриптор временного файла
 		dup2(tmp_fd, 1);
-		// zapisyvaem log v stderr
-		dup2(logfd, 2);
 		//читать запрос будем от родителя
 		dup2(fd[0], 0);
 		close(tmp_fd);
 		close(fd[0]);
 		if (execve(args[0], args, env) == -1)
-		{
-			std::cerr << "Problems with execve: " << strerror(errno) << std::endl;
-			exit(EXIT_FAILURE);
-		}
+            exit(2);
+		exit(1);
 	}
 	else
 	{
@@ -169,8 +168,14 @@ void	CGI::run()
 		write(fd[1], (*in.requestMap)["body"].c_str(), (*in.requestMap)["body"].size());
 		close(fd[1]);
 		waitpid(child, &status, 0);
+		if (WIFEXITED(status)) {
+            int exit_code = WEXITSTATUS(status);
+            if (exit_code == 2)
+                return (0);
+		}
 		readFromCGI();
 	}
+	return (1);
 }
 
 std::pair<std::string, std::string> splitPair(std::string const &str, std::string const &c)
@@ -185,40 +190,43 @@ std::pair<std::string, std::string> splitPair(std::string const &str, std::strin
 void	CGI::createResponseMap()
 {
 	int		fd = open(tmpFile.c_str(), O_RDONLY);
+	int		rv = 0;
 	size_t	headlen = 0;
 	std::pair<std::string, std::string> pr;
 	std::string str;
 
-	while (lseek_next_line(fd, str) > 0 && str[0] != '\r')
+	/* get response line */
+
+	lseek_next_line(fd, str);
+		//@TODO INTERNAL SERVER ERROR
+	if (!std::strncmp(str.c_str(), "Status: ", 8) && str[str.size() - 1] == '\r')
 	{
-		headlen += str.size() + 1;
-		str.pop_back();
-		responseMap.insert(splitPair(str, ": "));
+		/* Response line found! Adding headers */
+
+		lseek(fd, 0, SEEK_SET);
+		while ((rv = lseek_next_line(fd, str)) > 0 && str[0] != '\r')
+		{
+			headlen += str.size() + 1;
+			if (!str.empty())
+				str.pop_back();
+			responseMap.insert(splitPair(str, ": "));
+		}
+		//if (rv < 0)
+			// INTERNAL SERVER ERROR
 	}
 	responseMap.insert(std::pair<std::string, std::string>("#file", tmpFile));
 	responseMap.insert(std::pair<std::string, std::string>("#lseek", std::to_string(headlen += 2)));
-	lseek(fd, headlen, SEEK_SET);
+	//lseek(fd, headlen, SEEK_SET);
 	close(fd);
 }
 
 void    CGI::readFromCGI()
 {
-	/*
-	std::ifstream ifs;
-	std::ostringstream oss;
-	ifs.open("./tmp");
-
-	oss << ifs.rdbuf();
-	response = oss.str();
-	*/
 	int		fd = open(tmpFile.c_str(), O_RDONLY);
 	long	size = findFileSize(fd);
 
 	if (size < 0 || fd < 0)
-	{
-		std::cerr << "there" << std::endl;
 		throw (std::runtime_error(strerror(errno)));
-	}
 	createResponseMap();
 }
 
@@ -230,4 +238,59 @@ const std::string &CGI::getResponse() const
 std::map<std::string, std::string> CGI::getRespMap() const
 {
 	return responseMap;
+}
+
+void CGI::findInterpretator()
+{
+	static const std::string hashTable[2][6] = {
+		{ ".php", ".py", ".pl", ".rb", ".rbw", "" },
+		{ "php", "python", "perl", "ruby", "ruby", "" }
+	};
+
+	std::string scrypt_extension = location.getCgiScrypt();
+	size_t dot_pos = scrypt_extension.rfind('.');
+	if (dot_pos == std::string::npos)
+		return ;
+	scrypt_extension = scrypt_extension.substr(dot_pos);
+
+	args[0] = const_cast<char *>("/usr/bin/whereis");
+	for (int i = 0; !hashTable[0][i].empty(); ++i)
+	{
+		if (scrypt_extension == hashTable[0][i])
+		{
+			args[1] = const_cast<char *>(hashTable[1][i].c_str());
+			break ;
+		}
+	}
+	if (args[1] == nullptr)
+		return ;
+	int		status;
+	pid_t	child;
+	int		fd[2];
+	char	read_buff[1024] = "";
+
+	
+	if (pipe(fd) < 0 || (child = fork()) < 0)
+		throw (std::runtime_error(strerror(errno)));
+	if (child == 0)
+	{
+		close(fd[0]);
+		dup2(fd[1], 1);
+		if (execve(args[0], args, nullptr) == -1)
+		{
+			close(fd[1]);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		close(fd[1]);
+		waitpid(child, &status, 0);
+		int n = read(fd[0], read_buff, sizeof(read_buff) - 1);
+		close(fd[0]);
+		if (n < 0)
+			return ;
+		read_buff[n - 1] = '\0';
+		interpretator = read_buff;
+	}
 }

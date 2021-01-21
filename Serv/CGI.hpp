@@ -22,10 +22,12 @@ class CGI
 	std::string extension;
 	std::string tmpFile;
 	char		**env;
-	char		*args[3];
+	char		*args[4];
 	char		*buff;
 	input		&in;
+	Location    location;
 
+	std::string interpretator;
 	//настройки конфига
 	const ServConf &servConf;
 
@@ -44,15 +46,19 @@ class CGI
 	void		setHttpHeaders();
 	void		createResponseMap();
 
+	void		findInterpretator();
+
+
     int         initARGS();
 
     int     	mapToEnv();
 
 public:
-    CGI(const ServConf &servConf, input &in);
+    CGI(const ServConf &_servConf, const Location &location, input &in);
+
     ~CGI();
 
-	void 	run();
+	int 	run();
 
 	const std::string &getResponse() const;
 	std::map<std::string, std::string> getRespMap() const;

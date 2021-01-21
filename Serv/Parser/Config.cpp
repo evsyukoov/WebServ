@@ -5,6 +5,7 @@
 
 #include "Config.hpp"
 
+
 const std::list<ServConf> &Config::getConfig() const {
 	return config;
 }
@@ -47,6 +48,7 @@ int Config::readConf()
 	in.close();
 	if (checkBracketsDirectives() == -1)
 	    return (-1);
+	//проверим директиву server_name
 	return (1);
 }
 

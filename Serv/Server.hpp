@@ -22,8 +22,9 @@
 class Server
 {
 	//сервера ключ-listener, значение -  ServConf
+    std::string host;
 
-	std::map<int, ServConf> servers;
+	std::map<int, Client*>      servers;
 	std::list<Client *> clients;
 
 
@@ -42,9 +43,15 @@ class Server
 
 	void resetFdSets();
 
-	void acceptConnection(int sockFd, ServConf &);
+	void acceptConnection(int sockFd);
 
-	void sendToAllClients(std::vector<char *> requests, HTTP &http);
+	void sendToAllClients(HTTP &http);
+
+	int 	error(std::string msg);
+
+    int    findServerName(const std::string &server_name, Client *client);
+
+    std::pair<std::string, std::string>         &parseHostHeader(const std::string &server_name);
 
 
 public:
@@ -57,7 +64,7 @@ public:
 
 	int run(HTTP &http);
 
-	std::vector<char *> readRequests();
+	void readRequests();
 
 };
 

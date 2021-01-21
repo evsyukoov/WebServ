@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include "Response.hpp"
 #include <map>
+#include "HTTP.hpp"
 
 #define HEADER 0
 #define BODY 1
@@ -31,6 +32,18 @@ class Client {
     long            chunk_size;
     std::string 	chunk_end;
 
+    std::map<std::string, std::string> reqMap;
+public:
+    const std::string &getBody() const;
+
+    void setServConf(const ServConf &servConf);
+
+public:
+    const std::map<std::string, std::string> &getReqMap() const;
+
+
+private:
+
     std::map<std::string, std::string>  head;
     Response *resp;
 
@@ -43,7 +56,7 @@ class Client {
     void    analizeChunked();
 
 public:
-    Client(int clientSock, const ServConf &servConf, sockaddr_in &sAddr);
+    Client(int clientSock, sockaddr_in &sAddr);
 
     int     getClientSock() const;
 
@@ -66,6 +79,8 @@ public:
 
     Response    *getResponse();
 	void        setResponse(Response *r);
+
+	void        clearRequest();
 
 };
 

@@ -29,13 +29,15 @@
 #include "utils.hpp"
 #include "CGI.hpp"
 #include <sys/time.h>
+#include <ServConf.hpp>
 
 class HTTP
 {
+
 private:
 
 	ServConf		servConf;
-	std::string 	buff_req;
+	std::string 	body;
 	std::map<std::string, std::string>	reqMap;  //map запроса включает в себя все заголовки
 	std::list<Location>::const_iterator it; // нахождение нужного location
 	std::string 	result;
@@ -81,15 +83,11 @@ private:
 
 	std::list<Location>::const_iterator getMatchingLocation();
 
-//	long contentLength();
-
 	bool validateExtencion(std::string &root);
 
 	int 	initMap();
 
 	int		validateMethod();
-
-	bool	validateProtocol();
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
@@ -97,18 +95,20 @@ private:
 
 	std::string postRoot();
 
-	bool validateRequestLine();
+	static bool validateRequestLine(std::map<std::string, std::string> &map);
 
-	bool parceRequestLine(size_t &second_pos, size_t &rev_pos);
+	static bool parceRequestLine(std::map<std::string, std::string> &map, std::string request);
 
-	bool validateHeaderMap();
+	static bool validateHeaderMap(std::map<std::string, std::string> &map);
 
 	bool postGet();
 
 
 	void    initErrorMap();
 
-	int		initListingHTML(std::string path, const std::string &root);
+	int		initListingHTML(std::string &path);
+
+	static bool	doubleHostLength(bool &host, bool &name, std::string &header);
 
 	bool	putInPriorMap(std::map<std::string, float>& prior_map, std::string const &lang);
 
@@ -129,15 +129,13 @@ private:
 
 	static bool compareCharset(std::vector<File>::iterator matching_file, std::string const &charset);
 
-	std::string		responceMapToString();
+	std::string		responceMapToString(int statuscode);
 
 	std::string		makeAllow(std::string const &except = "");
 
 	std::string getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, const std::string &), std::vector<File>::iterator iter);
 
 	static std::string removeAllUnnecessarySlash(std::string path);
-
-	bool		findMethod(std::string const &find);
 
 	void		formContentTypeLength(const std::string &path, ssize_t file_size);
 
@@ -162,15 +160,20 @@ private:
 
 	void				hardcodeMap(std::map<std::string, std::string> responseMap);
 
+	static std::map<std::string, std::string>	clear(std::map<std::string, std::string> &map);
+
+
 public:
 
 	HTTP(int client, char *buf, const ServConf&);
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-	void setFields(int client, char const *buf, const ServConf &serv, struct input&); // функция инициализации полей для дальнейшей обработки
+    void    setFields(int client, std::string buf, const ServConf &serv, struct input &income, std::map<std::string, std::string> map); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
+
+	static std::map<std::string, std::string> parceMap(std::string &request);
 
 	const std::map<std::string, std::string> &getRequestMap() const; // для отладки
 

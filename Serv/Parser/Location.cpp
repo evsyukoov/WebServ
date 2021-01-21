@@ -3,12 +3,12 @@
 //
 
 #include "Location.hpp"
+#include "../CGI.hpp"
 
 
 Location::Location(const std::string &rawLocation) {
     this->raw_location = rawLocation;
     autoindex = false;
-    enable_upload = false;
     max_body = -1;
 }
 
@@ -48,44 +48,36 @@ int     Location::isRightDirective(const std::string &direct, const std::string 
     return (i);
 }
 
-int     Location::isAllowedMethod(const std::string &method)
+int     Location::isAllowedMethod(std::string &method)
 {
+	size_t i = method.size() - 1;
+	while (method[i] == ' ' && method[i])
+		i--;
+	method = method.substr(0, ++i);
     if (method == "GET" || method == "POST" || method == "PUT" || method == "DELETE" || method == "HEAD")
         return (1);
     return (0);
 }
 
-int     Location::findEndOfKeyword(const std::string &word)
-{
-    int i = 0;
-    while (!std::isspace(word[i]) && word[i] != '\0')
-        i++;
-    return (i);
-}
-
 int     Location::parseMethods(std::string &directive, int ind)
 {
-    bool exit_cycle = false;
     directive = directive.substr(ind);
     int i = skipSpaces(directive);
     std::string _methods = directive.substr(i);
-    while (true)
+    size_t pos;
+    while ((pos = _methods.find(',')) != std::string::npos)
     {
-        size_t pos;
-        if ((pos = _methods.find(',')) == std::string::npos) {
-            pos = findEndOfKeyword(_methods);
-            exit_cycle = true;
-        }
-        std::string method = _methods.substr(0, pos);
+    	std::string method = _methods.substr(0, pos);
         if (!isAllowedMethod(method))
-            return (error("Not allowed method in location block"));
+            return (error("Not allowed method in location block"));;
         methods.push_back(method);
-        if (exit_cycle)
-            break ;
         _methods = _methods.substr(pos + 1);
         i = skipSpaces(_methods);
         _methods = _methods.substr(i);
     }
+	if (!isAllowedMethod(_methods))
+		return (error("Not allowed method in location block"));;
+	methods.push_back(_methods);
     return (1);
 }
 
@@ -100,12 +92,8 @@ int Location::analizeDirective(std::list<std::string> &directive)
             root = *(++it);
         else if (*it == "cgi")
             cgi_extension = *(++it);
-        else if (*it == cgi_scrypt)
-            cgi_scrypt = *(++it);
         else if (*it == "index")
             index = *(++it);
-        else if (*it == "upload_dir")
-            upload_path = *(++it);
         else if (*it == "autoindex")
         {
             if (*(++it) == "on")
@@ -115,15 +103,6 @@ int Location::analizeDirective(std::list<std::string> &directive)
             else
                 return (error("Error in autoindex description"));
         }
-        else if (*it == "upload")
-        {
-            if (*(++it) == "on")
-                enable_upload = true;
-            else if (*it == "off")
-                enable_upload = false;
-            else
-                return (error("Error in upload description"));
-        }
         else if (*it == "max_body")
         {
             if (isDigit(*(++it)))
@@ -131,9 +110,26 @@ int Location::analizeDirective(std::list<std::string> &directive)
             else
                 return (error("Error in max_body description"));
         }
+        else if (*it == "scrypt") {
+            if (!ifFileExists(*(++it)))
+                return error("No such scrypt on server");
+            else
+                cgi_scrypt = *it;
+        }
+        else if (*it == "cgi_index")
+            cgi_index = *(++it);
         else
             return (error("Unknown directive in location block!"));
     }
+    return (1);
+}
+
+int     Location::ifFileExists(const std::string &fileName)
+{
+    int fd;
+    if ((fd = open(fileName.c_str(), O_RDONLY)) < 0)
+        return (0);
+    close(fd);
     return (1);
 }
 
@@ -216,13 +212,6 @@ bool Location::isAutoindex() const {
     return autoindex;
 }
 
-bool Location::isEnableUpload() const {
-    return enable_upload;
-}
-
-const std::string &Location::getUploadPath() const {
-    return upload_path;
-}
 
 Location::Location() {}
 
@@ -237,13 +226,20 @@ Location &Location::operator=(const Location &other) {
 	root = other.root;
 	index = other.index;
 	cgi_extension = other.cgi_extension;
+	interpretator = other.interpretator;
 	cgi_scrypt = other.cgi_scrypt;
 	autoindex = other.autoindex;
-	enable_upload = other.enable_upload;
-	upload_path = other.upload_path;
 	return (*this);
 }
 
 Location::Location(const Location &other) {
 	this->operator=(other);
+}
+
+const std::string &Location::getInterpretator() const {
+    return interpretator;
+}
+
+const std::string &Location::getCgiIndex() const {
+    return cgi_index;
 }

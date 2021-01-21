@@ -10,7 +10,7 @@ int 	Comparator(const Location &l1, const Location &l2)
 	return l1.getLocation().size() > l2.getLocation().size();
 }
 
-ServConf::ServConf(const std::string &rawServconf, int pos) : raw_servconf(rawServconf), pos(pos) {
+ServConf::ServConf( const std::string &rawServconf, int pos) : raw_servconf(rawServconf), pos(pos) {
     port = -1;
 }
 
@@ -72,13 +72,7 @@ int    ServConf::analizeDirective(std::list<std::string> line)
                 return (error("Dublicate directive in Server Block"));
             }
             else if (*str == "server_name" && server_name.empty())
-            {
-                if (*(++str) == "localhost")
-                    server_name = "127.0.0.1";
-                else
-                    server_name = *str;
-            }
-
+                    server_name = *(++str);
             if (*str == "listen" && port != -1)
                 return (error("Dublicate directive in Server Block"));
             else if (*str == "listen" && isDigit(*(++str)) && port == -1)
@@ -122,6 +116,8 @@ int    ServConf::parse()
         if (analizeDirective(splitted) == -1)
             return (-1);
     }
+    if (this->port == -1)
+    	return error("No port directive in server");
     return (1);
 }
 
@@ -168,4 +164,10 @@ ServConf::~ServConf() {
 ServConf::ServConf(const ServConf &other) {
 	this->operator=(other);
 }
+
+void ServConf::setServerName(const std::string &serverName) {
+	server_name = serverName;
+}
+
+
 

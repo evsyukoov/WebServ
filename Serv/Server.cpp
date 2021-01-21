@@ -13,22 +13,29 @@
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
 
-	std::cout << "Socket: " << listener << std::endl;
+	//std::cout << "Socket: " << listener << std::endl;
 	if (listener < 0)
 		return (error("sock error"));
 	int optval = 1;
 	//если сокет уже был открыт
-	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
-		return error("setsockopt error");
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 && setsockopt(listener, SOL_SOCKET, SO_NOSIGPIPE,  &optval, sizeof(int)) < 0) {
+		close(listener);
+		return (0);
+	}
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(servConf.getPort());
-	addr.sin_addr.s_addr = inet_addr(servConf.getServerName().c_str());
+	addr.sin_addr.s_addr = inet_addr(host.c_str());
 
-	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0)
-		return (error("bind failed"));
-	if (::listen(listener, SOMAXCONN) != 0)
-		return (error("listen error"));
+
+	if (::bind(listener, ((struct sockaddr*)&addr), sizeof(addr)) != 0) {
+		close(listener);
+		return (0);
+	}
+	if (::listen(listener, SOMAXCONN) != 0) {
+		close(listener);
+		return (0);
+	}
 	return (listener);
 }
 
@@ -49,7 +56,6 @@ int   Server::receiveData(int client_sock, std::string &str)
 		return (len);
     recieve[len] = '\0';
     str = recieve;
-    //std::cout << BLUE << "recieve: " << str  << RESET << std::endl;
     return (1);
 }
 
@@ -57,6 +63,7 @@ int   Server::receiveData(int client_sock, std::string &str)
 
 Server::Server(input &in,const Config &config)
 {
+    host = "127.0.0.1";
     this->in = in;
     this->config = config;
     FD_ZERO(&read_set);
@@ -68,26 +75,24 @@ int Server::openServers()
     for(it = config.getConfig().begin(); it != config.getConfig().end(); it++)
     {
     	int listener;
-        if ((listener = listen(*it)) < 0)
-            return (0);
+        if (!(listener = listen(*it))) {
+			std::cerr << "Port number " << it->getPort() << " is unavailable!" << std::endl;
+			continue;
+		}
         set_nonblock(listener);
-        std::pair<int , ServConf> pair = std::make_pair(listener, *it);
-        servers.insert(pair);
+        servers[listener] = 0;
     }
+    if (servers.empty())
+    	return (0);
     return (1);
 }
 
 int     Server::run(HTTP &http)
 {
-    if (openServers() == -1)
-        return (-1);
+    if (!openServers())
+        return (error("No available ports. Stop server"));
     servLoop(http);
     return (1);
-}
-
-bool    Comparator(const Client *c1, const Client *c2)
-{
-    return (c1->getClientSock() < c2->getClientSock());
 }
 
 //отладочная печать клиентов
@@ -107,11 +112,11 @@ void Server::resetFdSets()
     FD_ZERO(&write_set);
 
     max = 0;
-	std::map<int, ServConf>::iterator it;
+	std::map<int, Client*>::iterator it;
 	for(it = servers.begin(); it != servers.end(); it++)
 	{
-		FD_SET((*it).first, &read_set);
-		max = std::max(max, (*it).first);
+		FD_SET(it->first, &read_set);
+		max = std::max(max, it->first);
 	}
 	std::list<Client*>::iterator iter;
     for (iter = clients.begin(); iter != clients.end(); ++iter)
@@ -124,7 +129,7 @@ void Server::resetFdSets()
     }
 }
 
-void    Server::acceptConnection(int sockFd, ServConf &serv)
+void    Server::acceptConnection(int sockFd)
 {
 
 	sockaddr_in sAddr;
@@ -132,16 +137,19 @@ void    Server::acceptConnection(int sockFd, ServConf &serv)
 	int client_sock;
 
 	client_sock = accept(sockFd, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
+	if (client_sock < 0)
+		return ;
 	set_nonblock(client_sock);
-	Client *client = new Client(client_sock, serv, sAddr);
+	Client *client = new Client(client_sock, sAddr);
 	clients.push_back(client);
+	std::cout << "Client " << client_sock << " connected to server" << std::endl;
 }
 
-_Noreturn void Server::servLoop(HTTP &http)
+void Server::servLoop(HTTP &http)
 {
 	//ключ-сокет клиента  - value - конфиг сервера на котором коннект
 	int ret;
-	std::map<int, ServConf>::iterator it;
+	std::map<int, Client*>::iterator it;
 
 	while (true)
 	{
@@ -153,17 +161,18 @@ _Noreturn void Server::servLoop(HTTP &http)
 		//  бежим по всем серверам, смотрим на каком событие
 		for (it = servers.begin(); it != servers.end(); it++)
 		{
-			if (FD_ISSET(it->first, &read_set))
-				acceptConnection(it->first, it->second);
+			if (FD_ISSET(it->first, &read_set)) {
+                acceptConnection(it->first);
+                servers[it->first] = clients.back();
+            }
 		}
-		std::vector<char *> requests = readRequests();
-		sendToAllClients(requests, http);
+		readRequests();
+		sendToAllClients(http);
 	}
 }
 
-std::vector<char*>      Server::readRequests()
+void      Server::readRequests()
 {
-	std::vector<char*> requests;
     std::string req;
 
     std::list<Client*>::iterator it = clients.begin();
@@ -179,6 +188,7 @@ std::vector<char*>      Server::readRequests()
 			//кто-то отключился
 			if (ret == 0)
 			{
+                std::cout << "Client " << (*it)->getClientSock() << " disconnected" << std::endl;
 				close((*it)->getClientSock());
 				delete (*it);
 				it = clients.erase(it);
@@ -190,7 +200,6 @@ std::vector<char*>      Server::readRequests()
 		}
 		it++;
 	}
-	return (requests);
 }
 
 int    sendBodySegment(Response *rs)
@@ -202,7 +211,44 @@ int    sendBodySegment(Response *rs)
 	return (dynamic_cast<FileResponse *>(rs)->sendPiece());
 }
 
-void	Server::sendToAllClients(std::vector<char*> requests, HTTP &http)
+int    Server::findServerName(const std::string &server_name, Client *client)
+{
+    size_t pos = server_name.find(':');
+    std::string host_header = server_name.substr(0, pos);
+    std::string port_header = server_name.substr(pos + 1);
+    int port = std::stoi(port_header);
+    std::list<ServConf> serv = config.getConfig();
+    //ищем совпадение на server_name
+    for(std::list<ServConf>::iterator it = serv.begin(); it != serv.end(); it++)
+    {
+        if (port == it->getPort() && host_header == it->getServerName()) {
+            client->setServConf(*it);
+            return (1);
+        }
+    }
+    //если не нашли
+    if (host_header != "localhost" && host_header != "127.0.0.1")
+        return (0);
+    //иначе ищем первое совпадение по порту
+    for(std::list<ServConf>::iterator it = serv.begin(); it != serv.end(); it++)
+    {
+        if (port == it->getPort())
+        {
+            client->setServConf(*it);
+            return (1);
+        }
+    }
+    return (1);
+}
+
+void    printReqMap(std::map<std::string, std::string> req_map)
+{
+    for(std::map<std::string, std::string>::iterator it = req_map.begin(); it != req_map.end(); it++)
+        std::cout << RED << it->first << " : " << it->second << std::endl;
+    std::cout << RESET << std::endl;
+}
+
+void	Server::sendToAllClients(HTTP &http)
 {
     std::list<Client*>::iterator it = clients.begin();
     std::list<Client*>::iterator ite = clients.end();
@@ -214,7 +260,13 @@ void	Server::sendToAllClients(std::vector<char*> requests, HTTP &http)
 			if ((*it)->getState() == WRITING)
 			{
 				in.remote_addr = (*it)->getRemoteAddr();
-				http.setFields((*it)->getClientSock(), (*it)->getRequest().c_str(), (*it)->getServConf(), in);
+				std::map<std::string, std::string> map = (*it)->getReqMap();
+
+				//отдаем пустую мапу, если не нашли host, после обработки получим 400
+                if (map.count("Host") == 0 || !(findServerName(map["Host"], *it)))
+                    (*it)->clearRequest();
+                //printReqMap(map);
+				http.setFields((*it)->getClientSock(), (*it)->getBody(), (*it)->getServConf(), in, (*it)->getReqMap());
 				http.manager();
 				r = http.getResponse();
 				(*it)->setResponse(r);
@@ -228,14 +280,17 @@ void	Server::sendToAllClients(std::vector<char*> requests, HTTP &http)
 		}
 		it++;
 	}
-	//@TODO unused parameter requests
-    (void)requests;
 }
 
 Server::~Server() {
-    for (std::map<int, ServConf>::iterator it = servers.begin(); it != servers.end(); it++)
+    for (std::map<int, Client*>::iterator it = servers.begin(); it != servers.end(); it++)
         close(it->first);
     servers.clear();
+}
+
+int Server::error(std::string msg) {
+	std::cerr << "Server error: " << msg << std::endl;
+	return (0);
 }
 
 
