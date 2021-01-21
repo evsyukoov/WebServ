@@ -83,15 +83,11 @@ private:
 
 	std::list<Location>::const_iterator getMatchingLocation();
 
-//	long contentLength();
-
 	bool validateExtencion(std::string &root);
 
 	int 	initMap();
 
 	int		validateMethod();
-
-	bool	validateProtocol();
 
 	void 	locationToRootReplcaer(std::string& root_with_slash);
 
@@ -140,8 +136,6 @@ private:
 	std::string getMatchingAccept(std::map<std::string, float> accepts, bool (*func)(std::vector<File>::iterator, const std::string &), std::vector<File>::iterator iter);
 
 	static std::string removeAllUnnecessarySlash(std::string path);
-
-	bool		findMethod(std::string const &find);
 
 	void		formContentTypeLength(const std::string &path, ssize_t file_size);
 

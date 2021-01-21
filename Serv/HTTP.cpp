@@ -105,13 +105,6 @@ int HTTP::validateMethod()
 	return (0);
 }
 
-bool HTTP::validateProtocol()
-{
-	if (reqMap["protocol"] == "HTTP/1.1")
-		return (true);
-	return (false);
-}
-
 bool HTTP::validateRequestLine(std::map<std::string, std::string> &map)
 {
 	if (map["method"].empty() || map["location"].empty() || map["protocol"].empty() ||
@@ -294,7 +287,7 @@ void HTTP::manager() {
 	}
 	reqMap["location"] = removeAllUnnecessarySlash(reqMap["location"]);
 	it = getMatchingLocation();
-	if (!validateProtocol())
+	if (reqMap["protocol"] != "HTTP/1.1")
 	{
 		std::string error(errorPageResponece(505));
 		sendReq(responceMapToString(505), error);
@@ -408,39 +401,17 @@ std::string HTTP::pathFormerer() {
 	}
 }
 
-bool HTTP::findMethod(std::string const &find)
-{
-	if (!it->getMethods().empty())
-	{
-		if (std::find(it->getMethods().begin(), it->getMethods().end(), find) == it->getMethods().end())
-			return (false);
-		else
-			return (true);
-	}
-	return (true);
-}
-
 bool HTTP::checkForAllowedMethod()
 {
-//	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
-//	std::list<Location>::const_iterator it = getMatchingLocation(servConf);
-	std::string post("POST");
-	std::string put("PUT");
-	std::string get("GET");
-	std::string head("HEAD");
+	if (it == servConf.getLocations().end())
+		return (true);
 
-	if (it != servConf.getLocations().end())
-	{
-		if (reqMap["method"] == get)
-			return (findMethod(get));
-		else if (reqMap["method"] == head)
-			return (findMethod(head));
-		else if (reqMap["method"] == post)
-			return (findMethod(post));
-		else if (reqMap["method"] == put)
-			return (findMethod(put));
-	}
-	return (true);
+	std::vector<std::string>::const_iterator found;
+	std::vector<std::string> const &AllowedMethods(it->getMethods());
+
+	found = std::find(AllowedMethods.begin(), AllowedMethods.end(), reqMap["method"]);
+	/* if found == AllowedMethods.end - no method was found */
+	return (found != AllowedMethods.end());
 }
 
 bool HTTP::postGet()
@@ -761,11 +732,8 @@ void HTTP::formRespHeaderOK(std::string &path, struct stat st)
 
 void HTTP::readFile(struct stat &st, int fd, std::string &path)
 {
-//	char buf[st.st_size + 1];
-
 	char *buf = new char[st.st_size + 1];
 	buf[st.st_size] = '\0';
-//	//std::cout << st.st_size << std::endl;
 	if (read(fd, buf, st.st_size) < 0)
 	{
 		close(fd);
