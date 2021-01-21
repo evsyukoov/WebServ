@@ -30,6 +30,8 @@ class Location {
 
 	std::string            interpretator;
 
+	std::string             cgi_index;
+
 	bool 				   autoindex;
 
 	//input
@@ -69,6 +71,8 @@ public:
     const std::string &getRoot() const;
 
     const std::string &getIndex() const;
+
+    const std::string &getCgiIndex() const;
 
     const std::string &getCgiExtension() const;
 

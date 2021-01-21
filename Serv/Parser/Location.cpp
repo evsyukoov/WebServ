@@ -116,6 +116,8 @@ int Location::analizeDirective(std::list<std::string> &directive)
             else
                 cgi_scrypt = *it;
         }
+        else if (*it == "cgi_index")
+            cgi_index = *(++it);
         else
             return (error("Unknown directive in location block!"));
     }
@@ -236,4 +238,8 @@ Location::Location(const Location &other) {
 
 const std::string &Location::getInterpretator() const {
     return interpretator;
+}
+
+const std::string &Location::getCgiIndex() const {
+    return cgi_index;
 }

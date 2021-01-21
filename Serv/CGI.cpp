@@ -158,10 +158,8 @@ int	CGI::run()
 		dup2(fd[0], 0);
 		close(tmp_fd);
 		close(fd[0]);
-		if (execve(args[0], args, env) == -1) {
-            std::cerr << "ERROR EXeCVE" << std::endl;
+		if (execve(args[0], args, env) == -1)
             exit(2);
-        }
 		exit(1);
 	}
 	else
