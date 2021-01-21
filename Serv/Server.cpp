@@ -18,7 +18,7 @@ int Server::listen(const ServConf &servConf) {
 		return (error("sock error"));
 	int optval = 1;
 	//если сокет уже был открыт
-	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0) {
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 && setsockopt(listener, SOL_SOCKET, SO_NOSIGPIPE,  &optval, sizeof(int)) < 0) {
 		close(listener);
 		return (0);
 	}
