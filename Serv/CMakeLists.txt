@@ -4,7 +4,8 @@ project(Serv)
 set(CMAKE_CXX_STANDARD 98)
 #link_directories(~/Denis/WebServ/Serv/libft/)
 
-add_executable(Serv server_main.cpp HTTP.cpp CGI.cpp Server.cpp
+add_executable(Serv
+        server_main.cpp HTTP.cpp CGI.cpp Server.cpp
         Parser/ServConf.cpp
         Parser/Location.cpp
         Parser/Config.cpp
@@ -12,9 +13,9 @@ add_executable(Serv server_main.cpp HTTP.cpp CGI.cpp Server.cpp
         Parser/parser_utils.hpp
         utils.cpp utils_for_file.cpp
         Response.cpp
-        File.cpp utils.hpp Client.cpp AServer.cpp AServer.hpp)
+        File.cpp utils.hpp Client.cpp AServer.hpp)
 
-include_directories(Parser)
+include_directories(Parser .)
 set(CMAKE_CXX_FLAGS "-std=C++98 -Wall -Wextra -Werror")
 #add_executable(Serv test_for_file.cpp HTTP.cpp Server.cpp File.cpp
 #        Parser/ServConf.cpp
