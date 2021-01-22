@@ -11,6 +11,7 @@
 #include "Parser/Config.hpp"
 #include "HTTP.hpp"
 #include "Client.hpp"
+#include "AServer.hpp"
 
 //debug
 #define RED "\033[1;31m"
@@ -19,21 +20,11 @@
 #define RESET "\033[0m"
 #define WS_BUFFER_SIZE 100000
 
-class Server
+class Server : public AServer
 {
 	//сервера ключ-listener, значение -  ServConf
     std::string host;
-
-	std::map<int, Client*>      servers;
 	std::list<Client *> clients;
-
-
-	Config config;
-	//сет всех дескрипторов для select
-	fd_set read_set;
-	fd_set write_set;
-	int    max;
-	struct input in;
 
 	int receiveData(int client_sock, std::string &str);
 
@@ -41,11 +32,12 @@ class Server
 
 	int openServers();
 
-	void resetFdSets();
 
+	void iterateWriteSet();
 	void acceptConnection(int sockFd);
 
-	void sendToAllClients(HTTP &http);
+	void readRequests();
+	void sendToAllClients();
 
 	int 	error(std::string msg);
 
@@ -53,18 +45,14 @@ class Server
 
     std::pair<std::string, std::string>         &parseHostHeader(const std::string &server_name);
 
+    void doTheJob();
 
 public:
 	Server(input &in, const Config &config);
 
 	virtual ~Server();
 
-	_Noreturn void servLoop(HTTP &http);
-
-
 	int run(HTTP &http);
-
-	void readRequests();
 
 };
 

@@ -61,7 +61,7 @@ int   Server::receiveData(int client_sock, std::string &str)
 
 
 
-Server::Server(input &in,const Config &config)
+Server::Server(input &in,const Config &config) : AServer(in, config)
 {
     host = "127.0.0.1";
     this->in = in;
@@ -80,18 +80,21 @@ int Server::openServers()
 			continue;
 		}
         set_nonblock(listener);
-        servers[listener] = 0;
+        container[listener] = 0;
     }
-    if (servers.empty())
+    if (container.empty())
     	return (0);
     return (1);
 }
 
 int     Server::run(HTTP &http)
 {
+	(void)http;
     if (!openServers())
         return (error("No available ports. Stop server"));
-    servLoop(http);
+    PRINT("HERE")
+    while (true)
+		servLoop();
     return (1);
 }
 
@@ -104,29 +107,6 @@ void        print(const std::list<Client*> &clients)
     for( it = clients.begin(); it != clients.end(); it++)
         std::cout << (*it)->getClientSock() << " " ;
     std::cout << RESET << std::endl;
-}
-
-void Server::resetFdSets()
-{
-    FD_ZERO(&read_set);
-    FD_ZERO(&write_set);
-
-    max = 0;
-	std::map<int, Client*>::iterator it;
-	for(it = servers.begin(); it != servers.end(); it++)
-	{
-		FD_SET(it->first, &read_set);
-		max = std::max(max, it->first);
-	}
-	std::list<Client*>::iterator iter;
-    for (iter = clients.begin(); iter != clients.end(); ++iter)
-    {
-	    if ((*iter)->getState() == WRITING || (*iter)->getState() == WRITING_BODY)
-		    FD_SET((*iter)->getClientSock(), &write_set);
-	    else
-		    FD_SET((*iter)->getClientSock(), &read_set);
-	    max = std::max(max, (*iter)->getClientSock());
-    }
 }
 
 void    Server::acceptConnection(int sockFd)
@@ -145,6 +125,7 @@ void    Server::acceptConnection(int sockFd)
 	std::cout << "Client " << client_sock << " connected to server" << std::endl;
 }
 
+/*
 void Server::servLoop(HTTP &http)
 {
 	//ключ-сокет клиента  - value - конфиг сервера на котором коннект
@@ -169,7 +150,7 @@ void Server::servLoop(HTTP &http)
 		readRequests();
 		sendToAllClients(http);
 	}
-}
+}*/
 
 void      Server::readRequests()
 {
@@ -248,11 +229,12 @@ void    printReqMap(std::map<std::string, std::string> req_map)
     std::cout << RESET << std::endl;
 }
 
-void	Server::sendToAllClients(HTTP &http)
+void	Server::sendToAllClients()
 {
     std::list<Client*>::iterator it = clients.begin();
     std::list<Client*>::iterator ite = clients.end();
     Response *r;
+
 	while (it != ite)
     {
 		if (FD_ISSET((*it)->getClientSock(), &write_set))
@@ -260,7 +242,8 @@ void	Server::sendToAllClients(HTTP &http)
 			if ((*it)->getState() == WRITING)
 			{
 				in.remote_addr = (*it)->getRemoteAddr();
-				std::map<std::string, std::string> map = (*it)->getReqMap();
+				std::map<std::string, std::string> map((*it)->getReqMap());
+				HTTP http;
 
 				//отдаем пустую мапу, если не нашли host, после обработки получим 400
                 if (map.count("Host") == 0 || !(findServerName(map["Host"], *it)))
@@ -282,10 +265,38 @@ void	Server::sendToAllClients(HTTP &http)
 	}
 }
 
+void Server::iterateWriteSet() {
+	std::list<Client *>::iterator it;
+
+	for (it = clients.begin(); it != clients.end(); ++it)
+	{
+		if ((*it)->getState() == WRITING || (*it)->getState() == WRITING_BODY)
+			FD_SET((*it)->getClientSock(), &write_set);
+		FD_SET((*it)->getClientSock(), &read_set);
+		max = std::max(max, (*it)->getClientSock());
+	}
+}
+
+
+void Server::doTheJob()
+{
+	std::map<int, Client *>::iterator it;
+
+	for (it = container.begin(); it != container.end(); it++)
+	{
+		if (FD_ISSET(it->first, &read_set)) {
+			acceptConnection(it->first);
+			container[it->first] = clients.back();
+		}
+	}
+	readRequests();
+	sendToAllClients();
+}
+
 Server::~Server() {
-    for (std::map<int, Client*>::iterator it = servers.begin(); it != servers.end(); it++)
+    for (std::map<int, Client*>::iterator it = container.begin(); it != container.end(); it++)
         close(it->first);
-    servers.clear();
+    container.clear();
 }
 
 int Server::error(std::string msg) {
