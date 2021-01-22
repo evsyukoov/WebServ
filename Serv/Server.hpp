@@ -19,6 +19,7 @@
 #define BLUE "\033[1;34m"
 #define RESET "\033[0m"
 #define WS_BUFFER_SIZE 100000
+#define MAX_CLIENTS SOMAXCONN
 
 class Server : public AServer
 {

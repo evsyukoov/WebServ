@@ -32,7 +32,8 @@ int Server::listen(const ServConf &servConf) {
 		close(listener);
 		return (0);
 	}
-	if (::listen(listener, SOMAXCONN) != 0) {
+	if (::listen(listener, MAX_CLIENTS) != 0)
+	{
 		close(listener);
 		return (0);
 	}
@@ -117,7 +118,7 @@ void    Server::acceptConnection(int sockFd)
 
 	client_sock = accept(sockFd, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
 	if (client_sock < 0)
-		return ;
+		return;
 	set_nonblock(client_sock);
 	Client *client = new Client(client_sock, sAddr);
 	clients.push_back(client);
