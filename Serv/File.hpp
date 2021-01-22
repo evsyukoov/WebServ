@@ -41,6 +41,10 @@ public:
 
 	File(std::string const & filename);
 
+	File();
+
+	void setAll(std::map<std::string, std::string> reqMap);
+
 	long getContentLength();
 
 	void setRoot(std::string const &root);

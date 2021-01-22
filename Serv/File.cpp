@@ -76,9 +76,6 @@ void File::placeContentType(std::map<std::string, std::string> &reqMap)
 		else
 			content_type = getMime(reqMap["location"].substr(pos, reqMap["location"].size() - pos));
 	}
-#ifdef D_MIME
-	std::cout << "Content-Type: " << content_type << std::endl;
-#endif
 }
 
 bool File::contentType(std::map<std::string, std::string> &reqMap)
@@ -219,6 +216,16 @@ std::string File::getMime(std::string const &extencion)
 // 	if (mime_map.find(content_type) != mime_map.end())
 //		return (mime_map[content_type]);
 //	return ("");
+}
+
+File::File() {}
+
+void File::setAll(std::map<std::string, std::string> reqMap)
+{
+	this->content_length = contentLength(reqMap);
+	contentWithComma(reqMap, LANG);
+	contentWithComma(reqMap, ENCODE);
+	placeContentType(reqMap);
 }
 
 File::File(std::map<std::string, std::string> &reqMap)

@@ -229,6 +229,7 @@ Location &Location::operator=(const Location &other) {
 	interpretator = other.interpretator;
 	cgi_scrypt = other.cgi_scrypt;
 	autoindex = other.autoindex;
+	cgi_index = other.cgi_index;
 	return (*this);
 }
 
