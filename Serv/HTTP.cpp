@@ -322,7 +322,7 @@ void HTTP::regexpr(const std::string& location)
 	std::string to_find(reqMap["location"]);
 	std::cmatch match;
 
-	std::regex_match(to_find.c_str(), match, regex);
+	std::regex_search(to_find.c_str(), match, regex);
 
 	printMatches(match);
 
