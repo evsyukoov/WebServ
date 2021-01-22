@@ -36,21 +36,14 @@ CGI::~CGI()
 
 int        CGI::initARGS()
 {
-	findInterpretator();
-    if (interpretator.empty())
-    { 
-		args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
-        args[1] = const_cast<char *>(in.root.c_str());
-        args[2] = nullptr;
-    }
-    else
-    {
-        args[0] = const_cast<char *>(interpretator.c_str());
-        args[1] = const_cast<char *>(location.getCgiScrypt().c_str());
-        args[2] = const_cast<char *>(in.root.c_str());
-        args[3] = nullptr;
-    }
-    std::cout << "scrypt: " << args[1] << std::endl;
+
+    args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
+
+    args[1] = const_cast<char *>(in.root.c_str());
+    std::cout << "val: " << in.root << std::endl;
+    args[2] = nullptr;
+
+    //std::cout << "scrypt: " << args[1] << std::endl;
 	return (1);
 }
 
@@ -240,57 +233,58 @@ std::map<std::string, std::string> CGI::getRespMap() const
 	return responseMap;
 }
 
-void CGI::findInterpretator()
-{
-	static const std::string hashTable[2][6] = {
-		{ ".php", ".py", ".pl", ".rb", ".rbw", "" },
-		{ "php", "python", "perl", "ruby", "ruby", "" }
-	};
 
-	std::string scrypt_extension = location.getCgiScrypt();
-	size_t dot_pos = scrypt_extension.rfind('.');
-	if (dot_pos == std::string::npos)
-		return ;
-	scrypt_extension = scrypt_extension.substr(dot_pos);
-
-	args[0] = const_cast<char *>("/usr/bin/whereis");
-	for (int i = 0; !hashTable[0][i].empty(); ++i)
-	{
-		if (scrypt_extension == hashTable[0][i])
-		{
-			args[1] = const_cast<char *>(hashTable[1][i].c_str());
-			break ;
-		}
-	}
-	if (args[1] == nullptr)
-		return ;
-	int		status;
-	pid_t	child;
-	int		fd[2];
-	char	read_buff[1024] = "";
-
-	
-	if (pipe(fd) < 0 || (child = fork()) < 0)
-		throw (std::runtime_error(strerror(errno)));
-	if (child == 0)
-	{
-		close(fd[0]);
-		dup2(fd[1], 1);
-		if (execve(args[0], args, nullptr) == -1)
-		{
-			close(fd[1]);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		close(fd[1]);
-		waitpid(child, &status, 0);
-		int n = read(fd[0], read_buff, sizeof(read_buff) - 1);
-		close(fd[0]);
-		if (n < 0)
-			return ;
-		read_buff[n - 1] = '\0';
-		interpretator = read_buff;
-	}
-}
+//void CGI::findInterpretator()
+//{
+//	static const std::string hashTable[2][6] = {
+//		{ ".php", ".py", ".pl", ".rb", ".rbw", "" },
+//		{ "php", "python", "perl", "ruby", "ruby", "" }
+//	};
+//
+//	std::string scrypt_extension = location.getCgiScrypt();
+//	size_t dot_pos = scrypt_extension.rfind('.');
+//	if (dot_pos == std::string::npos)
+//		return ;
+//	scrypt_extension = scrypt_extension.substr(dot_pos);
+//
+//	args[0] = const_cast<char *>("/usr/bin/whereis");
+//	for (int i = 0; !hashTable[0][i].empty(); ++i)
+//	{
+//		if (scrypt_extension == hashTable[0][i])
+//		{
+//			args[1] = const_cast<char *>(hashTable[1][i].c_str());
+//			break ;
+//		}
+//	}
+//	if (args[1] == nullptr)
+//		return ;
+//	int		status;
+//	pid_t	child;
+//	int		fd[2];
+//	char	read_buff[1024] = "";
+//
+//
+//	if (pipe(fd) < 0 || (child = fork()) < 0)
+//		throw (std::runtime_error(strerror(errno)));
+//	if (child == 0)
+//	{
+//		close(fd[0]);
+//		dup2(fd[1], 1);
+//		if (execve(args[0], args, nullptr) == -1)
+//		{
+//			close(fd[1]);
+//			exit(EXIT_FAILURE);
+//		}
+//	}
+//	else
+//	{
+//		close(fd[1]);
+//		waitpid(child, &status, 0);
+//		int n = read(fd[0], read_buff, sizeof(read_buff) - 1);
+//		close(fd[0]);
+//		if (n < 0)
+//			return ;
+//		read_buff[n - 1] = '\0';
+//		interpretator = read_buff;
+//	}
+//}
