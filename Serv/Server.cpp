@@ -51,7 +51,7 @@ int   Server::receiveData(int client_sock, std::string &str)
 {
     char recieve[WS_BUFFER_SIZE + 1];
 
-    int len = read(client_sock, recieve, WS_BUFFER_SIZE);
+    int len = recv(client_sock, recieve, WS_BUFFER_SIZE, MSG_DONTWAIT);
 	if (len <= 0)
 		return (len);
     recieve[len] = '\0';
@@ -92,7 +92,6 @@ int     Server::run(HTTP &http)
 	(void)http;
     if (!openServers())
         return (error("No available ports. Stop server"));
-    PRINT("HERE")
     while (true)
 		servLoop();
     return (1);
@@ -272,7 +271,8 @@ void Server::iterateWriteSet() {
 	{
 		if ((*it)->getState() == WRITING || (*it)->getState() == WRITING_BODY)
 			FD_SET((*it)->getClientSock(), &write_set);
-		FD_SET((*it)->getClientSock(), &read_set);
+		else
+			FD_SET((*it)->getClientSock(), &read_set);
 		max = std::max(max, (*it)->getClientSock());
 	}
 }

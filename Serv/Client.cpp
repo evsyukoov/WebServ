@@ -165,6 +165,7 @@ void Client::findState(std::string &_piece) {
         }
     } else if (state == BODY) {
         body += _piece;
+        std::cout << reqMap << std::endl;
         analizeBodySize();
     }
     else if (state == BODY_CHUNKED)

@@ -42,7 +42,7 @@ class AServer
 		FD_ZERO(&read_set);
 		FD_ZERO(&write_set);
 		max = 0;
-		timeout.tv_sec = 2;
+		timeout.tv_sec = 5;
 		timeout.tv_usec = 0;
 	};
 

@@ -79,6 +79,7 @@ int     parseCommandLineArgs(int argc, char **argv, input &in)
 int main(int argc, char **argv)
 {
     try {
+    	signal(SIGPIPE, SIG_IGN);
         HTTP http;
 
         struct input in;

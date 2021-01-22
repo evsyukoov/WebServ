@@ -175,6 +175,7 @@ std::map<std::string, std::string> HTTP::parceMap(std::string &request)
 	bool flag_legth = false;
 	std::string str;
 
+	//std::cout << request << std::endl;
 	if (!parceRequestLine(map, request) || !validateRequestLine(map))
 		return (clear(map));
 	cut_pair = splitPair(request, '\n');
@@ -203,7 +204,7 @@ int HTTP::initMap() {
 	respMap[SERVER] = "webserv/1.0";
 	respMap[LENGTH] = '0';
 	timer();
-	if (reqMap .empty())
+	if (reqMap.empty())
 		return (1);
 	if (!body.empty())
 		reqMap["body"] = body;
@@ -283,7 +284,7 @@ bool HTTP::validateHost()
 
 void HTTP::manager() {
 
-	if (initMap() || !validateMethod() || !validateHost())
+	if (initMap() || !validateMethod()) //|| !validateHost())
 	{
 		std::string error(errorPageResponece(400));
 		sendReq(responceMapToString(400), error);
@@ -315,13 +316,6 @@ bool HTTP::locationMatch(const std::string& location)
 	if (!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size())))
 		return (true);
 	return (false);
-}
-
-void 	HTTP::locationToRootReplcaer(std::string& root_with_slash)
-{
-	(void)root_with_slash;
-	//reqMap["location"].replace(0, it->getLocation().size(), root_with_slash);
-	reqMap["location"].erase(0, it->getLocation().size());
 }
 
 static int checkDirectory(const std::string& root)
@@ -843,8 +837,8 @@ int HTTP::sendReq(std::string const &header, std::string responce)
 		responce.clear();
 	result = header + responce;
 
-	PRINT( "PUT "
-        "result:\n" << result);
+//	PRINT(
+//        "result:\n" << result);
 	to_send = new StringResponse(client_fd, header, responce);
 	return (1);
 }
