@@ -31,6 +31,10 @@
 #include <sys/time.h>
 #include <ServConf.hpp>
 
+
+
+#include <regex>
+
 class HTTP
 {
 
@@ -69,7 +73,6 @@ private:
 
 	bool	locationMatch(const std::string& location);
 
-	bool	createNewRepresent(std::string &post_root, File &file);
 
 	std::string pathFormerer();
 
@@ -88,8 +91,6 @@ private:
 	int 	initMap();
 
 	int		validateMethod();
-
-	void 	locationToRootReplcaer(std::string& root_with_slash);
 
 	void	cgiFiller(File &file, std::string &location);
 
@@ -162,6 +163,9 @@ private:
 
 	static std::map<std::string, std::string>	clear(std::map<std::string, std::string> &map);
 
+	void				printMatches(std::cmatch match);
+
+	void				regexpr(const std::string& location);
 
 public:
 
@@ -184,8 +188,6 @@ public:
     std::string     generateErrorPage(int error_code);
 
     const std::string &getListing() const;
-
-	int		ext_write();
 
 	Response    *getResponse();
 

@@ -225,7 +225,6 @@ void 	HTTP::printMap()
 
 std::string HTTP::makeAllow(std::string const &except)
 {
-	//std::string allow("GET, HEAD, POST, PUT");
 	std::string allowed_methods[4] = {"GET", "HEAD", "POST", "PUT"};
 	std::string allow;
 
@@ -311,8 +310,29 @@ void HTTP::manager() {
 		put();
 }
 
+void HTTP::printMatches(std::cmatch match)
+{
+	for (unsigned int i = 0; i < match.size(); ++i)
+		std::cout << "Match " << i << " :" << match.str(i) << std::endl;
+}
+
+void HTTP::regexpr(const std::string& location)
+{
+	std::regex regex(location);
+	std::string to_find(reqMap["location"]);
+	std::cmatch match;
+
+	std::regex_match(to_find.c_str(), match, regex);
+
+	printMatches(match);
+
+	exit(0);
+
+}
+
 bool HTTP::locationMatch(const std::string& location)
 {
+	regexpr(location);
 	if (!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size())))
 		return (true);
 	return (false);
@@ -322,7 +342,6 @@ static int checkDirectory(const std::string& root)
 {
 	struct stat structstat;
 
-//	//std::cout << root + reqMap["location"] << std::endl;
 	if (!stat(root.c_str(), &structstat))
 	{
 		if (S_ISREG(structstat.st_mode))
@@ -384,7 +403,6 @@ std::list<Location>::const_iterator HTTP::getMatchingLocation()
 
 std::string HTTP::pathFormerer() {
 
-//	it = getMatchingLocation(servConf);
 	char buf[PATH_MAX];
 
 	if (it != servConf.getLocations().end())
@@ -427,9 +445,7 @@ bool HTTP::postGet()
 	if (pos != std::string::npos)
 	{
 		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
-	//	//std::cout << "Body in getpost: " << reqMap["body"] << std::endl;
 		reqMap["location"].erase(pos);
-	//	//std::cout << "Location in getPost: " << reqMap["location"] << std::endl;
 		return (true);
 	}
 	return (false);
@@ -556,7 +572,6 @@ std::string HTTP::searchForMatchingAccept(std::map<std::string, float> &accepts,
 	std::vector<File>::iterator iter = files.begin();
 	std::vector<std::string> sorted;
 
-	//std::cout << "Path: " + path << std::endl;
 	while (iter != files.end())
 	{
 		if (iter->getRoot() == path)
@@ -782,11 +797,6 @@ std::string HTTP::errorPageResponece(int error_num)
 	return ("");
 }
 
-int HTTP::ext_write()
-{
-	return (x_write(client_fd, result, result.size()));
-}
-
 
 int HTTP::x_write(int fd, std::string const &buf, size_t len)
 {
@@ -906,21 +916,6 @@ bool HTTP::validateTransferEncoding()
 		return (false);
 	}
 	return (false);
-}
-
-bool HTTP::createNewRepresent(std::string &post_root, File &file)
-{
-	std::string location_saver(reqMap["location"]);
-	if (location_saver.empty())
-		location_saver = "/";
-	if (checkDirectory(post_root) == 1)
-	{
-		std::string new_representation(post_root + "blog");
-		respMap[LENGTH] = std::to_string(file.getContentLength());
-		putManager(new_representation, file, location_saver, 1, reqMap["body"]);
-		return (false);
-	}
-	return (true);
 }
 
 bool HTTP::postRootConfig(std::string &post_root)
