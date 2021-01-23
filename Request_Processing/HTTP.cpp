@@ -798,7 +798,6 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 		++iter;
 	}
 	respLine += "\r\n";
-	PRINT(respLine)
 	to_send = new FileResponse(this->client_fd, respLine, localfd, length);
 	to_send->setTmpFile(respMap["#file"]);
 	return (0);

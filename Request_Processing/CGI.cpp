@@ -40,7 +40,6 @@ int        CGI::initARGS()
     args[0] = const_cast<char *>(location.getCgiScrypt().c_str());
 
     args[1] = const_cast<char *>(in.root.c_str());
-    std::cout << "val: " << in.root << std::endl;
     args[2] = nullptr;
 
 	return (1);

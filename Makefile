@@ -9,18 +9,26 @@ SRC := Config.cpp Location.cpp ServConf.cpp parser_utils.cpp \
 	  Server.cpp Client.cpp Response.cpp \
 	  main.cpp
 
-DIR := Parser Server Request-Response Request_processing Utils
+DIR := Parser Request-Response Request_processing Utils
 BIN := $(mkfile_dir)bin/
 
-OBJS := $(addprefix $(BIN), $(SRC:.cpp=.o))
-INC := $(foreach d, $(DIR), -I$d )
-
 CXX := clang++
-CXXFLAGS := -std=c++98 $(INC) -Wall -Wextra -Werror
+CXXFLAGS := -std=c++98 -Wall -Wextra -Werror
 
 testr := $(mkfile_dir)tester
 
 conf := $(mkfile_dir)conf/webserv.conf
+
+ifndef WITH_BONUS
+    DIR += Server
+else
+    SRC += Worker.cpp
+    DIR += Bonus
+    CXXFLAGS += -D BONUS=1
+endif
+
+OBJS := $(addprefix $(BIN), $(SRC:.cpp=.o))
+INC := -I. $(foreach d, $(DIR), -I$d )
 
 vpath %.cpp $(DIR)
 
@@ -41,7 +49,7 @@ test: $(testr)
 	$< http://127.0.0.1:1234
 
 $(BIN)%.o: %.cpp | $(BIN)
-	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+	@$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 	$(eval DOTS := .$(DOTS))
 	@printf "%s%-40s\r" "[$(DOTS)]" "Compiling $(notdir $@)"
 
