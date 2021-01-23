@@ -9,7 +9,7 @@
 //#include <list>
 #include <fcntl.h>
 #include "Parser/Config.hpp"
-#include "HTTP.hpp"
+#include "HTTP_BONUS.hpp"
 #include "Client.hpp"
 #include "AServer.hpp"
 

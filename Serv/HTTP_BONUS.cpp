@@ -4,23 +4,12 @@
 #include "HTTP_BONUS.hpp"
 #include "Debug.hpp"
 
-static void printLMAP(std::map<std::string, float> &map)
-{
-    /*
-    std::map<std::string, float>::iterator iter;
-    for (iter = map.begin(); iter != map.end() ; ++iter)
-        std::cout << RED << "MAP: " << iter->first << ": " << iter->second << std::endl;
-    std::cout << RESET;
-     */
-    (void)map;
-}
-
 static void printVec(std::vector<std::string> &vector)
 {
-    std::vector<std::string>::iterator iter;
-    for (iter = vector.begin(); iter != vector.end() ; ++iter)
-        std::cout << GREEN << "Sorted vector: " << *iter << std::endl;
-    std::cout << RESET;
+	std::vector<std::string>::iterator iter;
+	for (iter = vector.begin(); iter != vector.end() ; ++iter)
+		std::cout << GREEN << "Sorted vector: " << *iter << std::endl;
+	std::cout << RESET;
 }
 
 
@@ -31,7 +20,7 @@ HTTP::HTTP(int client, char *buf, const ServConf &_servConf) {
 }
 
 HTTP::HTTP() {
-    initErrorMap();
+	initErrorMap();
 }
 
 const std::map<std::string, std::string> &HTTP::getRequestMap() const {
@@ -72,7 +61,7 @@ int 		HTTP::initListingHTML(std::string &path)
 				   "</a></p>\n";
 		}
 		flag = 1;
-    }
+	}
 	listing += ref;
 	listing += "</head>\n"
 			   "<body>\n"
@@ -86,8 +75,8 @@ void HTTP::setFields(int client, std::string buf, const ServConf &serv, struct i
 	body = buf;
 	servConf = serv;
 	client_fd = client;
-    this->in = income;
-    reqMap = map;
+	this->in = income;
+	reqMap = map;
 }
 
 
@@ -108,7 +97,7 @@ int HTTP::validateMethod()
 bool HTTP::validateRequestLine(std::map<std::string, std::string> &map)
 {
 	if (map["method"].empty() || map["location"].empty() || map["protocol"].empty() ||
-	map["protocol"].find(' ') != std::string::npos)
+		map["protocol"].find(' ') != std::string::npos)
 		return (false);
 	return (true);
 }
@@ -142,7 +131,7 @@ bool HTTP::validateHeaderMap(std::map<std::string, std::string> &map)
 		iter++;
 	}
 	if (map.find(LENGTH) != map.end() &&
-	map.find(TRANSFER) != map.end())
+		map.find(TRANSFER) != map.end())
 		return (false);
 	return (true);
 }
@@ -241,7 +230,7 @@ std::string HTTP::makeAllow(std::string const &except)
 		}
 		else
 		{
-            std::vector<std::string>::const_iterator iter;
+			std::vector<std::string>::const_iterator iter;
 			for (iter = it->getMethods().begin(); iter != it->getMethods().end(); ++iter)
 			{
 				if (*iter == except)
@@ -274,7 +263,7 @@ bool HTTP::validateHost()
 	{
 		pair = splitPair(reqMap[HOST], ':');
 		if ((pair.first != servConf.getServerName() && pair.first != "localhost" && pair.first != "127.0.0.1") || (!pair.second.empty() && pair.second != std::to_string(servConf.getPort())) ||
-		(pair.second.empty() && servConf.getPort() != 80))
+			(pair.second.empty() && servConf.getPort() != 80))
 			return (false);
 		return (true);
 	}
@@ -310,11 +299,30 @@ void HTTP::manager() {
 		put();
 }
 
+void HTTP::printMatches(std::cmatch match)
+{
+	for (unsigned int i = 0; i < match.size(); ++i)
+		std::cout << "Match " << i << " :" << match.str(i) << std::endl;
+}
+
+bool HTTP::regexpr(const std::string& location)
+{
+	std::regex regex(location);
+	std::string to_find(reqMap["location"]);
+	std::cmatch match;
+
+	if (std::regex_search(to_find.c_str(), match, regex))
+	{
+		matched_regexp = match.str(0);
+		return (true);
+	}
+	return (false);
+
+}
+
 bool HTTP::locationMatch(const std::string& location)
 {
-	if (!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size())))
-		return (true);
-	return (false);
+	return (regexpr(location));
 }
 
 static int checkDirectory(const std::string& root)
@@ -338,7 +346,7 @@ std::string HTTP::rootSwitcher(const std::string& root, const std::string& serv_
 
 	if (rootWithSlash.back() != '/')
 		rootWithSlash.push_back('/');
-	reqMap["location"].erase(0, it->getLocation().size());
+	reqMap["location"].erase(0, matched_regexp.size());
 	if ((checkDirectoryRet = checkDirectory(rootWithSlash + reqMap["location"])) == 0)
 		return (rootWithSlash + reqMap["location"]);
 	else if (checkDirectoryRet == 1)
@@ -373,8 +381,8 @@ std::list<Location>::const_iterator HTTP::getMatchingLocation()
 	while (it != servConf.getLocations().end())
 	{
 		if ((locationMatch((*it).getLocation()))) {
-            return (it);
-        }
+			return (it);
+		}
 		it++;
 	}
 	return (it);
@@ -411,7 +419,7 @@ bool HTTP::checkForAllowedMethod()
 	std::vector<std::string> const &AllowedMethods(it->getMethods());
 
 	if (AllowedMethods.empty())
-	    return (true);
+		return (true);
 	found = std::find(AllowedMethods.begin(), AllowedMethods.end(), reqMap["method"]);
 	/* if found == AllowedMethods.end - no method was found */
 	return (found != AllowedMethods.end());
@@ -519,7 +527,7 @@ bool HTTP::compareContentLanguage(std::vector<File>::iterator matching_file, std
 	while (file_lang_it != file_lang_it_end) //content language
 	{
 		if (*file_lang_it == language || (!std::strncmp(file_lang_it->c_str(), language.c_str(), language.size()) &&
-		file_lang_it->size() > language.size() && (*file_lang_it)[language.size()] == '-'))//file_lang_it->substr(0, file_lang_it->find_last_of('-')) == language)//)
+										  file_lang_it->size() > language.size() && (*file_lang_it)[language.size()] == '-'))//file_lang_it->substr(0, file_lang_it->find_last_of('-')) == language)//)
 			return (true);
 		file_lang_it++;
 	}
@@ -532,7 +540,7 @@ std::string HTTP::getMatchingAccept(std::map<std::string, float> accepts, bool (
 
 	sorted = passMap(accepts);
 	printVec(sorted);
-    std::vector<std::string>::iterator vec_it;
+	std::vector<std::string>::iterator vec_it;
 	for (vec_it = sorted.begin(); vec_it != sorted.end(); ++vec_it)
 	{
 		if (*vec_it == "*")
@@ -546,7 +554,7 @@ std::string HTTP::getMatchingAccept(std::map<std::string, float> accepts, bool (
 }
 
 std::string HTTP::searchForMatchingAccept(std::map<std::string, float> &accepts, std::string const &path,
-            bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base)
+										  bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base)
 {
 	std::vector<File>::iterator iter = files.begin();
 	std::vector<std::string> sorted;
@@ -571,7 +579,7 @@ std::string HTTP::responceMapToString(int statusCode)
 	std::string headers;
 	std::string resLine = "HTTP/1.1 " + std::to_string(statusCode) + ' ' + errors[statusCode] + "\r\n";
 
-    std::map<std::string, std::string>::iterator iter;
+	std::map<std::string, std::string>::iterator iter;
 	for (iter = respMap.begin();  iter != respMap.end() ; ++iter)
 		headers.append(iter->first + ": " + iter->second + "\r\n");
 	headers.append("\r\n");
@@ -652,11 +660,6 @@ int HTTP::get()
 		return (0);
 	accepts(lang_prior_map, AC_LANG);
 	accepts(accept_charset_map, AC_CHARSET);
-//	if (!acceptedLanguages(lang_prior_map))
-//		lang_prior_map.clear();
-
-	printLMAP(lang_prior_map);
-	//printLMAP(accept_charset_map);
 
 	if (path.empty())
 	{
@@ -689,14 +692,14 @@ int HTTP::get()
 void HTTP::formContentTypeLength(const std::string &path, ssize_t file_size)
 {
 	size_t pos;
-    std::vector<File>::iterator iter;
+	std::vector<File>::iterator iter;
 	for (iter = files.begin(); iter != files.end(); ++iter)
 	{
 		if (iter->getRoot() == path)
 		{
 			respMap[TYPE] = iter->getContentType();
 			if (file_size != -1)
-			    respMap[LENGTH] = std::to_string(iter->getContentLength());
+				respMap[LENGTH] = std::to_string(iter->getContentLength());
 			if (!iter->getCharset().empty())
 			{
 				respMap[TYPE].append("; charset=" + iter->getCharset());
@@ -709,7 +712,7 @@ void HTTP::formContentTypeLength(const std::string &path, ssize_t file_size)
 	else
 		respMap[TYPE] = File::getMime(path.substr(pos, path.size() - pos));
 	if (file_size != -1)
-	    respMap[LENGTH] = std::to_string(file_size);
+		respMap[LENGTH] = std::to_string(file_size);
 }
 
 void HTTP::formTime(long long time_sec, std::string const &base)
@@ -755,7 +758,7 @@ std::string HTTP::errorPageResponece(int error_num)
 	if (error_num >= 400 && error_num < 600)
 	{
 		if ((iter = servConf.getErrorPages().find(error_num)) != servConf.getErrorPages().end()
-		&& (fd = open(iter->second.c_str(), O_RDWR, 0644)) >= 0 && !fstat(fd, &st))
+			&& (fd = open(iter->second.c_str(), O_RDWR, 0644)) >= 0 && !fstat(fd, &st))
 		{
 			char buf[st.st_size];
 			buf[st.st_size] = '\0';
@@ -1021,11 +1024,11 @@ void HTTP::post(bool post_put_flag)
 		in.root = post_root;
 		CGI worker_cgi(servConf, *it ,in);
 		if (!(worker_cgi.run()))
-        {
-		    std::string error(errorPageResponece(500));
-            sendReq(responceMapToString(500), error);
-		    return ;
-        }
+		{
+			std::string error(errorPageResponece(500));
+			sendReq(responceMapToString(500), error);
+			return ;
+		}
 		hardcodeMap(worker_cgi.getRespMap());
 		//if (respMap.count(TYPE) == 0)
 		//	respMap[TYPE] = "application/octet-stream";
@@ -1051,7 +1054,7 @@ void HTTP::rewriteFileToVector(File &file)
 
 void HTTP::former(std::string &root)
 {
-	reqMap["location"].erase(0, it->getLocation().size());
+	reqMap["location"].erase(0, matched_regexp.size());
 	root += reqMap["location"];
 	root = removeAllUnnecessarySlash(root);
 }
@@ -1118,60 +1121,60 @@ void HTTP::initErrorMap()
 {
 	errors[200] = "OK";
 	errors[201] = "Created";
-    errors[400] = "Bad Request";
-    errors[401] = "Unauthorized";
-    errors[402] = "Payment Required";
-    errors[403] = "Forbidden";
-    errors[404] = "Not Found";
-    errors[405] = "Method Not Allowed";
-    errors[406] = "Not Acceptable";
-    errors[407] = "Proxy Authentication Required";
-    errors[408] = "Request Timeout";
-    errors[409] = "Conflict";
-    errors[410] = "Gone";
-    errors[411] = "Length Required";
-    errors[412] = "Precondition Failed";
-    errors[413] = "Payload Too Large";
-    errors[414] = "URI Too Long";
-    errors[415] = "Unsupported Media Type";
-    errors[416] = "Range Not Satisfiable";
-    errors[417] = "Expectation Failed";
-    errors[418] = "I’m a teapot";
-    errors[419] = "Authentication Timeout (not in RFC 2616)";
-    errors[421] = "Misdirected Request";
-    errors[422] = "Unprocessable Entity";
-    errors[423] = "Locked";
-    errors[424] = "Failed Dependency";
-    errors[425] = "Too Early";
-    errors[426] = "Upgrade Required";
-    errors[428] = "Precondition Required";
-    errors[429] = "Too Many Requests";
-    errors[431] = "Request Header Fields Too Large";
-    errors[449] = "Retry With";
-    errors[451] = "Unavailable For Legal Reasons";
-    errors[499] = "Client Closed Request";
-    errors[500] = "Internal Server Error";
-    errors[501] = "Not Implemented";
-    errors[505] = "HTTP Version Not Supported";
+	errors[400] = "Bad Request";
+	errors[401] = "Unauthorized";
+	errors[402] = "Payment Required";
+	errors[403] = "Forbidden";
+	errors[404] = "Not Found";
+	errors[405] = "Method Not Allowed";
+	errors[406] = "Not Acceptable";
+	errors[407] = "Proxy Authentication Required";
+	errors[408] = "Request Timeout";
+	errors[409] = "Conflict";
+	errors[410] = "Gone";
+	errors[411] = "Length Required";
+	errors[412] = "Precondition Failed";
+	errors[413] = "Payload Too Large";
+	errors[414] = "URI Too Long";
+	errors[415] = "Unsupported Media Type";
+	errors[416] = "Range Not Satisfiable";
+	errors[417] = "Expectation Failed";
+	errors[418] = "I’m a teapot";
+	errors[419] = "Authentication Timeout (not in RFC 2616)";
+	errors[421] = "Misdirected Request";
+	errors[422] = "Unprocessable Entity";
+	errors[423] = "Locked";
+	errors[424] = "Failed Dependency";
+	errors[425] = "Too Early";
+	errors[426] = "Upgrade Required";
+	errors[428] = "Precondition Required";
+	errors[429] = "Too Many Requests";
+	errors[431] = "Request Header Fields Too Large";
+	errors[449] = "Retry With";
+	errors[451] = "Unavailable For Legal Reasons";
+	errors[499] = "Client Closed Request";
+	errors[500] = "Internal Server Error";
+	errors[501] = "Not Implemented";
+	errors[505] = "HTTP Version Not Supported";
 }
 
 std::string     HTTP::generateErrorPage(int error_code)
 {
-    std::string error_html = "<!DOCTYPE html>\n"
-                             "<html lang=\"en\">\n"
-                             "<head>\n"
-                             "<meta charset=\"UTF-8\">\n"
-                             "<title>Error</title>\n";
+	std::string error_html = "<!DOCTYPE html>\n"
+							 "<html lang=\"en\">\n"
+							 "<head>\n"
+							 "<meta charset=\"UTF-8\">\n"
+							 "<title>Error</title>\n";
 
-    error_html += "<h2>" + std::to_string(error_code) + "</h2>\n";
-    error_html += "<h4>" + errors[error_code] + "</h4>\n";
-    error_html += "</head>\n"
-                  "<body>\n"
-                  "</body>\n"
-                  "</html>";
-    return error_html;
+	error_html += "<h2>" + std::to_string(error_code) + "</h2>\n";
+	error_html += "<h4>" + errors[error_code] + "</h4>\n";
+	error_html += "</head>\n"
+				  "<body>\n"
+				  "</body>\n"
+				  "</html>";
+	return error_html;
 }
 
 const std::string &HTTP::getListing() const {
-    return listing;
+	return listing;
 }

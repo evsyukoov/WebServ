@@ -32,6 +32,9 @@
 #include <ServConf.hpp>
 
 
+
+#include <regex>
+
 class HTTP
 {
 
@@ -42,12 +45,13 @@ private:
 	std::map<std::string, std::string>	reqMap;  //map запроса включает в себя все заголовки
 	std::list<Location>::const_iterator it; // нахождение нужного location
 	std::string 	result;
+	std::string 	matched_regexp;
 	int				client_fd;
 	struct input    in;
 	std::vector<File> files; // вектор отслеживаемых файлов
 	std::map<std::string, std::string> respMap; //map заголовков ответа
 
-    std::map<int, std::string> errors; //карта ошибок
+	std::map<int, std::string> errors; //карта ошибок
 	//сформированная страничка со списком директорий для автоиндекса
 	std::string listing; // автоиндекс
 	Response    *to_send;
@@ -117,7 +121,7 @@ private:
 	std::vector<std::string>	passMap(std::map<std::string, float> accept);
 
 	std::string searchForMatchingAccept(std::map<std::string, float> &accepts, std::string const &path,
-                bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base);
+										bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base);
 
 	static bool	compareContentLanguage(std::vector<File>::iterator matching_file, std::string const &language);
 
@@ -160,6 +164,8 @@ private:
 
 	static std::map<std::string, std::string>	clear(std::map<std::string, std::string> &map);
 
+	void				printMatches(std::cmatch match);
+
 	bool 				regexpr(const std::string& location);
 
 public:
@@ -168,7 +174,7 @@ public:
 
 	HTTP(); // дефолтный конструктор, не инициализирует ничего
 
-    void    setFields(int client, std::string buf, const ServConf &serv, struct input &income, std::map<std::string, std::string> map); // функция инициализации полей для дальнейшей обработки
+	void    setFields(int client, std::string buf, const ServConf &serv, struct input &income, std::map<std::string, std::string> map); // функция инициализации полей для дальнейшей обработки
 
 	std::string &getResponce();
 
@@ -180,9 +186,9 @@ public:
 
 	void 	manager();
 
-    std::string     generateErrorPage(int error_code);
+	std::string     generateErrorPage(int error_code);
 
-    const std::string &getListing() const;
+	const std::string &getListing() const;
 
 	Response    *getResponse();
 

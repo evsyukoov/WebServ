@@ -244,3 +244,4 @@ const std::string &Location::getInterpretator() const {
 const std::string &Location::getCgiIndex() const {
     return cgi_index;
 }
+

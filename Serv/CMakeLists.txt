@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 98)
 #link_directories(~/Denis/WebServ/Serv/libft/)
 
 add_executable(Serv
-        server_main.cpp HTTP.cpp CGI.cpp Server.cpp
+        server_main.cpp HTTP_BONUS.cpp CGI.cpp Server.cpp
         Parser/ServConf.cpp
         Parser/Location.cpp
         Parser/Config.cpp
