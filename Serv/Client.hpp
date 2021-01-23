@@ -9,7 +9,7 @@
 #include <netinet/in.h>
 #include "Response.hpp"
 #include <map>
-#include "HTTP_BONUS.hpp"
+#include "HTTP.hpp"
 
 #define HEADER 0
 #define BODY 1

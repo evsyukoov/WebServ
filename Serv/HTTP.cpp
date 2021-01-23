@@ -1,7 +1,7 @@
 
 
 #include <dirent.h>
-#include "HTTP_BONUS.hpp"
+#include "HTTP.hpp"
 #include "Debug.hpp"
 
 static void printLMAP(std::map<std::string, float> &map)
@@ -313,6 +313,9 @@ void HTTP::manager() {
 bool HTTP::locationMatch(const std::string& location)
 {
 	if (!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size())))
+		return (true);
+	else if (location.size() > 0 && location[location.size() - 1] == '/' &&
+	!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size() - 1)))
 		return (true);
 	return (false);
 }

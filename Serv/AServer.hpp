@@ -9,7 +9,7 @@
 #include <vector>
 #include <fcntl.h>
 #include "Config.hpp"
-#include "HTTP_BONUS.hpp"
+#include "HTTP.hpp"
 #include "Client.hpp"
 
 class AServer

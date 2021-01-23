@@ -1,7 +1,7 @@
 
 
 #include <dirent.h>
-#include "HTTP_BONUS.hpp"
+#include "HTTP.hpp"
 #include "Debug.hpp"
 
 static void printVec(std::vector<std::string> &vector)
