@@ -30,7 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Miscellaneous
 cmake-build-debug
 .idea
-.vscode
+file_should_exist_after
+website/wordpress/
+*/*.conf
 .DS_Store
