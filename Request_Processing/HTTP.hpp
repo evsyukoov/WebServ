@@ -30,7 +30,11 @@
 #include "CGI.hpp"
 #include <sys/time.h>
 #include <ServConf.hpp>
+#ifdef BONUS
+#include <regex>
+#endif
 
+static std::vector<File> g_files;
 
 class HTTP
 {
@@ -44,8 +48,12 @@ private:
 	std::string 	result;
 	int				client_fd;
 	struct input    in;
-	std::vector<File> files; // вектор отслеживаемых файлов
+	//std::vector<File> files; // вектор отслеживаемых файлов
 	std::map<std::string, std::string> respMap; //map заголовков ответа
+#ifdef BONUS
+	std::string		matched_regexp;
+	bool regexpr(const std::string& location);
+#endif
 
     std::map<int, std::string> errors; //карта ошибок
 	//сформированная страничка со списком директорий для автоиндекса
@@ -159,8 +167,6 @@ private:
 	void				hardcodeMap(std::map<std::string, std::string> responseMap);
 
 	static std::map<std::string, std::string>	clear(std::map<std::string, std::string> &map);
-
-	bool 				regexpr(const std::string& location);
 
 public:
 

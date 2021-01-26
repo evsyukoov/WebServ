@@ -299,14 +299,35 @@ void HTTP::manager() {
 		put();
 }
 
+#ifdef BONUS
+bool HTTP::regexpr(const std::string& location)
+{
+	std::regex regex(location);
+	std::string to_find(reqMap["location"]);
+	std::cmatch match;
+
+	if (std::regex_search(to_find.c_str(), match, regex))
+	{
+		matched_regexp = match.str(0);
+		return (true);
+	}
+	return (false);
+
+}
+#endif
+
 bool HTTP::locationMatch(const std::string& location)
 {
+#ifdef BONUS
+	return (regexpr(location));
+#else
 	if (!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size())))
 		return (true);
 	else if (location.size() > 0 && location[location.size() - 1] == '/' &&
 	!(std::strncmp(location.c_str(), reqMap["location"].c_str(), location.size() - 1)))
 		return (true);
 	return (false);
+#endif
 }
 
 static int checkDirectory(const std::string& root)
@@ -330,7 +351,11 @@ std::string HTTP::rootSwitcher(const std::string& root, const std::string& serv_
 
 	if (rootWithSlash.back() != '/')
 		rootWithSlash.push_back('/');
+#ifdef BONUS
+	reqMap["location"].erase(0, matched_regexp.size());
+#else
 	reqMap["location"].erase(0, it->getLocation().size());
+#endif
 	if ((checkDirectoryRet = checkDirectory(rootWithSlash + reqMap["location"])) == 0)
 		return (rootWithSlash + reqMap["location"]);
 	else if (checkDirectoryRet == 1)
@@ -540,16 +565,16 @@ std::string HTTP::getMatchingAccept(std::map<std::string, float> accepts, bool (
 std::string HTTP::searchForMatchingAccept(std::map<std::string, float> &accepts, std::string const &path,
             bool (*func)(std::vector<File>::iterator, std::string const &), std::string const &base)
 {
-	std::vector<File>::iterator iter = files.begin();
+	std::vector<File>::iterator iter = g_files.begin();
 	std::vector<std::string> sorted;
 
-	while (iter != files.end())
+	while (iter != g_files.end())
 	{
 		if (iter->getRoot() == path)
 			break;
 		iter++;
 	}
-	if (iter == files.end())
+	if (iter == g_files.end())
 		return ("no file");
 	if (base == AC_LANG  && !iter->getContentLanguage().empty() && !accepts.empty())
 		return (getMatchingAccept(accepts, func, iter));
@@ -677,7 +702,7 @@ void HTTP::formContentTypeLength(const std::string &path, ssize_t file_size)
 {
 	size_t pos;
     std::vector<File>::iterator iter;
-	for (iter = files.begin(); iter != files.end(); ++iter)
+	for (iter = g_files.begin(); iter != g_files.end(); ++iter)
 	{
 		if (iter->getRoot() == path)
 		{
@@ -793,7 +818,6 @@ int HTTP::x_write(std::map<std::string, std::string> responseMap)
 		++iter;
 	}
 	respLine += "\r\n";
-	PRINT(respLine)
 	to_send = new FileResponse(this->client_fd, respLine, localfd, length);
 	to_send->setTmpFile(respMap["#file"]);
 	return (0);
@@ -1013,23 +1037,28 @@ void HTTP::post(bool post_put_flag)
 
 void HTTP::rewriteFileToVector(File &file)
 {
-	std::vector<File>::iterator iter = files.begin();
+	std::vector<File>::iterator iter = g_files.begin();
 
-	while (iter != files.end())
+	while (iter != g_files.end())
 	{
 		if (iter->getRoot() == file.getRoot())
 		{
-			files.erase(iter);
-			files.push_back(file);
-			break;
+			g_files.erase(iter);
+			g_files.push_back(file);
+			return;
 		}
 		iter++;
 	}
+	g_files.push_back(file);
 }
 
 void HTTP::former(std::string &root)
 {
+#ifdef BONUS
+	reqMap["location"].erase(0, matched_regexp.size());
+#else
 	reqMap["location"].erase(0, it->getLocation().size());
+#endif
 	root += reqMap["location"];
 	root = removeAllUnnecessarySlash(root);
 }
@@ -1052,7 +1081,7 @@ bool HTTP::putManager(std::string &put_root, File &file, std::string const &uri,
 		respMap[LOCATION] = uri;
 		sendReq(responseMapToString(201), response);
 		file.setRoot(put_root);
-		files.push_back(file);
+		g_files.push_back(file);
 		close(fd);
 		return (true);
 	}

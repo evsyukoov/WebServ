@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
-project(Bonuses)
+project(Serv)
 
 set(CMAKE_CXX_STANDARD 98)
-#link_directories(~/Denis/WebServ/Bonuses/libft/)
+#link_directories(~/Denis/WebServ/Serv/libft/)
 
-add_executable(Bonuses
-        Utils/main.cpp
+
+add_executable(
+        webserv
+        main.cpp
         Request_Processing/HTTP.cpp
         Request_Processing/CGI.cpp
         Server/Server.cpp
@@ -16,12 +18,11 @@ add_executable(Bonuses
         Parser/parser_utils.hpp
         Utils/utils.cpp Utils/utils_for_file.cpp
         Request-Response/Response.cpp
-        Request_Processing/File.cpp Utils/utils.hpp Request-Response/Client.cpp Server/AServer.hpp)
+        Request_Processing/File.cpp
+        Utils/utils.hpp
+        Request-Response/Client.cpp
+        AServer.hpp
+)
 
 include_directories(Parser Server Utils Request-Response Request_Processing .)
 set(CMAKE_CXX_FLAGS "-std=C++98 -Wall -Wextra -Werror")
-#add_executable(Bonuses test_for_file.cpp HTTP.cpp Server.cpp File.cpp
-#        Parser/ServConf.cpp
-#        Parser/Location.cpp
-#        Parser/Config.cpp Parser/parser_utils.cpp Parser/parser_utils.hpp utils_for_file.cpp)
-#target_link_libraries(Bonuses ft)

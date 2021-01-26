@@ -7,11 +7,11 @@
 #define RESET "\033[0m"
 #include <zconf.h>
 #include <unistd.h>
-#include <dirent.h>
-#include "../Request_Processing/CGI.hpp"
-#include "../Server/Server.hpp"
-#include "../Parser/Config.hpp"
-#include "../Request-Response/Client.hpp"
+#include "CGI.hpp"
+#include "Server.hpp"
+//# ifdef BONUS
+//#  include "Worker.hpp"
+//# endif
 
 void    printConfig(const Config &config)
 {
