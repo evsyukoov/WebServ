@@ -56,15 +56,15 @@ void    printConfig(const Config &config)
     }
 }
 
-//--->     ./program  /path/config.configs
+//--->     ./program  /path/config.conf
 
 int     parseCommandLineArgs(int argc, char **argv, input &in)
 {
     if (argc != 2)
         return (error("Bad numbers of arguments, first arg - config"));
     std::string conf_name = std::string(argv[1]);
-    if (conf_name.substr(conf_name.size() - 5) != ".configs")
-        return (error("Bad extension of config file. Expected .configs"));
+    if (conf_name.substr(conf_name.size() - 5) != ".conf")
+        return (error("Bad extension of config file. Expected .conf"));
     int fd;
     if ((fd = open(argv[1], O_RDONLY)) < 0)
         return (error("No such config file"));

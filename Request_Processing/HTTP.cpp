@@ -804,7 +804,6 @@ Response *HTTP::getResponse()
 	return to_send;
 }
 
-
 int HTTP::sendReq(std::string const &header, std::string response)
 {
 	if (reqMap["method"] == "HEAD")
