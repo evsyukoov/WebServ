@@ -27,8 +27,17 @@ int Config::readConf()
 		{
 			if (!line.empty()) {
                 trim(line);
+#ifdef BONUS
+                if (startWith(line, "workers"))
+                {
+                    std::string w = *(++split(line).begin());
+                    workers = std::stoi(w);
+                }
                 //каждая директива сервер в отдельной строчке
-                if (line[0] != '#') {
+                else if (line[0] != '#') {
+#else
+                    if (line[0] != '#') {
+#endif
                     if (startWith(line, "server"))
                         i++;
                     if (i == 2) {
@@ -148,6 +157,11 @@ Config::Config(const Config &other)
 Config &Config::operator=(const Config &other){
 	this->path_to_conf = other.path_to_conf;
 	this->config = other.config;
+	this->workers = other.workers;
 	return (*this);
 
+}
+
+int Config::getWorkers() const {
+    return workers;
 }

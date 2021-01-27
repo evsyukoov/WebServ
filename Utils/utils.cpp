@@ -59,7 +59,8 @@ std::ostream    &operator<<(std::ostream &os, std::map<std::string, std::string>
     std::map<std::string, std::string>::const_iterator it = m.begin();
     while (it != m.end())
     {
-        os << it->first << ": " << it->second << std::endl;
+        if (it->first != "body")
+            os << it->first << ": " << it->second << std::endl;
         ++it;
     }
     return os;

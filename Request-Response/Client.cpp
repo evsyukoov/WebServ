@@ -15,8 +15,8 @@ Client::Client(int clientSock, sockaddr_in &sAddr)
     chunk_size = 0;
     state = HEADER;
     resp = NULL;
-	std::cout << "Client " << this->remoteAddr;
-	std::cout << " connected to server." << std::endl;
+	//std::cout << "Client " << this->remoteAddr;
+	//std::cout << " connected to server." << std::endl;
 }
 
 int Client::getClientSock() const {

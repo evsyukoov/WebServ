@@ -36,5 +36,5 @@ cmake-build-debug
 .idea
 file_should_exist_after
 website/wordpress/
-*/*.conf
+#*/*.conf
 .DS_Store

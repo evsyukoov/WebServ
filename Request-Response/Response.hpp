@@ -21,6 +21,7 @@ class Response
 	std::string         headers;
 	size_t              bodyLength;
 	std::string         tmpFile;
+	bool                is_close;
 
 	char    *buffer;
 
@@ -36,6 +37,10 @@ class Response
 	ssize_t sendHeader();
 	virtual ssize_t sendPiece();
 	virtual ssize_t sendChunk();
+
+    bool isClose() const;
+
+    void setIsClose(bool isClose);
 };
 
 class StringResponse : public Response

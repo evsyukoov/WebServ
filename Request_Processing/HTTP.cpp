@@ -835,6 +835,8 @@ int HTTP::sendReq(std::string const &header, std::string response)
 	result = header + response;
 
 	to_send = new StringResponse(client_fd, header, response);
+    if (reqMap.count("Connection") && reqMap["Connection"] == "close")
+        to_send->setIsClose(true);
 	return (1);
 }
 

@@ -28,7 +28,8 @@ class Config {
 
 	int     startWith(const std::string &str, const std::string &in);
 
-	int 	checkSeverNames();
+	//bonus
+	int     workers;
 
 
 public:
@@ -46,7 +47,9 @@ public:
 
 	Config		&operator=(const Config &config);
 
-	virtual ~Config();
+    int getWorkers() const;
+
+    virtual ~Config();
 
 
 };
