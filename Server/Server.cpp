@@ -10,6 +10,26 @@
 #include "../Request-Response/Client.hpp"
 #include "../Utils/Debug.hpp"
 
+int Server::openServers()
+{
+	std::list<ServConf>::const_iterator it;
+	for(it = config.getConfig().begin(); it != config.getConfig().end(); it++)
+	{
+		int listener;
+		if (!(listener = listen(*it))) {
+			std::cerr << "Port number " << it->getPort() << " is unavailable!" << std::endl;
+			continue;
+		}
+		set_nonblock(listener);
+		container[listener] = nullptr;
+		PRINT("Server " << it->getServerName() << ":" << it->getPort()
+		                << " started.");
+	}
+	if (container.empty())
+		return (0);
+	return (1);
+}
+
 int Server::listen(const ServConf &servConf) {
 	int listener = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -45,7 +65,6 @@ int     set_nonblock(int fd)
     return (fcntl(fd, F_SETFL | O_NONBLOCK));
 }
 
-
 int   Server::receiveData(int client_sock, std::string &str)
 {
     char recieve[WS_BUFFER_SIZE + 1];
@@ -58,34 +77,12 @@ int   Server::receiveData(int client_sock, std::string &str)
     return (1);
 }
 
-
-
 Server::Server(input &in,const Config &config) : AServer(in, config)
 {
     host = "127.0.0.1";
     this->in = in;
     this->config = config;
     FD_ZERO(&read_set);
-}
-
-int Server::openServers()
-{
-	std::list<ServConf>::const_iterator it;
-    for(it = config.getConfig().begin(); it != config.getConfig().end(); it++)
-    {
-    	int listener;
-        if (!(listener = listen(*it))) {
-			std::cerr << "Port number " << it->getPort() << " is unavailable!" << std::endl;
-			continue;
-		}
-        set_nonblock(listener);
-        container[listener] = nullptr;
-	    PRINT("Server " << it->getServerName() << ":" << it->getPort()
-	        << " started.");
-    }
-    if (container.empty())
-    	return (0);
-    return (1);
 }
 
 int     Server::run()
@@ -117,9 +114,7 @@ void    Server::acceptConnection(int sockFd)
 
 	client_sock = accept(sockFd, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
 	if (client_sock < 0) {
-	    //std::cout << RED << "ERROR!" << std::endl;
         return;
-
     }
 	set_nonblock(client_sock);
 	Client *client = new Client(client_sock, sAddr);
@@ -194,13 +189,6 @@ int    Server::findServerName(const std::string &server_name, Client *client)
         }
     }
     return (1);
-}
-
-void    printReqMap(std::map<std::string, std::string> req_map)
-{
-    for(std::map<std::string, std::string>::iterator it = req_map.begin(); it != req_map.end(); it++)
-        std::cout << RED << it->first << " : " << it->second << std::endl;
-    std::cout << RESET << std::endl;
 }
 
 void	Server::sendToAllClients()

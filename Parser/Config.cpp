@@ -12,6 +12,7 @@ const std::list<ServConf> &Config::getConfig() const {
 
 Config::Config(const std::string &pathToConf) {
 	this->path_to_conf = pathToConf;
+	workers = 1;
 }
 
 int Config::readConf()

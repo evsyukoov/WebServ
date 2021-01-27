@@ -21,7 +21,7 @@ add_executable(
         Request_Processing/File.cpp
         Utils/utils.hpp
         Request-Response/Client.cpp
-        AServer.hpp
+        Utils/AServer.hpp
 )
 
 include_directories(Parser Server Utils Request-Response Request_Processing .)
