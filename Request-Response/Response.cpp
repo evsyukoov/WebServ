@@ -29,8 +29,8 @@ Response &Response::operator=(const Response &copy)
 
 Response::~Response()
 {
-	if (!tmpFile.empty())
-		unlink(tmpFile.c_str());
+//	if (!tmpFile.empty())
+//		unlink(tmpFile.c_str());
     delete buffer;
 }
 
