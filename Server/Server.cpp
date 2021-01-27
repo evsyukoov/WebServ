@@ -116,8 +116,11 @@ void    Server::acceptConnection(int sockFd)
 	int client_sock;
 
 	client_sock = accept(sockFd, reinterpret_cast<sockaddr *>(&sAddr), &sLen);
-	if (client_sock < 0)
-		return;
+	if (client_sock < 0) {
+	    //std::cout << RED << "ERROR!" << std::endl;
+        return;
+
+    }
 	set_nonblock(client_sock);
 	Client *client = new Client(client_sock, sAddr);
 	clients.push_back(client);
@@ -140,7 +143,7 @@ void      Server::readRequests()
 			//кто-то отключился
 			if (ret == 0)
 			{
-                std::cout << "Client " << (*it)->getClientSock() << " disconnected" << std::endl;
+                //std::cout << "Client " << (*it)->getClientSock() << " disconnected" << std::endl;
 				close((*it)->getClientSock());
 				delete (*it);
 				it = clients.erase(it);
@@ -208,6 +211,7 @@ void	Server::sendToAllClients()
 
 	while (it != ite)
     {
+        bool flag = false;
 		if (FD_ISSET((*it)->getClientSock(), &write_set))
 		{
 			if ((*it)->getState() == WRITING)
@@ -219,7 +223,6 @@ void	Server::sendToAllClients()
 				//отдаем пустую мапу, если не нашли host, после обработки получим 400
                 if (map.count("Host") == 0 || !(findServerName(map["Host"], *it)))
                     (*it)->clearRequest();
-                //printReqMap(map);
 				http.setFields((*it)->getClientSock(), (*it)->getBody(), (*it)->getServConf(), in, (*it)->getReqMap());
 				http.manager();
 				r = http.getResponse();
@@ -228,11 +231,21 @@ void	Server::sendToAllClients()
 			}
 			else if ((*it)->getState() == WRITING_BODY)
 			{
-				if (!sendBodySegment((*it)->getResponse()))
-					(*it)->clear();
+				if (!sendBodySegment((*it)->getResponse())) {
+				    if ((*it)->getResponse()->isClose())
+                    {
+                        close((*it)->getClientSock());
+                        delete (*it);
+                        it = clients.erase(it);
+                        flag = true;
+                    }
+				    else
+                        (*it)->clear();
+				}
 			}
 		}
-		it++;
+		if (!flag)
+		    it++;
 	}
 }
 

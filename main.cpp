@@ -15,6 +15,7 @@
 
 void    printConfig(const Config &config)
 {
+    std::cout << "Workers: " << config.getWorkers() << std::endl;
     std::list<ServConf> servConf = config.getConfig();
     std::list<ServConf>::iterator it = servConf.begin();
     std::list<ServConf>::iterator ite = servConf.end();
@@ -82,9 +83,9 @@ int main(int argc, char **argv)
         if (parseCommandLineArgs(argc, argv, in) == -1)
             return (0);
         Config conf(in.conf);
-
         if (conf.readConf() == -1)
             return (0);
+        //printConfig(conf);
         Server server = Server(in, conf);
         server.run();
     }

@@ -51,8 +51,12 @@ void		CGI::setUriAttributes()
 	size_t		q_pos = uri.find('?');
 	size_t		slash_pos = uri.rfind('/');
 
-	if (q_pos != std::string::npos)
-		envMap["QUERY_STRING"] = uri.substr(q_pos + 1, uri.size());
+    //envMap["QUERY_STRING"] = "login=aa&pass=bb";
+    std::cout << "uri: " << uri << std::endl;
+	if (q_pos != std::string::npos) {
+        envMap["QUERY_STRING"] = uri.substr(q_pos + 1, uri.size());
+    }
+	std::cout << "query: " << envMap["QUERY_STRING"] <<  std::endl;
 	if (slash_pos != std::string::npos && q_pos < slash_pos)
 	{
 		envMap["PATH_INFO"] = uri.substr(slash_pos + 1, uri.size());

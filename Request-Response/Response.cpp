@@ -4,12 +4,14 @@
 Response::Response(int _sockFd, std::string const &_headers) :
 sockFd(_sockFd), headers(_headers)
 {
+    is_close = false;
     buffer = new char[ R_SIZE + 1 ];
     bodyLength = 0;
 }
 
 Response::Response(const Response &copy) : sockFd(copy.sockFd), headers(copy.headers), bodyLength(copy.bodyLength)
 {
+    this->is_close = copy.is_close;
 	buffer = copy.buffer;
 }
 
@@ -20,14 +22,15 @@ Response &Response::operator=(const Response &copy)
 		sockFd     = copy.sockFd;
 		headers    = copy.headers;
 		bodyLength = copy.bodyLength;
+		is_close = copy.is_close;
 	}
 	return *this;
 }
 
 Response::~Response()
 {
-	if (!tmpFile.empty())
-		unlink(tmpFile.c_str());
+//	if (!tmpFile.empty())
+//		unlink(tmpFile.c_str());
     delete buffer;
 }
 
@@ -47,6 +50,14 @@ ssize_t Response::sendChunk() { return (bodyLength); }
 void Response::setTmpFile(const std::string &tmp_file)
 {
 	tmpFile = tmp_file;
+}
+
+bool Response::isClose() const {
+    return is_close;
+}
+
+void Response::setIsClose(bool isClose) {
+    is_close = isClose;
 }
 
 static std::string     ulToHex(size_t num)

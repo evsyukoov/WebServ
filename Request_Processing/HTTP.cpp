@@ -440,8 +440,8 @@ bool HTTP::postGet()
 
 	if (pos != std::string::npos)
 	{
-		reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
-		reqMap["location"].erase(pos);
+		//reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
+		//reqMap["location"].erase(pos);
 		return (true);
 	}
 	return (false);
@@ -835,6 +835,8 @@ int HTTP::sendReq(std::string const &header, std::string response)
 	result = header + response;
 
 	to_send = new StringResponse(client_fd, header, response);
+    if (reqMap.count("Connection") && reqMap["Connection"] == "close")
+        to_send->setIsClose(true);
 	return (1);
 }
 
@@ -1007,18 +1009,18 @@ bool HTTP::postGetValidation(std::string &root)
 	return (true);
 }
 
-void HTTP::post(bool post_put_flag)
+void HTTP::post(bool post_get_flag)
 {
 
 	File file;
 	std::string post_root;
 	std::string save_lock(reqMap["location"]);
 
-	if (!post_put_flag && !postPutvalidation(post_root, file, true))
+	if (!post_get_flag && !postPutvalidation(post_root, file, true))
 		return;
 	else
 	{
-		if (post_put_flag && !postGetValidation(post_root))
+		if (post_get_flag && !postGetValidation(post_root))
 			return;
 		cgiFiller(file, save_lock);
 		in.requestMap = &reqMap;
