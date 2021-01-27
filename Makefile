@@ -21,7 +21,9 @@ conf := $(mkfile_dir)conf/webserv.conf
 
 ifndef WITH_BONUS
     DIR += Server
+    BIN := $(mkfile_dir)bin/
 else
+	BIN := $(mkfile_dir)bin_bonus/
     SRC += Worker.cpp
     DIR += Bonus
     CXXFLAGS += -D BONUS=1
@@ -32,15 +34,14 @@ INC := -I. $(foreach d, $(DIR), -I$d )
 
 vpath %.cpp $(DIR)
 
-all: $(NAME)
-
+all: bindir $(NAME)
 
 $(NAME): $(OBJS)
 	@clang++ $^ -o $@
 	@printf "%s%-40s\n" "[$(DOTS)]" "Compiling $@"
 
-run: $(NAME) config
-	@./$< $(conf) 
+run: $(NAME)
+	@./$< ./conf/main.conf
 
 test: $(testr)
 	@if ! [[ -f $< ]]; \
@@ -49,14 +50,13 @@ test: $(testr)
 	chmod u+x $<
 	$< http://127.0.0.1:1234
 
-$(BIN)%.o: %.cpp | $(BIN)
+$(BIN)%.o: %.cpp
 	@$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 	$(eval DOTS := .$(DOTS))
 	@printf "%s%-40s\r" "[$(DOTS)]" "Compiling $(notdir $@)"
 
-
-$(BIN):
-	mkdir -p $@ && cd $(BIN) && mkdir $(DIR)
+bindir:
+	@mkdir -p $(BIN)
 
 bonus:
 	$(MAKE) 'WITH_BONUS=1' all
@@ -64,13 +64,9 @@ bonus:
 clean:
 	rm -rf $(BIN) 
 
-config:
-	@cd conf && cat template.conf | sed "s#_PWD_#$(mkfile_dir)#" > $(conf)
-	@printf "%s\n" "Config created"
-
 fclean: clean
 	rm -f $(NAME) $(conf) file_should_exist_after ws_* multiple_same
 
-re: fclean $(BIN) all
+re: fclean all
 
-.PHONY: all clean fclean re run test debug config $(testr) bonus
+.PHONY: all clean fclean re run test debug $(testr) bonus bindir

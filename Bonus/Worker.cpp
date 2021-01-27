@@ -119,37 +119,40 @@ void	Worker::sendToAllClients()
 	std::map<int, Client*>::iterator ite = container.end();
 	Response *r;
 
-	while (it != ite)
-	{
-		if (FD_ISSET(it->first, &write_set))
-		{
-			client = it->second;
-			if (client->getState() == WRITING)
-			{
-				in.remote_addr = client->getRemoteAddr();
-				std::map<std::string, std::string> map(client->getReqMap());
-				HTTP http;
+	while (it != ite) {
+        bool flag = false;
+        if (FD_ISSET(it->first, &write_set)) {
+            client = it->second;
+            if (client->getState() == WRITING) {
+                in.remote_addr = client->getRemoteAddr();
+                std::map<std::string, std::string> map(client->getReqMap());
+                HTTP http;
 
-				//отдаем пустую мапу, если не нашли host, после обработки получим 400
-				if (map.count("Host") == 0 || !(findServerName(map["Host"], client)))
-					client->clearRequest();
-				//printReqMap(map);
-				http.setFields(client->getClientSock(), client->getBody(),
-						client->getServConf(), in, client->getReqMap());
-				http.manager();
-				r = http.getResponse();
-				client->setResponse(r);
-				client->getResponse()->sendHeader();
-			}
-			else if (client->getState() == WRITING_BODY)
-			{
-				if (!sendBodySegment(client->getResponse()))
-					client->clear();
-			}
-
-		}
-		it++;
-	}
+                //отдаем пустую мапу, если не нашли host, после обработки получим 400
+                if (map.count("Host") == 0 || !(findServerName(map["Host"], client)))
+                    client->clearRequest();
+                //printReqMap(map);
+                http.setFields(client->getClientSock(), client->getBody(),
+                               client->getServConf(), in, client->getReqMap());
+                http.manager();
+                r = http.getResponse();
+                client->setResponse(r);
+                client->getResponse()->sendHeader();
+            } else if (client->getState() == WRITING_BODY) {
+                if (!sendBodySegment(client->getResponse())) {
+                    if (client->getResponse()->isClose()) {
+                        close(client->getClientSock());
+                        delete client;
+                        it = container.erase(it);
+                        flag = true;
+                    } else
+                        client->clear();
+                }
+            }
+        }
+        if (flag != true)
+            it++;
+    }
 }
 
 void Worker::doTheJob()

@@ -15,7 +15,7 @@ Client::Client(int clientSock, sockaddr_in &sAddr)
     chunk_size = 0;
     state = HEADER;
     resp = NULL;
-	std::cout << "Client " << this->remoteAddr;
+	std::cout << "Client " << this->remoteAddr << ": " << ntohs(sAddr.sin_port);
 	std::cout << " connected to server." << std::endl;
 }
 
