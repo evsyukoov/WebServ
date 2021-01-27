@@ -89,9 +89,9 @@ int main(int argc, char **argv)
         Server server = Server(in, conf);
         server.run();
     }
-    catch (std::exception &obj)
+    catch (...)
     {
-        std::cerr<< obj.what() << std::endl;
+        std::cerr<< "eerooor" << std::endl;
     }
     return (1);
 }

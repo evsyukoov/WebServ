@@ -51,14 +51,17 @@ int     set_nonblock(int fd)
 Server::Server(input &in, const Config &config)
 : AServer(in, config), Threadpool<Worker, Client *>(255)
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < config.getWorkers(); i++)
 		proletariat.push_back(Worker(in, config));
 	setWorkers(proletariat);
-	initThreadpool();
+	if (initThreadpool())
+	{
+		std::cerr << "Threadpool: too many workers" << std::endl;
+		exit(1);
+	}
 	host = "127.0.0.1";
-	this->in = in;
+	this->in     = in;
 	this->config = config;
-	FD_ZERO(&read_set);
 }
 
 int Server::openServers()

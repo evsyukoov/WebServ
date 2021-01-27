@@ -27,6 +27,16 @@ class Threadpool
 		pool_kill  = (1 << 2)
 	};
 
+ protected:
+	std::vector<pthread_t> threads;
+	std::vector<W>         workers;
+	size_t                 qSize;
+	std::queue<T>          *q;
+	int                    status;
+
+	int const &state() const
+	{ return status; }
+
 	class pool_strerror : public std::exception
 	{
 	 public:
@@ -38,16 +48,6 @@ class Threadpool
 			return (error.c_str());
 		}
 	};
-
- protected:
-	std::vector<pthread_t> threads;
-	std::vector<W>         workers;
-	size_t                 qSize;
-	std::queue<T>          *q;
-	int                    status;
-
-	int const &state() const
-	{ return status; }
 
 	/* Cannot copy or assign a Threadpool */
 
@@ -158,15 +158,16 @@ class Threadpool
 	}
 
 
-	void initThreadpool()
+	int initThreadpool()
 	{
 		if (VALID_PARAMS(workers.size(), qSize) == false)
-			throw (std::runtime_error("Threadpool: invalid constructor arguments"));
+			return (1);
 
 		if (pthread_mutex_init(&g_qLock, nullptr) < 0)
 			throw pool_strerror();
 
 		createThreads();
+		return (0);
 	}
 	/* "Signals" */
 
