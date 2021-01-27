@@ -31,6 +31,8 @@ class Config {
 	//bonus
 	int     workers;
 
+    int     checkPorts();
+
 
 public:
 	const std::list<ServConf> &getConfig() const;

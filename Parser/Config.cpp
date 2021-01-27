@@ -57,7 +57,8 @@ int Config::readConf()
 	in.close();
 	if (checkBracketsDirectives() == -1)
 	    return (-1);
-	//проверим директиву server_name
+	if (!checkPorts())
+	    return error("Repeated ports in config");
 	return (1);
 }
 
@@ -104,6 +105,19 @@ void Config::trim(std::string &s) {
 }
 
 
+
+int     Config::checkPorts()
+{
+	    std::map<int, int> tmp;
+	    for(std::list<ServConf>::iterator it = config.begin(); it != config.end(); it++)
+	    {
+	       if (tmp.count(it->getPort()) == 0)
+	           tmp[it->getPort()] = 0;
+	       else
+               return (0);
+        }
+	    return (1);
+}
 
 int Config::checkBracketsDirectives() {
 	for(std::list<std::string>::iterator it = raw_conf.begin(); it != raw_conf.end(); it++)
