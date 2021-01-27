@@ -440,8 +440,8 @@ bool HTTP::postGet()
 
 	if (pos != std::string::npos)
 	{
-		//reqMap["body"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
-		//reqMap["location"].erase(pos);
+		reqMap["query_string"] = reqMap["location"].substr(pos + 1, reqMap["locaton"].size() - pos);
+		reqMap["location"].erase(pos);
 		return (true);
 	}
 	return (false);
@@ -837,7 +837,7 @@ int HTTP::sendReq(std::string const &header, std::string response)
 	to_send = new StringResponse(client_fd, header, response);
     if (reqMap.count("Connection") && reqMap["Connection"] == "close")
         to_send->setIsClose(true);
-	return (1);
+    return (1);
 }
 
 void HTTP::cgiFiller(File &file, std::string &location)
@@ -1016,6 +1016,8 @@ void HTTP::post(bool post_get_flag)
 	std::string post_root;
 	std::string save_lock(reqMap["location"]);
 
+	if (!post_get_flag)
+		postGet();
 	if (!post_get_flag && !postPutvalidation(post_root, file, true))
 		return;
 	else

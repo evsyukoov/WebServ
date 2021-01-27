@@ -52,11 +52,12 @@ void		CGI::setUriAttributes()
 	size_t		slash_pos = uri.rfind('/');
 
     //envMap["QUERY_STRING"] = "login=aa&pass=bb";
-    std::cout << "uri: " << uri << std::endl;
-	if (q_pos != std::string::npos) {
-        envMap["QUERY_STRING"] = uri.substr(q_pos + 1, uri.size());
-    }
-	std::cout << "query: " << envMap["QUERY_STRING"] <<  std::endl;
+ //   std::cout << "uri: " << uri << std::endl;
+//	if (q_pos != std::string::npos) {
+  //      envMap["QUERY_STRING"] = uri.substr(q_pos + 1, uri.size());
+ //   }
+//	std::cout << "query: " << envMap["QUERY_STRING"] <<  std::endl;
+	envMap["QUERY_STRING"] = (*in.requestMap)["query_string"];
 	if (slash_pos != std::string::npos && q_pos < slash_pos)
 	{
 		envMap["PATH_INFO"] = uri.substr(slash_pos + 1, uri.size());
@@ -70,7 +71,8 @@ void		CGI::setUriAttributes()
 void		CGI::setHttpHeaders()
 {
 	std::map<std::string, std::string>::iterator it = (*in.requestMap).begin();
-	static std::array<std::string, 4> extras = { "body", "method", "location", "protocol" };
+	static std::array<std::string, 5> extras = { "body", "method", "location", "protocol" ,
+											  "query_string"};
 	std::string	httpKey;
 
 	while (it != (*in.requestMap).end())
