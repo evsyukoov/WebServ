@@ -138,7 +138,7 @@ void      Server::readRequests()
 			//кто-то отключился
 			if (ret == 0)
 			{
-                //std::cout << "Client " << (*it)->getClientSock() << " disconnected" << std::endl;
+                std::cout << "Client " << (*it)->getClientSock() << " disconnected" << std::endl;
 				close((*it)->getClientSock());
 				delete (*it);
 				it = clients.erase(it);
