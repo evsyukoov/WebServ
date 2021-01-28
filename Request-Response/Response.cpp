@@ -43,10 +43,6 @@ ssize_t Response::sendHeader()
 	return rv;
 }
 
-ssize_t Response::sendPiece() { return (bodyLength); };
-
-ssize_t Response::sendChunk() { return (bodyLength); }
-
 void Response::setTmpFile(const std::string &tmp_file)
 {
 	tmpFile = tmp_file;

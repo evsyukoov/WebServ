@@ -692,7 +692,9 @@ int HTTP::get()
 		else
 		{
 			fstat(fd, &structstat);
-			readFile(structstat, fd, path);
+			formRespHeaderOK(path ,structstat);
+			//respMap["Content-Length"] = std::to_string(findFileSize(fd));
+			to_send = new FileResponse(this->client_fd, responseMapToString(200), fd, findFileSize(fd));
 		}
 	}
 	return (0);
@@ -740,22 +742,6 @@ void HTTP::formRespHeaderOK(std::string &path, struct stat st)
 {
 	formContentTypeLength(path, st.st_size);
 	formTime(st.st_mtimespec.tv_sec, LAST_MOD);
-}
-
-void HTTP::readFile(struct stat &st, int fd, std::string &path)
-{
-	char *buf = new char[st.st_size + 1];
-	buf[st.st_size] = '\0';
-	if (read(fd, buf, st.st_size) < 0)
-	{
-		close(fd);
-		delete[] buf;
-		return;
-	}
-	close(fd);
-	formRespHeaderOK(path, st);
-	sendReq(responseMapToString(200), buf);
-	delete[] buf;
 }
 
 std::string HTTP::errorPageResponece(int error_num)

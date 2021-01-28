@@ -64,8 +64,6 @@ public:
 
     const ServConf &getServConf() const;
 
-
-
     std::string getRequest();
     std::string &getRemoteAddr();
 

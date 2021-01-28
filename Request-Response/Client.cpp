@@ -4,6 +4,8 @@
 
 #include "Client.hpp"
 #include "../Server/Server.hpp"
+#define WS_TOHS(x) (uint16_t) (((uint16_t) x >> 8) | ((uint16_t) x << 8))
+
 
 Client::Client(int clientSock, sockaddr_in &sAddr)
 {
@@ -15,7 +17,7 @@ Client::Client(int clientSock, sockaddr_in &sAddr)
     chunk_size = 0;
     state = HEADER;
     resp = NULL;
-	std::cout << "Client " << this->remoteAddr << ": " << ntohs(sAddr.sin_port);
+	std::cout << "Client " << this->remoteAddr << ": " << WS_TOHS(sAddr.sin_port);
 	std::cout << " connected to server." << std::endl;
 }
 

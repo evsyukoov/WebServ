@@ -220,6 +220,7 @@ void	Server::sendToAllClients()
 			else if ((*it)->getState() == WRITING_BODY)
 			{
 				if (!sendBodySegment((*it)->getResponse())) {
+					::send((*it)->getClientSock(), "\r\n", 2, MSG_DONTWAIT);
 				    if ((*it)->getResponse()->isClose())
                     {
                         close((*it)->getClientSock());

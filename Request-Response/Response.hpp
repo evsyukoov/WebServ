@@ -32,11 +32,9 @@ class Response
 	Response &operator=(const Response &copy);
 	void setTmpFile(std::string const &);
 	virtual ~Response();
-	//void    setHeaderMap(std::map<std::string, std::string> const map);
-	//void    setRespLine(std::string const &respLine);
 	ssize_t sendHeader();
-	virtual ssize_t sendPiece();
-	virtual ssize_t sendChunk();
+	virtual ssize_t sendPiece() = 0;
+	virtual ssize_t sendChunk() = 0;
 
     bool isClose() const;
 
@@ -57,8 +55,9 @@ class StringResponse : public Response
 	ssize_t sendChunk();
 };
 
-class FileResponse : public Response
+class FileResponse : virtual public Response
 {
+ protected:
 	int     bodyFd;
 
  public:

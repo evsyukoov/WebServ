@@ -87,8 +87,6 @@ private:
 
 	int sendReq(std::string const &header, std::string request);
 
-	void readFile(struct stat &st, int fd, std::string &path);
-
 	std::list<Location>::const_iterator getMatchingLocation();
 
 	bool validateExtencion(std::string &root);
